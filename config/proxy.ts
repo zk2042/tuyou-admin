@@ -18,6 +18,12 @@ export default {
     //   changeOrigin: true,
     // },
   },
+  prod: {
+    // '/api/': {
+    //   target: 'https://api.xxx.com',
+    //   changeOrigin: true,
+    // },
+  },
   pre: {
     // '/api/': {
     //   target: 'https://pre-api.xxx.com',

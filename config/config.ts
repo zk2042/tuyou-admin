@@ -3,24 +3,24 @@ import defaultSettings from './defaultSettings';
 import proxy from './proxy';
 import routes from './routes';
 
-const { REACT_APP_ENV = 'dev' } = process.env;
+const rawEnv = process.env.UMI_ENV || 'dev';
+const currentEnv = (rawEnv in proxy ? rawEnv : 'dev') as keyof typeof proxy;
 
-// 打印REACT_APP_ENV变量的几种方式
-console.log('REACT_APP_ENV:', REACT_APP_ENV); // 方式1：直接打印变量值
-console.log('当前环境:', process.env.REACT_APP_ENV); // 方式2：通过process.env访问
-console.debug('调试信息 - 环境变量:', { REACT_APP_ENV }); // 方式3：以对象形式打印
+console.log('[Umi Config] rawEnv:', rawEnv);
+console.log('[Umi Config] currentEnv:', currentEnv);
 
 export default defineConfig({
   // ========== 构建配置 ==========
   hash: true, // 打包产物带 hash，避免浏览器缓存
   fastRefresh: true, // 热更新保留组件 state
   ignoreMomentLocale: true, // 去掉 moment 国际化，减包体积
+  esbuildMinifyIIFE: true, // 避免 esbuild helper 冲突导致构建失败
 
   // ========== 路由 ==========
   routes,
 
-  // ========== 代理（根据 REACT_APP_ENV 自动切换环境） ==========
-  proxy: proxy[REACT_APP_ENV as keyof typeof proxy],
+  // ========== 代理（根据 UMI_ENV 自动切换环境） ==========
+  proxy: proxy[currentEnv],
 
   // ========== Umi Max 插件 ==========
   antd: {},
@@ -39,6 +39,10 @@ export default defineConfig({
     // antd DatePicker 底层从 moment 切到 dayjs
     preset: 'antd',
     plugins: ['duration'],
+  },
+  define: {
+    'process.env.APP_ENV': JSON.stringify(currentEnv),
+    'process.env.UMI_ENV': JSON.stringify(currentEnv),
   },
   npmClient: 'npm',
 });
