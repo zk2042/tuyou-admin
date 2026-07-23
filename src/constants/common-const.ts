@@ -25,3 +25,6 @@ export const DATE_FORMAT = {
   MONTH_DAY: 'MM-DD',
   HOUR_MINUTE: 'HH:mm',
 } as const;
+
+// ========== 导出状态码常量 ==========
+export * from './status-code-const';
