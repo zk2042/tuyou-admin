@@ -23,7 +23,15 @@ export default defineConfig({
   proxy: proxy[currentEnv],
 
   // ========== Umi Max 插件 ==========
-  antd: {},
+  antd: {
+    theme: {
+      token: {
+        colorPrimary: '#2e7d32',
+        colorPrimaryHover: '#38953cff',
+        colorPrimaryActive: '#2b732eff',
+      },
+    },
+  },
   access: {}, // RBAC 权限插件
   model: {}, // 数据流插件（useModel）
   initialState: {}, // 全局初始状态（getInitialState）

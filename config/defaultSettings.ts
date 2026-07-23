@@ -3,7 +3,7 @@ import type { ProLayoutProps } from '@ant-design/pro-components';
 /**
  * @name 默认设置配置
  * @description 包含系统的基础配置，如主题、布局、logo等
- * @author gp
+ * @author zk
  * @time 2026-07-19
  */
 
@@ -12,7 +12,7 @@ const Settings: ProLayoutProps & {
   logo?: string;
 } = {
   navTheme: 'light',
-  colorPrimary: '#1890ff',
+  colorPrimary: '#2e7d32',
   layout: 'side',
   contentWidth: 'Fluid',
   fixedHeader: false,
