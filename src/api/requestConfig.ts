@@ -3,14 +3,6 @@ import type { RequestConfig, RequestOptions } from '@umijs/max';
 import { errorConfig } from './requestErrorConfig';
 
 const TOKEN_HEADER = 'Authorization';
-const SUCCESS_CODE = 10000;
-
-interface ResponseStructure {
-  code: number;
-  msg: string;
-  data: any;
-  success?: boolean;
-}
 
 // ========== 请求配置 ==========
 export const requestConfig: RequestConfig = {
@@ -45,13 +37,10 @@ export const requestConfig: RequestConfig = {
   responseInterceptors: [
     (response) => {
       const contentType = response.headers?.['content-type'] || '';
+
+      // 非 JSON 响应直接返回（如文件下载）
       if (!contentType.includes('application/json')) {
         return response;
-      }
-
-      const { data } = response as unknown as { data: ResponseStructure };
-      if (data && typeof data.code === 'number') {
-        data.success = data.code === SUCCESS_CODE;
       }
 
       return response;
