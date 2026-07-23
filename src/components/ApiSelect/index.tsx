@@ -1,8 +1,8 @@
+import { apiRequest } from '@/lib/apiRequest';
 import {
   ProFormSelect,
   type ProFormSelectProps,
 } from '@ant-design/pro-components';
-import { request } from '@umijs/max';
 import { App } from 'antd';
 import type { DefaultOptionType } from 'antd/lib/select';
 import _ from 'lodash';
@@ -73,14 +73,15 @@ const ApiSelect: React.FC<ApiSelectProps> = ({
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await request(api, {
+      const response = await apiRequest<any>({
+        url: api,
         method,
         params: method === 'GET' ? params : undefined,
         data: method !== 'GET' ? params : undefined,
       });
 
-      // 处理响应数据
-      let data = resultField ? _.get(response, resultField, []) : response;
+      // 默认从统一响应结构的 data 字段取值，也支持外部自定义 resultField。
+      let data = resultField ? _.get(response, resultField, []) : response.data;
 
       // 如果数据不是数组，尝试转换为数组
       if (!Array.isArray(data)) {
