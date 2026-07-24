@@ -15,4 +15,24 @@ export default [
     path: '/home',
     component: './Home',
   },
+  {
+    name: '用户管理',
+    path: '/user-management',
+    routes: [
+      {
+        path: '/user-management',
+        redirect: '/user-management/member',
+      },
+      {
+        name: '会员管理',
+        path: '/user-management/member',
+        component: './UserManagement/Member',
+      },
+      {
+        name: '领队管理',
+        path: '/user-management/leader',
+        component: './UserManagement/Leader',
+      },
+    ],
+  },
 ];

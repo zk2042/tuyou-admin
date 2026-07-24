@@ -4,10 +4,6 @@ import {
   showTableTotal,
 } from '@/constants/common-const';
 import {
-  normalizeTableData,
-  type NormalizeTableDataOptions,
-} from '@/utils/table';
-import {
   PageContainer,
   ProTable,
   type PageContainerProps,
@@ -16,31 +12,32 @@ import {
 import type { TablePaginationConfig } from 'antd';
 import React from 'react';
 
-type TableRequest<T, U extends Record<string, any>> = NonNullable<
-  ProTableProps<T, U>['request']
->;
+type TableRequest<
+  T,
+  U extends Record<string, any>,
+  ValueType = 'text',
+> = NonNullable<ProTableProps<T, U, ValueType>['request']>;
 
-type ToolBarRender<T> = NonNullable<ProTableProps<T, any>['toolBarRender']>;
+type ToolBarRender<
+  T,
+  U extends Record<string, any>,
+  ValueType = 'text',
+> = NonNullable<ProTableProps<T, U, ValueType>['toolBarRender']>;
 
-export interface ListPageProps<
+export interface ListProps<
   T extends Record<string, any>,
   U extends Record<string, any> = Record<string, any>,
+  ValueType = 'text',
 > extends Omit<
-    ProTableProps<T, U>,
+    ProTableProps<T, U, ValueType>,
     'pagination' | 'request' | 'toolBarRender'
   > {
   pageTitle?: PageContainerProps['title'];
   pageContainerProps?: Omit<PageContainerProps, 'children' | 'title'>;
-  request?: TableRequest<T, U>;
-  fetchData?: (
-    params: U & { current?: number; pageSize?: number },
-    sorter: Parameters<TableRequest<T, U>>[1],
-    filter: Parameters<TableRequest<T, U>>[2],
-  ) => Promise<any>;
-  requestOptions?: NormalizeTableDataOptions<T>;
+  request?: TableRequest<T, U, ValueType>;
   pagination?: false | TablePaginationConfig;
   toolbarActions?: React.ReactNode[];
-  toolBarRender?: ToolBarRender<T>;
+  toolBarRender?: ToolBarRender<T, U, ValueType>;
 }
 
 const defaultSearch = {
@@ -66,44 +63,29 @@ const buildPagination = (
 const ListPage = <
   T extends Record<string, any>,
   U extends Record<string, any> = Record<string, any>,
+  ValueType = 'text',
 >({
   pageTitle,
   pageContainerProps,
   request,
-  fetchData,
-  requestOptions,
   pagination,
   toolbarActions,
   toolBarRender,
   search,
   ...tableProps
-}: ListPageProps<T, U>) => {
-  const mergedRequest: TableRequest<T, U> | undefined =
-    request ??
-    (fetchData
-      ? async (params, sorter, filter) => {
-          const response = await fetchData(params, sorter, filter);
-          return normalizeTableData<T>(response, requestOptions);
-        }
-      : undefined);
-
+}: ListProps<T, U, ValueType>) => {
   return (
     <PageContainer title={pageTitle} ghost {...pageContainerProps}>
-      <ProTable<T, U>
+      <ProTable<T, U, ValueType>
         search={
           search === false ? false : { ...defaultSearch, ...(search ?? {}) }
         }
         pagination={buildPagination(pagination)}
-        request={mergedRequest}
+        request={request}
         toolBarRender={toolBarRender ?? (() => toolbarActions ?? [])}
         {...tableProps}
       />
     </PageContainer>
   );
 };
-
-export type {
-  NormalizeTableDataOptions,
-  TableRequestData,
-} from '@/utils/table';
 export default ListPage;

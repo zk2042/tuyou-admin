@@ -29,6 +29,23 @@ export default defineConfig({
         colorPrimary: '#2e7d32',
         colorPrimaryHover: '#38953cff',
         colorPrimaryActive: '#2b732eff',
+        colorLink: '#2e7d32',
+        colorLinkHover: '#38953cff',
+        colorLinkActive: '#2b732eff',
+        controlItemBgHover: '#f3fbf4',
+        controlItemBgActive: '#e8f5e9',
+      },
+      components: {
+        Table: {
+          rowHoverBg: '#f3fbf4',
+          rowSelectedBg: '#f3fbf4',
+          rowSelectedHoverBg: '#e8f5e9',
+        },
+        DatePicker: {
+          cellHoverBg: '#f3fbf4',
+          cellActiveWithRangeBg: '#e8f5e9',
+          cellRangeBorderColor: '#8bc78f',
+        },
       },
     },
   },
