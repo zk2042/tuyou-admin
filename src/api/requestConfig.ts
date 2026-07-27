@@ -1,4 +1,4 @@
-import { LOCAL_STORAGE_KEY } from '@/constants';
+import { getToken } from '@/utils/auth';
 import type { RequestConfig, RequestOptions } from '@umijs/max';
 import { errorConfig } from './requestErrorConfig';
 
@@ -13,8 +13,12 @@ export const requestConfig: RequestConfig = {
   // ====== 请求拦截器 ======
   requestInterceptors: [
     (config: RequestOptions) => {
-      const token = localStorage.getItem(LOCAL_STORAGE_KEY.USER_TOKEN);
-      if (token) {
+      const requestConfig = config as RequestOptions & {
+        skipAuthToken?: boolean;
+      };
+      const token = getToken();
+
+      if (token && !requestConfig.skipAuthToken) {
         config.headers = {
           ...config.headers,
           [TOKEN_HEADER]: `Bearer ${token}`,

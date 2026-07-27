@@ -1,7 +1,12 @@
 // 运行时配置
-import { LOCAL_STORAGE_KEY } from '@/constants';
 import { getMe, type AdminInfo } from '@/services/login';
 import { store } from '@/store';
+import {
+  clearAuth as clearToken,
+  getRefresh,
+  getToken,
+  setUser,
+} from '@/utils/auth';
 import { setAppInstance } from '@/utils/message';
 import {
   BellOutlined,
@@ -43,13 +48,8 @@ type BreadcrumbRoute = {
   title: string;
 };
 
-function clearAuth() {
-  localStorage.removeItem(LOCAL_STORAGE_KEY.USER_TOKEN);
-  localStorage.removeItem(LOCAL_STORAGE_KEY.USER_INFO);
-}
-
 function redirectToLogin() {
-  clearAuth();
+  clearToken();
 
   if (window.location.pathname === '/login') {
     return;
@@ -271,27 +271,26 @@ export function rootContainer(container: ReactNode) {
 // 全局初始化数据配置，用于 Layout 用户信息和权限初始化
 // 更多信息见文档：https://umijs.org/docs/api/runtime-config#getinitialstate
 export async function getInitialState(): Promise<InitialState | undefined> {
-  const token = localStorage.getItem(LOCAL_STORAGE_KEY.USER_TOKEN);
-  if (!token) {
-    clearAuth();
+  const token = getToken();
+  const refreshToken = getRefresh();
+
+  if (!token && !refreshToken) {
+    clearToken();
     return undefined;
   }
 
   try {
     const response = await getMe({ skipErrorHandler: true });
     if (!response.data) {
-      clearAuth();
+      clearToken();
       return undefined;
     }
 
-    localStorage.setItem(
-      LOCAL_STORAGE_KEY.USER_INFO,
-      JSON.stringify(response.data),
-    );
+    setUser(response.data);
 
     return response.data;
   } catch {
-    clearAuth();
+    clearToken();
     return undefined;
   }
 }

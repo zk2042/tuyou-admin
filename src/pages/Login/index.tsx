@@ -1,17 +1,32 @@
-import { LOCAL_STORAGE_KEY } from '@/constants';
-import { adminLogin, type LoginForm } from '@/services/login';
-import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import logoImg from '@/assets/images/logo.png';
+import {
+  adminLogin,
+  getCaptcha,
+  type CaptchaData,
+  type LoginForm,
+} from '@/services/login';
+import { setToken, setUser } from '@/utils/auth';
+import {
+  LockOutlined,
+  SafetyCertificateOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import { history, useModel } from '@umijs/max';
 import { App, Button, Checkbox, Form, Input } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { carouselImages } from './carouselConfig';
 import styles from './index.less';
 
+type FormValue = Omit<LoginForm, 'captchaKey'>;
+
 const LoginPage: React.FC = () => {
   const { message } = App.useApp();
-  const { refresh } = useModel('@@initialState');
+  const [form] = Form.useForm();
+  const { refresh, setInitialState } = useModel('@@initialState');
   const [submitting, setSubmitting] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [codeData, setCodeData] = useState<CaptchaData>();
+  const [codeLoad, setCodeLoad] = useState(false);
   const activeSlide = carouselImages[activeIndex];
 
   useEffect(() => {
@@ -22,15 +37,46 @@ const LoginPage: React.FC = () => {
     return () => {
       window.clearInterval(timer);
     };
-  }, [activeIndex]);
+  }, []);
 
-  const handleLogin = async (values: LoginForm & { remember?: boolean }) => {
+  const loadCode = useCallback(async () => {
+    setCodeLoad(true);
+
+    try {
+      const response = await getCaptcha({ skipErrorHandler: true });
+      if (!response.data) {
+        message.error('验证码加载失败，请稍后重试');
+        return;
+      }
+
+      setCodeData(response.data);
+      form.setFieldValue('captchaCode', undefined);
+    } catch {
+      message.error('验证码加载失败，请稍后重试');
+    } finally {
+      setCodeLoad(false);
+    }
+  }, [form, message]);
+
+  useEffect(() => {
+    loadCode();
+  }, [loadCode]);
+
+  const handleLogin = async (values: FormValue) => {
+    if (!codeData?.captchaKey) {
+      message.error('验证码未准备好，请刷新后重试');
+      return;
+    }
+
     setSubmitting(true);
 
     try {
       const response = await adminLogin({
         username: values.username,
         password: values.password,
+        captchaCode: values.captchaCode,
+        captchaKey: codeData.captchaKey,
+        remember: values.remember,
       });
 
       if (!response.data) {
@@ -38,11 +84,9 @@ const LoginPage: React.FC = () => {
         return;
       }
 
-      localStorage.setItem(LOCAL_STORAGE_KEY.USER_TOKEN, response.data.token);
-      localStorage.setItem(
-        LOCAL_STORAGE_KEY.USER_INFO,
-        JSON.stringify(response.data.admin),
-      );
+      setToken(response.data, values.remember);
+      setUser(response.data.admin);
+      setInitialState(response.data.admin);
 
       await refresh();
 
@@ -51,6 +95,8 @@ const LoginPage: React.FC = () => {
       const redirect =
         new URLSearchParams(window.location.search).get('redirect') || '/';
       history.replace(redirect);
+    } catch {
+      await loadCode();
     } finally {
       setSubmitting(false);
     }
@@ -98,11 +144,15 @@ const LoginPage: React.FC = () => {
       <div className={styles.formPanel}>
         <div className={styles.formCard}>
           <div className={styles.formHeader}>
-            <h2>途友后台</h2>
+            <div className={styles.brandHead}>
+              <img src={logoImg} alt="途友" className={styles.brandLogo} />
+              <h2>途友后台</h2>
+            </div>
             <p>请输入账号信息后进入后台系统</p>
           </div>
 
           <Form
+            form={form}
             layout="vertical"
             size="large"
             initialValues={{ remember: true }}
@@ -125,11 +175,43 @@ const LoginPage: React.FC = () => {
               />
             </Form.Item>
 
+            <div className={styles.captchaRow}>
+              <Form.Item
+                name="captchaCode"
+                className={styles.captchaInput}
+                rules={[{ required: true, message: '请输入图片验证码' }]}
+              >
+                <Input
+                  prefix={<SafetyCertificateOutlined />}
+                  placeholder="请输入图片验证码"
+                />
+              </Form.Item>
+              <button
+                type="button"
+                className={styles.captchaBox}
+                onClick={loadCode}
+                aria-label="刷新图片验证码"
+                disabled={codeLoad}
+              >
+                {codeData?.imageUrl ? (
+                  <img src={codeData.imageUrl} alt="图片验证码" />
+                ) : (
+                  <span className={styles.captchaText}>
+                    {codeLoad ? '加载中...' : '点击刷新'}
+                  </span>
+                )}
+              </button>
+            </div>
+
             <div className={styles.formOptions}>
               <Form.Item name="remember" valuePropName="checked" noStyle>
                 <Checkbox>记住我</Checkbox>
               </Form.Item>
               <a href="#">忘记密码</a>
+            </div>
+
+            <div className={styles.loginHint}>
+              还没有账号？请联系系统管理员开通。
             </div>
 
             <Button

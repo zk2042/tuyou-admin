@@ -6,16 +6,15 @@ import {
   isNeedLogin,
   isPermissionStatusCode,
   isWarningStatusCode,
-  LOCAL_STORAGE_KEY,
 } from '@/constants';
+import { clearAuth } from '@/utils/auth';
 import { message } from '@/utils/message';
 import type { RequestConfig } from '@umijs/max';
 
 const SUCCESS_CODE = API_RESPONSE_SUCCESS_CODE;
 
 function redirectToLogin() {
-  localStorage.removeItem(LOCAL_STORAGE_KEY.USER_TOKEN);
-  localStorage.removeItem(LOCAL_STORAGE_KEY.USER_INFO);
+  clearAuth();
 
   if (window.location.pathname === '/login') {
     return;
@@ -122,6 +121,24 @@ function handleUnknownError(error: any) {
   showErrorMessage('请求失败，请重试');
 }
 
+export function handleRequestError(error: any, opts?: any) {
+  if (opts?.skipErrorHandler) throw error;
+
+  if (handleNetworkError(error)) {
+    return;
+  }
+
+  if (handleHttpStatusError(error)) {
+    return;
+  }
+
+  if (handleBizError(error)) {
+    return;
+  }
+
+  handleUnknownError(error);
+}
+
 export const errorConfig: RequestConfig = {
   // Umi Max 内置的错误处理配置
   errorConfig: {
@@ -139,25 +156,7 @@ export const errorConfig: RequestConfig = {
 
     // 错误接收及处理
     errorHandler: (error: any, opts: any) => {
-      if (opts?.skipErrorHandler) throw error;
-
-      // 1. 先处理网络层异常
-      if (handleNetworkError(error)) {
-        return;
-      }
-
-      // 2. 再处理非 2xx 的 HTTP 状态错误
-      if (handleHttpStatusError(error)) {
-        return;
-      }
-
-      // 3. 最后处理后端业务 code 错误
-      if (handleBizError(error)) {
-        return;
-      }
-
-      // 4. 兜底处理未知异常
-      handleUnknownError(error);
+      handleRequestError(error, opts);
     },
   },
 };

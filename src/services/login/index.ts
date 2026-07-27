@@ -4,6 +4,9 @@ import { apiRequest } from '@/lib/apiRequest';
 export type LoginForm = {
   username: string;
   password: string;
+  captchaCode: string;
+  captchaKey: string;
+  remember: boolean;
 };
 
 export type AdminInfo = {
@@ -15,8 +18,14 @@ export type AdminInfo = {
 
 export type LoginData = {
   token: string;
+  refreshToken: string;
   expires_in: number;
   admin: AdminInfo;
+};
+
+export type CaptchaData = {
+  captchaKey: string;
+  imageUrl: string;
 };
 
 export async function adminLogin(
@@ -36,6 +45,16 @@ export async function getMe(options?: {
 }): Promise<ApiResponse<AdminInfo>> {
   return apiRequest<AdminInfo>({
     url: '/v1/admin/auth/me',
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
+export async function getCaptcha(options?: {
+  [key: string]: any;
+}): Promise<ApiResponse<CaptchaData>> {
+  return apiRequest<CaptchaData>({
+    url: '/v1/admin/auth/captcha',
     method: 'GET',
     ...(options || {}),
   });

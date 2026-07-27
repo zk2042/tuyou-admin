@@ -9,7 +9,9 @@
  *   data: {}
  * }
  */
-import type { ApiResponse } from '@/constants';
+import { handleRequestError } from '@/api/requestErrorConfig';
+import { type ApiResponse, isNeedLogin } from '@/constants';
+import { clearAuth, getRefresh, updateToken } from '@/utils/auth';
 import { message } from '@/utils/message';
 import { request, type RequestOptions } from '@umijs/max';
 
@@ -28,6 +30,131 @@ type RequestMethod = NonNullable<RequestOptions['method']>;
 interface RequestExecutorOptions extends RequestOptions {
   url: string;
   method?: RequestMethod;
+  skipAuthRefresh?: boolean;
+  skipAuthToken?: boolean;
+}
+
+type RefreshData = {
+  token?: string;
+  accessToken?: string;
+  access_token?: string;
+  refreshToken?: string;
+  refresh_token?: string;
+};
+
+const REFRESH_URL = '/v1/admin/auth/refresh';
+const AUTH_PATHS = [
+  '/v1/admin/auth/login',
+  '/v1/admin/auth/captcha',
+  REFRESH_URL,
+];
+
+let refreshTask: Promise<boolean> | null = null;
+
+function isAuthPath(url: string) {
+  return AUTH_PATHS.includes(url);
+}
+
+function needRefresh(error: any) {
+  const status = error?.response?.status;
+  const code = error?.info?.code;
+
+  return status === 401 || (typeof code === 'number' && isNeedLogin(code));
+}
+
+async function sendRequest<T = unknown>(
+  url: string,
+  options: Omit<RequestExecutorOptions, 'url'>,
+) {
+  return request<ApiResponse<T>>(url, {
+    ...options,
+    skipErrorHandler: true,
+  });
+}
+
+async function refreshToken() {
+  if (refreshTask) {
+    return refreshTask;
+  }
+
+  const refreshValue = getRefresh();
+  if (!refreshValue) {
+    return false;
+  }
+
+  refreshTask = sendRequest<RefreshData>(REFRESH_URL, {
+    method: 'POST',
+    data: {
+      refreshToken: refreshValue,
+    },
+    skipAuthToken: true,
+    skipAuthRefresh: true,
+  })
+    .then((response) => {
+      if (!response.data) {
+        clearAuth();
+        return false;
+      }
+
+      updateToken({
+        token: response.data.token,
+        accessToken: response.data.accessToken,
+        access_token: response.data.access_token,
+        refreshToken: response.data.refreshToken || refreshValue,
+        refresh_token: response.data.refresh_token || refreshValue,
+      });
+      return true;
+    })
+    .catch(() => {
+      clearAuth();
+      return false;
+    })
+    .finally(() => {
+      refreshTask = null;
+    });
+
+  return refreshTask;
+}
+
+async function requestWithAuth<T>(
+  url: string,
+  options: Omit<RequestExecutorOptions, 'url'>,
+  sender: (
+    path: string,
+    config: Omit<RequestExecutorOptions, 'url'>,
+  ) => Promise<T>,
+  onError?: (error: any, opts?: any) => void,
+) {
+  try {
+    return await sender(url, options);
+  } catch (error) {
+    if (!options.skipAuthRefresh && !isAuthPath(url) && needRefresh(error)) {
+      const refreshed = await refreshToken();
+
+      if (refreshed) {
+        try {
+          return await sender(url, {
+            ...options,
+            skipAuthRefresh: true,
+          });
+        } catch (retryError) {
+          if (onError) {
+            onError(retryError, options);
+          } else {
+            handleRequestError(retryError, options);
+          }
+          return Promise.reject(retryError);
+        }
+      }
+    }
+
+    if (onError) {
+      onError(error, options);
+    } else {
+      handleRequestError(error, options);
+    }
+    return Promise.reject(error);
+  }
 }
 
 /**
@@ -40,10 +167,14 @@ export async function apiRequest<T = unknown>(
 ): Promise<ApiResponse<T>> {
   const { url, method = 'GET', ...restOptions } = options;
 
-  return request<ApiResponse<T>>(url, {
-    method,
-    ...restOptions,
-  });
+  return requestWithAuth<ApiResponse<T>>(
+    url,
+    {
+      method,
+      ...restOptions,
+    },
+    sendRequest,
+  );
 }
 
 // ================================= 下载 =================================
@@ -133,20 +264,24 @@ function handleDownloadData(response: any) {
  * @returns Promise<Blob> 返回文件数据
  */
 export const postDownload = (url: string, data: object) =>
-  request(url, {
-    method: 'post',
-    data,
-    responseType: 'blob',
-    getResponse: true,
-  })
-    .then((response) => {
-      handleDownloadData(response);
-      return response.data;
-    })
-    .catch((error) => {
-      handleDownloadError(error);
-      return Promise.reject(error);
-    });
+  requestWithAuth<any>(
+    url,
+    {
+      method: 'post',
+      data,
+      responseType: 'blob',
+      getResponse: true,
+    },
+    (path, options) =>
+      request(path, {
+        ...options,
+        skipErrorHandler: true,
+      }),
+    handleDownloadError,
+  ).then((response) => {
+    handleDownloadData(response);
+    return response.data;
+  });
 
 /**
  * get方式下载文件
@@ -155,17 +290,21 @@ export const postDownload = (url: string, data: object) =>
  * @returns Promise<Blob> 返回文件数据
  */
 export const getDownload = (url: string, params?: object): Promise<Blob> =>
-  request(url, {
-    method: 'get',
-    params,
-    responseType: 'blob',
-    getResponse: true,
-  })
-    .then((response) => {
-      handleDownloadData(response);
-      return response.data;
-    })
-    .catch((error) => {
-      handleDownloadError(error);
-      return Promise.reject(error);
-    });
+  requestWithAuth<any>(
+    url,
+    {
+      method: 'get',
+      params,
+      responseType: 'blob',
+      getResponse: true,
+    },
+    (path, options) =>
+      request(path, {
+        ...options,
+        skipErrorHandler: true,
+      }),
+    handleDownloadError,
+  ).then((response) => {
+    handleDownloadData(response);
+    return response.data;
+  });
