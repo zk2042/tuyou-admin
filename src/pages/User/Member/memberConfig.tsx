@@ -1,11 +1,21 @@
 import type { ProColumns } from '@ant-design/pro-components';
 
-import type { UserRecord } from '../shared';
-import { roleTag, statusTag, tableActions, userAvatar } from '../shared';
+import type { DetailLoad, UserRecord } from '../shared';
+import {
+  dateRange,
+  roleTag,
+  statusTag,
+  tableActions,
+  textEllipsis,
+  userAvatar,
+} from '../shared';
 
 export type MemberRecord = UserRecord;
 
-export const memberColumns = (): ProColumns<MemberRecord>[] => {
+export const memberColumns = (
+  loadDetail: DetailLoad,
+  bioWidth: number,
+): ProColumns<MemberRecord>[] => {
   return [
     {
       title: 'ID',
@@ -19,20 +29,21 @@ export const memberColumns = (): ProColumns<MemberRecord>[] => {
       title: '头像',
       dataIndex: 'avatar',
       hideInSearch: true,
-      width: 70,
+      width: 60,
       render: userAvatar,
     },
     {
       title: '昵称',
       dataIndex: 'nickname',
-      width: 110,
+      width: 90,
       fieldProps: {
         placeholder: '请输入昵称',
       },
+      render: (_, record) => textEllipsis(record.nickname, 90),
     },
     {
       title: '手机号',
-      dataIndex: 'mobile',
+      dataIndex: 'phone',
       width: 120,
       fieldProps: {
         placeholder: '请输入手机号',
@@ -47,9 +58,10 @@ export const memberColumns = (): ProColumns<MemberRecord>[] => {
     },
     {
       title: '签名',
-      dataIndex: 'signature',
-      ellipsis: true,
+      dataIndex: 'bio',
+      width: bioWidth,
       hideInSearch: true,
+      render: (_, record) => textEllipsis(record.bio, bioWidth),
     },
     {
       title: '角色',
@@ -60,28 +72,26 @@ export const memberColumns = (): ProColumns<MemberRecord>[] => {
     },
     {
       title: '注册时间',
-      dataIndex: 'registeredAt',
+      dataIndex: 'register_time',
       valueType: 'date',
       width: 110,
       hideInSearch: true,
     },
     {
       title: '注册时间',
-      dataIndex: 'registeredAtRange',
+      dataIndex: 'register_range',
       valueType: 'dateRange',
       hideInTable: true,
       fieldProps: {
         placeholder: ['年/月/日', '年/月/日'],
       },
       search: {
-        transform: (value) => ({
-          registeredAt: value,
-        }),
+        transform: dateRange,
       },
     },
     {
       title: '最近登录',
-      dataIndex: 'lastLogin',
+      dataIndex: 'last_login',
       width: 140,
       hideInSearch: true,
     },
@@ -90,7 +100,7 @@ export const memberColumns = (): ProColumns<MemberRecord>[] => {
       key: 'option',
       valueType: 'option',
       width: 220,
-      render: (_, record) => tableActions('会员', record),
+      render: (_, record) => tableActions('会员', loadDetail, record),
     },
   ];
 };

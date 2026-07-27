@@ -1,15 +1,15 @@
-export type UserStatus = 'enabled' | 'disabled';
-
 export interface UserItem {
-  id: string;
+  id: string | number;
   avatar: string;
+  cover?: string;
+  cover_style?: string;
   nickname: string;
-  mobile: string;
-  status: UserStatus;
-  signature: string;
+  phone: string;
+  status: string;
+  bio: string;
   role: string;
-  registeredAt: string;
-  lastLogin: string;
+  register_time: string;
+  last_login: string;
 }
 
 export interface PageQuery {
@@ -17,9 +17,9 @@ export interface PageQuery {
   size?: string;
   id?: string;
   nickname?: string;
-  mobile?: string;
-  registeredAtStart?: string;
-  registeredAtEnd?: string;
+  phone?: string;
+  register_start?: string;
+  register_end?: string;
 }
 
 const includesText = (source: string, keyword?: string) => {
@@ -50,14 +50,10 @@ export const pageResult = <T extends UserItem>(
   const size = Number(query.size || 10);
   const filtered = source.filter((item) => {
     return (
-      includesText(item.id, query.id) &&
+      includesText(String(item.id), query.id) &&
       includesText(item.nickname, query.nickname) &&
-      includesText(item.mobile, query.mobile) &&
-      matchDate(
-        item.registeredAt,
-        query.registeredAtStart,
-        query.registeredAtEnd,
-      )
+      includesText(item.phone, query.phone) &&
+      matchDate(item.register_time, query.register_start, query.register_end)
     );
   });
   const start = (page - 1) * size;
@@ -74,4 +70,45 @@ export const pageResult = <T extends UserItem>(
       total_page: Math.ceil(filtered.length / size) || 1,
     },
   };
+};
+
+export const detailResult = <T>(data: T | null) => {
+  if (!data) {
+    return {
+      code: 404,
+      message: '数据不存在',
+      data: null,
+    };
+  }
+
+  return {
+    code: 0,
+    message: '成功',
+    data,
+  };
+};
+
+export const findItem = <T extends UserItem>(
+  source: T[],
+  id?: string | number,
+): T | undefined => {
+  return source.find((item) => String(item.id) === String(id));
+};
+
+const escapeCell = (value: unknown) => {
+  if (value === null || value === undefined) {
+    return '';
+  }
+
+  return String(value).replace(/\t/g, ' ').replace(/\r?\n/g, ' ');
+};
+
+export const exportText = (
+  headers: string[],
+  rows: Array<Array<string | number | undefined>>,
+) => {
+  const head = headers.join('\t');
+  const body = rows.map((row) => row.map(escapeCell).join('\t'));
+
+  return [head, ...body].join('\n');
 };

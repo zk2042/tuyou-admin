@@ -7,6 +7,7 @@ import {
   PageContainer,
   ProTable,
   type PageContainerProps,
+  type ProColumns,
   type ProTableProps,
 } from '@ant-design/pro-components';
 import type { TablePaginationConfig } from 'antd';
@@ -54,9 +55,48 @@ const buildPagination = (
   return {
     defaultPageSize: PAGE_SIZE,
     showSizeChanger: true,
+    showQuickJumper: true,
     pageSizeOptions: PAGE_SIZE_OPTIONS,
     showTotal: showTableTotal,
     ...(pagination ?? {}),
+  };
+};
+
+const isActionColumn = <T extends Record<string, any>, ValueType = 'text'>(
+  column: ProColumns<T, ValueType>,
+) => {
+  return column.valueType === 'option' || column.key === 'option';
+};
+
+const buildColumns = <T extends Record<string, any>, ValueType = 'text'>(
+  columns?: ProTableProps<T, Record<string, any>, ValueType>['columns'],
+) => {
+  if (!columns) {
+    return columns;
+  }
+
+  return columns.map((column) => {
+    if (!column || !isActionColumn(column) || column.fixed) {
+      return column;
+    }
+
+    return {
+      ...column,
+      fixed: 'right' as const,
+    };
+  });
+};
+
+const buildScroll = (
+  scroll?: ProTableProps<Record<string, any>, Record<string, any>>['scroll'],
+) => {
+  if (!scroll) {
+    return { x: 'max-content' as const };
+  }
+
+  return {
+    x: 'max-content' as const,
+    ...scroll,
   };
 };
 
@@ -72,16 +112,29 @@ const ListPage = <
   toolbarActions,
   toolBarRender,
   search,
+  columns,
+  scroll,
   ...tableProps
 }: ListProps<T, U, ValueType>) => {
+  const tableColumns = React.useMemo(() => {
+    return buildColumns<T, ValueType>(columns);
+  }, [columns]);
+
   return (
-    <PageContainer title={pageTitle} ghost {...pageContainerProps}>
+    <PageContainer
+      title={pageTitle}
+      ghost
+      breadcrumbRender={false}
+      {...pageContainerProps}
+    >
       <ProTable<T, U, ValueType>
+        columns={tableColumns}
         search={
           search === false ? false : { ...defaultSearch, ...(search ?? {}) }
         }
         pagination={buildPagination(pagination)}
         request={request}
+        scroll={buildScroll(scroll)}
         toolBarRender={toolBarRender ?? (() => toolbarActions ?? [])}
         {...tableProps}
       />

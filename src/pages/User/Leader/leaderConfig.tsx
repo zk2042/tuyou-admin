@@ -1,13 +1,23 @@
 import type { ProColumns } from '@ant-design/pro-components';
 
-import type { UserRecord } from '../shared';
-import { roleTag, statusTag, tableActions, userAvatar } from '../shared';
+import type { DetailLoad, UserRecord } from '../shared';
+import {
+  dateRange,
+  roleTag,
+  statusTag,
+  tableActions,
+  textEllipsis,
+  userAvatar,
+} from '../shared';
 
 export interface LeaderRecord extends UserRecord {
-  leadCount: number;
+  lead_count: number;
 }
 
-export const leaderColumns = (): ProColumns<LeaderRecord>[] => {
+export const leaderColumns = (
+  loadDetail: DetailLoad,
+  bioWidth: number,
+): ProColumns<LeaderRecord>[] => {
   return [
     {
       title: 'ID',
@@ -21,20 +31,21 @@ export const leaderColumns = (): ProColumns<LeaderRecord>[] => {
       title: '头像',
       dataIndex: 'avatar',
       hideInSearch: true,
-      width: 70,
+      width: 60,
       render: userAvatar,
     },
     {
       title: '昵称',
       dataIndex: 'nickname',
-      width: 120,
+      width: 90,
       fieldProps: {
         placeholder: '请输入昵称',
       },
+      render: (_, record) => textEllipsis(record.nickname, 90),
     },
     {
       title: '手机号',
-      dataIndex: 'mobile',
+      dataIndex: 'phone',
       width: 110,
       fieldProps: {
         placeholder: '请输入手机号',
@@ -49,13 +60,14 @@ export const leaderColumns = (): ProColumns<LeaderRecord>[] => {
     },
     {
       title: '签名',
-      dataIndex: 'signature',
-      ellipsis: true,
+      dataIndex: 'bio',
+      width: bioWidth,
       hideInSearch: true,
+      render: (_, record) => textEllipsis(record.bio, bioWidth),
     },
     {
       title: '带队次数',
-      dataIndex: 'leadCount',
+      dataIndex: 'lead_count',
       width: 80,
       hideInSearch: true,
     },
@@ -69,28 +81,26 @@ export const leaderColumns = (): ProColumns<LeaderRecord>[] => {
     },
     {
       title: '注册时间',
-      dataIndex: 'registeredAt',
+      dataIndex: 'register_time',
       valueType: 'date',
       width: 110,
       hideInSearch: true,
     },
     {
       title: '注册时间',
-      dataIndex: 'registeredAtRange',
+      dataIndex: 'register_range',
       valueType: 'dateRange',
       hideInTable: true,
       fieldProps: {
         placeholder: ['年/月/日', '年/月/日'],
       },
       search: {
-        transform: (value) => ({
-          registeredAt: value,
-        }),
+        transform: dateRange,
       },
     },
     {
       title: '最近登录',
-      dataIndex: 'lastLogin',
+      dataIndex: 'last_login',
       width: 140,
       hideInSearch: true,
     },
@@ -99,7 +109,7 @@ export const leaderColumns = (): ProColumns<LeaderRecord>[] => {
       key: 'option',
       valueType: 'option',
       width: 220,
-      render: (_, record) => tableActions('领队', record),
+      render: (_, record) => tableActions('领队', loadDetail, record),
     },
   ];
 };

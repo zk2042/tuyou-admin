@@ -8,30 +8,28 @@ export default [
 
   {
     path: '/',
-    redirect: '/home',
-  },
-  {
-    name: '首页',
-    path: '/home',
-    component: './Home',
+    redirect: '/user/member',
   },
   {
     name: '用户管理',
-    path: '/user-management',
+    path: '/user',
+    disabledTooltip: true,
     routes: [
       {
-        path: '/user-management',
-        redirect: '/user-management/member',
+        path: '/user',
+        redirect: '/user/member',
       },
       {
         name: '会员管理',
-        path: '/user-management/member',
-        component: './UserManagement/Member',
+        path: '/user/member',
+        disabledTooltip: true,
+        component: './User/Member',
       },
       {
         name: '领队管理',
-        path: '/user-management/leader',
-        component: './UserManagement/Leader',
+        path: '/user/leader',
+        disabledTooltip: true,
+        component: './User/Leader',
       },
     ],
   },

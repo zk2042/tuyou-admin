@@ -1,20 +1,22 @@
 import ListPage from '@/components/ListPage';
 import { API_RESPONSE_SUCCESS_CODE, PAGE_SIZE } from '@/constants';
-import { queryLeaderPage } from '@/services/user/leader';
+import { exportMember, getMember, queryMember } from '@/services/user/member';
+import { Grid } from 'antd';
 import React, { useMemo, useState } from 'react';
 
-import { batchActions, dateRange, type UserQuery } from '../shared';
-import { leaderColumns, type LeaderRecord } from './leaderConfig';
+import { batchActions, getBioWidth, type UserQuery } from '../shared';
+import { memberColumns, type MemberRecord } from './memberConfig';
 
-const leaderRequest = async (params: UserQuery) => {
+const memberRequest = async (params: UserQuery) => {
   try {
-    const response = await queryLeaderPage<LeaderRecord>({
+    const response = await queryMember({
       page: params.current ?? 1,
       size: params.pageSize ?? PAGE_SIZE,
       id: params.id,
       nickname: params.nickname,
-      mobile: params.mobile,
-      ...dateRange(params.registeredAt),
+      phone: params.phone,
+      register_start: params.register_start,
+      register_end: params.register_end,
     });
     const pageData = response.data;
 
@@ -32,17 +34,24 @@ const leaderRequest = async (params: UserQuery) => {
   }
 };
 
-const LeaderPage: React.FC = () => {
+const MemberPage: React.FC = () => {
+  const screens = Grid.useBreakpoint();
+  const bioWidth = getBioWidth(screens);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
-  const columns = useMemo(() => leaderColumns(), []);
+  const columns = useMemo(() => {
+    return memberColumns(async (id) => {
+      const response = await getMember(id);
+      return response.data ?? null;
+    }, bioWidth);
+  }, [bioWidth]);
 
   return (
-    <ListPage<LeaderRecord, UserQuery>
+    <ListPage<MemberRecord, UserQuery>
       rowKey="id"
-      headerTitle="领队列表"
+      headerTitle="会员列表"
       columns={columns}
-      request={leaderRequest}
+      request={memberRequest}
       options={false}
       search={{
         defaultCollapsed: false,
@@ -53,11 +62,12 @@ const LeaderPage: React.FC = () => {
         onChange: setSelectedRowKeys,
       }}
       toolbarActions={batchActions({
-        entityLabel: '领队',
+        entityLabel: '会员',
         selectedCount: selectedRowKeys.length,
+        exportRequest: exportMember,
       })}
     />
   );
 };
 
-export default LeaderPage;
+export default MemberPage;

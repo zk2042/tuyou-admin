@@ -1,16 +1,30 @@
-import { apiRequest } from '@/lib/apiRequest';
+import type { ApiResponse } from '@/constants';
+import { apiRequest, postDownload } from '@/lib/apiRequest';
 
-import type { UserData, UserParams } from './types';
+import type { MemberItem, MemberQuery, PageData } from './types';
 
-// TODO: 后端联调时，将下面占位路径替换为真实接口地址。
-export async function queryMemberPage<T>(
-  params: UserParams,
+export async function queryMember(
+  params: MemberQuery,
   options?: { [key: string]: any },
-) {
-  return apiRequest<UserData<T>>({
-    url: '/v1/members',
+): Promise<ApiResponse<PageData<MemberItem>>> {
+  return apiRequest<PageData<MemberItem>>({
+    url: '/v1/admin/users',
     method: 'GET',
     params,
     ...(options || {}),
   });
 }
+
+export async function getMember(
+  id: string | number,
+  options?: { [key: string]: any },
+): Promise<ApiResponse<MemberItem>> {
+  return apiRequest<MemberItem>({
+    url: `/v1/admin/users/${id}`,
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
+export const exportMember = (data?: Partial<MemberQuery>) =>
+  postDownload('/v1/admin/users/export', data || {});
