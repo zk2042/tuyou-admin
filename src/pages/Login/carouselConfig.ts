@@ -1,6 +1,6 @@
 import carousel1Image from '@/assets/images/carousel1.jpg';
-import carousel2Image from '@/assets/images/carousel2.webp';
 import carousel4Image from '@/assets/images/carousel4.webp';
+import carousel7Image from '@/assets/images/carousel7.webp';
 
 export const carouselImages = [
   {
@@ -13,7 +13,7 @@ export const carouselImages = [
     id: '02',
     title: '实时业务洞察',
     description: '通过可视化图表快速识别趋势，帮助管理员及时完成决策。',
-    image: carousel2Image,
+    image: carousel7Image,
   },
   {
     id: '03',

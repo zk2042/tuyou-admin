@@ -46,6 +46,10 @@ export default defineConfig({
           cellActiveWithRangeBg: '#e8f5e9',
           cellRangeBorderColor: '#8bc78f',
         },
+        Menu: {
+          popupBg: '#141414',
+          subMenuItemSelectedColor: '#ffffff',
+        },
       },
     },
   },

@@ -1,14 +1,16 @@
-import {
-  LockOutlined,
-  SafetyCertificateOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
-import { Button, Checkbox, Form, Input } from 'antd';
+import { LOCAL_STORAGE_KEY } from '@/constants';
+import { adminLogin, type LoginForm } from '@/services/login';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { history, useModel } from '@umijs/max';
+import { App, Button, Checkbox, Form, Input } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { carouselImages } from './carouselConfig';
 import styles from './index.less';
 
 const LoginPage: React.FC = () => {
+  const { message } = App.useApp();
+  const { refresh } = useModel('@@initialState');
+  const [submitting, setSubmitting] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const activeSlide = carouselImages[activeIndex];
 
@@ -21,6 +23,38 @@ const LoginPage: React.FC = () => {
       window.clearInterval(timer);
     };
   }, [activeIndex]);
+
+  const handleLogin = async (values: LoginForm & { remember?: boolean }) => {
+    setSubmitting(true);
+
+    try {
+      const response = await adminLogin({
+        username: values.username,
+        password: values.password,
+      });
+
+      if (!response.data) {
+        message.error('登录失败，请稍后重试');
+        return;
+      }
+
+      localStorage.setItem(LOCAL_STORAGE_KEY.USER_TOKEN, response.data.token);
+      localStorage.setItem(
+        LOCAL_STORAGE_KEY.USER_INFO,
+        JSON.stringify(response.data.admin),
+      );
+
+      await refresh();
+
+      message.success('登录成功');
+
+      const redirect =
+        new URLSearchParams(window.location.search).get('redirect') || '/';
+      history.replace(redirect);
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className={styles.loginWrap}>
@@ -72,29 +106,23 @@ const LoginPage: React.FC = () => {
             layout="vertical"
             size="large"
             initialValues={{ remember: true }}
+            onFinish={handleLogin}
           >
-            <Form.Item name="username">
+            <Form.Item
+              name="username"
+              rules={[{ required: true, message: '请输入管理员账号' }]}
+            >
               <Input prefix={<UserOutlined />} placeholder="请输入管理员账号" />
             </Form.Item>
 
-            <Form.Item name="password">
+            <Form.Item
+              name="password"
+              rules={[{ required: true, message: '请输入密码' }]}
+            >
               <Input.Password
                 prefix={<LockOutlined />}
                 placeholder="请输入密码"
               />
-            </Form.Item>
-
-            <Form.Item name="captcha">
-              <div className={styles.captchaRow}>
-                <Input
-                  prefix={<SafetyCertificateOutlined />}
-                  placeholder="请输入验证码"
-                  className={styles.captchaInput}
-                />
-                <div className={styles.captchaBox} aria-label="图形验证码">
-                  <span>T8K9</span>
-                </div>
-              </div>
             </Form.Item>
 
             <div className={styles.formOptions}>
@@ -108,6 +136,7 @@ const LoginPage: React.FC = () => {
               type="primary"
               htmlType="submit"
               className={styles.loginButton}
+              loading={submitting}
               block
             >
               登录
