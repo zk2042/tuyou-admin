@@ -1,6 +1,6 @@
+import { message } from '@/utils/message';
 import { IDomEditor } from '@wangeditor/editor';
 import { Editor, Toolbar } from '@wangeditor/editor-for-react';
-import { message } from 'antd';
 import React, {
   forwardRef,
   useEffect,

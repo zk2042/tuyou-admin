@@ -1,7 +1,7 @@
 import type { ApiResponse } from '@/constants';
 import { apiRequest, postDownload } from '@/lib/apiRequest';
 
-import type { LeaderItem, LeaderQuery, PageData } from './types';
+import type { LeaderEdit, LeaderItem, LeaderQuery, PageData } from './types';
 
 export async function queryLeader(
   params: LeaderQuery,
@@ -16,12 +16,61 @@ export async function queryLeader(
 }
 
 export async function getLeader(
-  id: string | number,
+  id: string,
   options?: { [key: string]: any },
 ): Promise<ApiResponse<LeaderItem>> {
   return apiRequest<LeaderItem>({
     url: `/v1/admin/leaders/${id}`,
     method: 'GET',
+    ...(options || {}),
+  });
+}
+
+export async function editLeader(
+  id: string,
+  data: LeaderEdit,
+  options?: { [key: string]: any },
+): Promise<ApiResponse<LeaderItem>> {
+  return apiRequest<LeaderItem>({
+    url: `/v1/admin/leaders/${id}`,
+    method: 'PUT',
+    data,
+    ...(options || {}),
+  });
+}
+
+export async function delLeader(
+  id: string,
+  options?: { [key: string]: any },
+): Promise<ApiResponse<null>> {
+  return apiRequest<null>({
+    url: `/v1/admin/leaders/${id}`,
+    method: 'DELETE',
+    ...(options || {}),
+  });
+}
+
+export async function batchDelLeader(
+  ids: string[],
+  options?: { [key: string]: any },
+): Promise<ApiResponse<null>> {
+  return apiRequest<null>({
+    url: '/v1/admin/leaders/batch-delete',
+    method: 'POST',
+    data: { ids },
+    ...(options || {}),
+  });
+}
+
+export async function batchStatusLeader(
+  ids: string[],
+  status: boolean,
+  options?: { [key: string]: any },
+): Promise<ApiResponse<null>> {
+  return apiRequest<null>({
+    url: '/v1/admin/leaders/batch-status',
+    method: 'POST',
+    data: { ids, status },
     ...(options || {}),
   });
 }

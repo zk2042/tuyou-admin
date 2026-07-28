@@ -6,8 +6,6 @@ const admUser = {
 };
 
 const capMap = new Map<string, string>();
-const refMap = new Map<string, typeof admUser>();
-const accMap = new Map<string, typeof admUser>();
 
 function makeCode() {
   return Array.from({ length: 4 }, () => {
@@ -44,6 +42,10 @@ function makeToken(prefix: string) {
   return `${prefix}_${Date.now().toString(36)}_${Math.random()
     .toString(36)
     .slice(2, 8)}`;
+}
+
+function isTokenValid(token: string, prefix: string) {
+  return Boolean(token) && token.startsWith(`${prefix}_`);
 }
 
 function getBearer(req: any) {
@@ -99,32 +101,27 @@ export default {
     const token = makeToken('mock_access');
     const refreshToken = makeToken('mock_refresh');
 
-    accMap.set(token, admUser);
-    refMap.set(refreshToken, admUser);
-
     sendBiz(res, 0, '登录成功', {
       token,
       refreshToken,
-      expires_in: 7200,
+      expires_in: 86400000,
       admin: admUser,
     });
   },
   'GET /api/v1/admin/auth/me': (req: any, res: any) => {
     const token = getBearer(req);
-    const user = accMap.get(token);
 
-    if (!token || !user) {
+    if (!isTokenValid(token, 'mock_access')) {
       sendBiz(res, 1006, '令牌已过期');
       return;
     }
 
-    sendBiz(res, 0, '获取成功', user);
+    sendBiz(res, 0, '获取成功', admUser);
   },
   'POST /api/v1/admin/auth/refresh': (req: any, res: any) => {
     const { refreshToken } = req.body || {};
-    const user = refMap.get(refreshToken);
 
-    if (!refreshToken || !user) {
+    if (!isTokenValid(String(refreshToken || ''), 'mock_refresh')) {
       sendBiz(res, 1006, '刷新令牌已失效');
       return;
     }
@@ -132,14 +129,10 @@ export default {
     const token = makeToken('mock_access');
     const nextRefresh = makeToken('mock_refresh');
 
-    accMap.set(token, user);
-    refMap.delete(refreshToken);
-    refMap.set(nextRefresh, user);
-
     sendBiz(res, 0, '刷新成功', {
       token,
       refreshToken: nextRefresh,
-      expires_in: 7200,
+      expires_in: 86400000,
     });
   },
 };

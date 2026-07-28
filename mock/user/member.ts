@@ -1,5 +1,14 @@
 import type { UserItem } from './shared';
-import { detailResult, exportText, findItem, pageResult } from './shared';
+import {
+  detailResult,
+  exportText,
+  findItem,
+  pageResult,
+  removeItem,
+  removeItems,
+  updateItem,
+  updateStatusItems,
+} from './shared';
 
 const DEFAULT_COVER =
   'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png';
@@ -169,6 +178,18 @@ export default {
   },
   'GET /api/v1/admin/users/:id': (req: any, res: any) => {
     res.json(detailResult(findItem(memberList, req.params.id) || null));
+  },
+  'PUT /api/v1/admin/users/:id': (req: any, res: any) => {
+    res.json(updateItem(memberList, req.params.id, req.body));
+  },
+  'DELETE /api/v1/admin/users/:id': (req: any, res: any) => {
+    res.json(removeItem(memberList, req.params.id));
+  },
+  'POST /api/v1/admin/users/batch-delete': (req: any, res: any) => {
+    res.json(removeItems(memberList, req.body));
+  },
+  'POST /api/v1/admin/users/batch-status': (req: any, res: any) => {
+    res.json(updateStatusItems(memberList, req.body));
   },
   'POST /api/v1/admin/users/export': (_req: any, res: any) => {
     const content = exportText(

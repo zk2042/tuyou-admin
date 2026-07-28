@@ -9,7 +9,7 @@ export interface LeaderQuery {
 }
 
 export interface LeaderItem {
-  id: string | number;
+  id: string;
   avatar: string;
   cover?: string;
   cover_style?: string;
@@ -21,6 +21,11 @@ export interface LeaderItem {
   role: string;
   register_time: string;
   last_login: string;
+}
+
+export interface LeaderEdit {
+  status?: boolean;
+  role?: '普通会员' | '领队';
 }
 
 export interface PageData<T> {

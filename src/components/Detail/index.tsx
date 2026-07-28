@@ -33,7 +33,7 @@ const Detail = ({
       open={open}
       loading={loading}
       onClose={onClose}
-      destroyOnClose
+      destroyOnHidden
       extra={extra}
     >
       {header}

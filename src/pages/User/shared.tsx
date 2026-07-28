@@ -1,29 +1,32 @@
-import Detail from '@/components/Detail';
-import { useBatchDelete } from '@/hooks/table/useBatchDelete';
+import { API_RESPONSE_SUCCESS_CODE, type ApiResponse } from '@/constants';
 import { useExportExcel } from '@/hooks/table/useExportExcel';
 import { useRowDelete } from '@/hooks/table/useRowDelete';
+import DetailModal from '@/pages/User/components/DetailModal';
+import EditModal from '@/pages/User/components/EditModal';
+import { message } from '@/utils/message';
 import {
   DeleteOutlined,
   EditOutlined,
   ExportOutlined,
   EyeOutlined,
 } from '@ant-design/icons';
-import type { DescriptionsProps } from 'antd';
 import {
   Avatar,
   Button,
+  ConfigProvider,
+  Divider,
   Grid,
-  Image,
-  message,
+  Modal,
   Space,
-  Spin,
+  Switch,
+  Table,
   Tag,
   theme,
   Typography,
 } from 'antd';
 import type { Dayjs } from 'dayjs';
-import type { CSSProperties, ReactNode } from 'react';
-import { useState } from 'react';
+import type { ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 
 type DateValue = string | Dayjs;
 
@@ -40,7 +43,7 @@ export interface UserQuery {
 }
 
 export interface UserRecord {
-  id: string | number;
+  id: string;
   avatar: string;
   cover?: string;
   cover_style?: string;
@@ -53,13 +56,62 @@ export interface UserRecord {
   last_login: string;
 }
 
+export type BatchRow = Pick<UserRecord, 'id' | 'nickname' | 'status'>;
+
+export type RoleText = '普通会员' | '领队';
+
+export interface EditData {
+  status?: boolean;
+  role?: RoleText;
+}
+
+export type EditVals = {
+  status: boolean;
+  roleFlag: boolean;
+};
+
+type EditSrc = Pick<UserRecord, 'status' | 'role'>;
+
+const statusOn = (status?: string) => status === '正常';
+
+const roleOn = (role?: string) => role === '领队';
+
+export const editVals = (data: EditSrc): EditVals => {
+  return {
+    status: statusOn(data.status),
+    roleFlag: roleOn(data.role),
+  };
+};
+
+export const editData = (
+  data: EditVals,
+  off: RoleText = '普通会员',
+): EditData => {
+  return {
+    status: data.status,
+    role: data.roleFlag ? '领队' : off,
+  };
+};
+
 export type DetailRecord = UserRecord & {
   lead_count?: number;
 };
 
 export type DetailLoad = (
-  id: string | number,
+  id: string,
 ) => Promise<DetailRecord | null | undefined>;
+
+export type EditSave = (
+  id: string,
+  data: EditData,
+) => Promise<ApiResponse<DetailRecord>>;
+
+export type DelRun = (id: string) => Promise<ApiResponse<null>>;
+export type BatchDel = (ids: string[]) => Promise<ApiResponse<null>>;
+export type BatchStatus = (
+  ids: string[],
+  status: boolean,
+) => Promise<ApiResponse<null>>;
 
 const formatDateValue = (value: DateValue) => {
   if (typeof value === 'string') {
@@ -134,188 +186,59 @@ export const textEllipsis = (text?: ReactNode, width = 220) => {
   );
 };
 
-interface PreviewProps {
-  src?: string;
-  alt: string;
-  width: number;
-  height: number;
-  shape?: 'circle' | 'default';
-  bordered?: boolean;
-  fallback: ReactNode;
-  borderColor: string;
-  fillColor: string;
-}
-
-const PreviewImage = ({
-  src,
-  alt,
-  width,
-  height,
-  shape = 'default',
-  bordered = false,
-  fallback,
-  borderColor,
-  fillColor,
-}: PreviewProps) => {
-  const radius = shape === 'circle' ? '50%' : 12;
-  const wrapperStyle: CSSProperties = {
-    width,
-    height,
-    overflow: 'hidden',
-    borderRadius: radius,
-    background: fillColor,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-    border: bordered ? `1px dashed ${borderColor}` : undefined,
-  };
-
-  if (!src) {
-    return <div style={wrapperStyle}>{fallback}</div>;
-  }
-
-  return (
-    <Image
-      src={src}
-      alt={alt}
-      width={width}
-      height={height}
-      wrapperStyle={wrapperStyle}
-      style={{
-        width: '100%',
-        height: '100%',
-        objectFit: 'cover',
-        borderRadius: radius,
-      }}
-      preview={{
-        movable: true,
-        mask: (
-          <Space size={6}>
-            <EyeOutlined />
-            <span>预览</span>
-          </Space>
-        ),
-      }}
-    />
-  );
+const cardStyle = {
+  padding: 20,
+  border: '1px solid #f0f0f0',
+  borderRadius: 12,
+  background: '#fafafa',
 };
 
-const detailItems = (
-  record: DetailRecord,
-  token: ReturnType<typeof theme.useToken>['token'],
-): DescriptionsProps['items'] => {
-  return [
-    {
-      key: 'phone',
-      label: '手机号',
-      children: record.phone,
+const switchTheme = {
+  components: {
+    Switch: {
+      handleSize: 22,
+      trackHeight: 30,
+      innerMaxMargin: 30,
+      innerMinMargin: 12,
+      trackMinWidth: 68,
+      trackPadding: 4,
     },
-    {
-      key: 'status',
-      label: '状态',
-      children: statusTag(record.status),
-    },
-    {
-      key: 'role',
-      label: '角色',
-      children: roleTag(record.role),
-    },
-    ...(typeof record.lead_count === 'number'
-      ? [
-          {
-            key: 'lead_count',
-            label: '带队次数',
-            children: `${record.lead_count}`,
-          },
-        ]
-      : []),
-    {
-      key: 'bio',
-      label: '个性签名',
-      children: record.bio || '-',
-    },
-    {
-      key: 'cover',
-      label: '封面图',
-      children: (
-        <PreviewImage
-          src={record.cover}
-          alt={`${record.nickname}封面图`}
-          width={160}
-          height={100}
-          bordered
-          borderColor={token.colorBorder}
-          fillColor={token.colorFillAlter}
-          fallback={
-            <Typography.Text type="secondary">暂无封面图</Typography.Text>
-          }
-        />
-      ),
-    },
-    {
-      key: 'register_time',
-      label: '注册时间',
-      children: record.register_time,
-    },
-    {
-      key: 'last_login',
-      label: '最近登录',
-      children: record.last_login,
-    },
-  ];
-};
-
-const detailHeader = (
-  record: DetailRecord,
-  token: ReturnType<typeof theme.useToken>['token'],
-) => {
-  return (
-    <Space size={16} align="start" style={{ marginBottom: 24 }}>
-      <PreviewImage
-        src={record.avatar}
-        alt={record.nickname}
-        width={72}
-        height={72}
-        shape="circle"
-        borderColor={token.colorBorder}
-        fillColor={token.colorFillAlter}
-        fallback={
-          <Avatar size={72} style={{ backgroundColor: token.colorFill }}>
-            {record.nickname.slice(0, 1)}
-          </Avatar>
-        }
-      />
-      <Space direction="vertical" size={4}>
-        <Typography.Title level={5} style={{ margin: 0 }}>
-          {record.nickname}
-        </Typography.Title>
-        <Typography.Text type="secondary">ID：{record.id}</Typography.Text>
-        <Space size={8} wrap>
-          {statusTag(record.status)}
-          {roleTag(record.role)}
-        </Space>
-      </Space>
-    </Space>
-  );
-};
+  },
+} as const;
 
 interface RowProps {
   entityLabel: string;
   loadDetail: DetailLoad;
+  editSave?: EditSave;
+  delRun?: DelRun;
+  onEdited?: () => void;
   record: DetailRecord;
 }
 
-const RowActions = ({ entityLabel, loadDetail, record }: RowProps) => {
+const RowActions = ({
+  entityLabel,
+  loadDetail,
+  editSave,
+  delRun,
+  onEdited,
+  record,
+}: RowProps) => {
   const { token } = theme.useToken();
   const [detailData, setDetailData] = useState<DetailRecord>();
   const [detailOpen, setDetailOpen] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editFetching, setEditFetching] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
   const { deleting, confirmDelete } = useRowDelete<DetailRecord>({
     entityLabel,
     getName: (current) => current.nickname,
     getDesc: (current) =>
       `${current.nickname}（${current.id}）删除后将无法恢复。`,
+    request: async (current) => {
+      await delRun?.(current.id);
+    },
+    onSuccess: () => onEdited?.(),
   });
 
   const openDetail = async () => {
@@ -332,6 +255,45 @@ const RowActions = ({ entityLabel, loadDetail, record }: RowProps) => {
 
   const currentDetail = detailData ?? record;
 
+  const openEdit = async () => {
+    setEditOpen(true);
+    setEditFetching(true);
+
+    try {
+      const current = await loadDetail(record.id);
+      setDetailData(current ?? record);
+    } finally {
+      setEditFetching(false);
+    }
+  };
+
+  const submitEdit = async (values: EditVals) => {
+    if (!editSave) {
+      return;
+    }
+
+    setEditLoading(true);
+
+    try {
+      const response = await editSave(record.id, editData(values));
+
+      if (response.code !== API_RESPONSE_SUCCESS_CODE) {
+        message.error(response.message || `更新${entityLabel}失败`);
+        return;
+      }
+
+      if (response.data) {
+        setDetailData(response.data);
+      }
+
+      message.success(`已更新${entityLabel} ${record.nickname}`);
+      setEditOpen(false);
+      onEdited?.();
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
   return (
     <>
       <Space size={0}>
@@ -347,9 +309,7 @@ const RowActions = ({ entityLabel, loadDetail, record }: RowProps) => {
           type="link"
           icon={<EditOutlined />}
           style={{ paddingInline: 4 }}
-          onClick={() => {
-            message.success(`进入${entityLabel} ${record.nickname} 的编辑流程`);
-          }}
+          onClick={() => void openEdit()}
         >
           编辑
         </Button>
@@ -366,25 +326,30 @@ const RowActions = ({ entityLabel, loadDetail, record }: RowProps) => {
           删除
         </Button>
       </Space>
-      <Detail
-        title={`${entityLabel}详情`}
+      <DetailModal
+        entityLabel={entityLabel}
+        record={currentDetail}
         open={detailOpen}
-        loading={detailLoading}
+        loading={detailLoading && !detailData}
         onClose={() => {
           setDetailOpen(false);
           setDetailData(undefined);
         }}
-        width={580}
-        header={
-          detailLoading && !detailData ? (
-            <div style={{ marginBottom: 24 }}>
-              <Spin />
-            </div>
-          ) : (
-            detailHeader(currentDetail, token)
-          )
-        }
-        items={detailItems(currentDetail, token)}
+      />
+      <EditModal
+        entityLabel={entityLabel}
+        roleText="普通会员"
+        record={currentDetail}
+        values={editVals(currentDetail)}
+        open={editOpen}
+        loading={editFetching}
+        saving={editLoading}
+        onCancel={() => {
+          setEditOpen(false);
+        }}
+        onSubmit={(values) => {
+          void submitEdit(values);
+        }}
       />
     </>
   );
@@ -393,12 +358,18 @@ const RowActions = ({ entityLabel, loadDetail, record }: RowProps) => {
 export const tableActions = (
   entityLabel: string,
   loadDetail: DetailLoad,
+  editSave: EditSave | undefined,
+  delRun: DelRun | undefined,
+  onEdited: (() => void) | undefined,
   record: DetailRecord,
 ) => {
   return (
     <RowActions
       entityLabel={entityLabel}
       loadDetail={loadDetail}
+      editSave={editSave}
+      delRun={delRun}
+      onEdited={onEdited}
       record={record}
     />
   );
@@ -406,47 +377,244 @@ export const tableActions = (
 
 interface BatchOptions {
   entityLabel: string;
-  selectedCount: number;
+  selectedKeys: string[];
+  selectedRows: BatchRow[];
+  statusRun?: BatchStatus;
+  onStatused?: () => void;
+  delRun?: BatchDel;
+  onDeleted?: () => void;
   exportRequest: () => Promise<Blob>;
 }
 
-const batchMessage = (
-  actionLabel: string,
-  entityLabel: string,
-  selectedCount: number,
-) => {
-  if (!selectedCount) {
-    message.warning(`请先选择要${actionLabel}的${entityLabel}`);
-    return;
-  }
+interface StatusBtnProps {
+  entityLabel: string;
+  selectedKeys: string[];
+  selectedRows: BatchRow[];
+  statusRun?: BatchStatus;
+  onStatused?: () => void;
+}
 
-  message.success(
-    `已触发 ${selectedCount} 个${entityLabel}的${actionLabel}操作`,
+const BatchStatusButton = ({
+  entityLabel,
+  selectedKeys,
+  selectedRows,
+  statusRun,
+  onStatused,
+}: StatusBtnProps) => {
+  const [open, setOpen] = useState(false);
+  const [updating, setUpdating] = useState(false);
+  const [status, setStatus] = useState(true);
+  const selectedCount = selectedKeys.length;
+  const nextText = status ? '正常' : '禁用';
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    setStatus(selectedRows.every((row) => statusOn(row.status)));
+  }, [open, selectedRows]);
+
+  const batchStatus = async () => {
+    if (!selectedCount) {
+      message.warning(`请先选择要批量修改状态的${entityLabel}`);
+      return;
+    }
+
+    setUpdating(true);
+
+    try {
+      const response = await statusRun?.(selectedKeys, status);
+
+      if (!response || response.code !== API_RESPONSE_SUCCESS_CODE) {
+        message.error(response?.message || `批量更新${entityLabel}状态失败`);
+        return;
+      }
+
+      setOpen(false);
+      await onStatused?.();
+      message.success(`已将 ${selectedCount} 个${entityLabel}设为${nextText}`);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  return (
+    <>
+      <Button
+        disabled={!selectedCount}
+        loading={updating}
+        onClick={() => {
+          if (!selectedCount) {
+            message.warning(`请先选择要批量修改状态的${entityLabel}`);
+            return;
+          }
+
+          setOpen(true);
+        }}
+      >
+        批量修改状态
+      </Button>
+      <Modal
+        title={`批量修改${entityLabel}状态`}
+        open={open}
+        destroyOnHidden
+        confirmLoading={updating}
+        okText="确认修改"
+        cancelText="取消"
+        width={620}
+        onCancel={() => {
+          if (!updating) {
+            setOpen(false);
+          }
+        }}
+        onOk={() => {
+          void batchStatus();
+        }}
+      >
+        <Divider style={{ margin: '0 0 24px' }} />
+        <ConfigProvider theme={switchTheme}>
+          <div style={{ ...cardStyle, marginBottom: 20 }}>
+            <Switch
+              checked={status}
+              checkedChildren="正常"
+              unCheckedChildren="禁用"
+              disabled={updating}
+              onChange={setStatus}
+            />
+            <Typography.Paragraph
+              type="secondary"
+              style={{ marginTop: 16, marginBottom: 0 }}
+            >
+              {`已选择 ${selectedCount} 个${entityLabel}，保存后状态将统一改为${nextText}。`}
+            </Typography.Paragraph>
+          </div>
+        </ConfigProvider>
+        <Table<BatchRow>
+          rowKey="id"
+          size="small"
+          pagination={false}
+          dataSource={selectedRows}
+          scroll={{ y: 320 }}
+          columns={[
+            {
+              title: 'ID',
+              dataIndex: 'id',
+              width: 160,
+            },
+            {
+              title: '昵称',
+              dataIndex: 'nickname',
+            },
+          ]}
+        />
+      </Modal>
+    </>
   );
 };
 
 interface DelBtnProps {
   entityLabel: string;
-  selectedCount: number;
+  selectedKeys: string[];
+  selectedRows: BatchRow[];
+  delRun?: BatchDel;
+  onDeleted?: () => void;
 }
 
-const BatchDeleteButton = ({ entityLabel, selectedCount }: DelBtnProps) => {
-  const { deleting, batchDelete } = useBatchDelete({
-    entityLabel,
-    getCount: () => selectedCount,
-  });
+const BatchDeleteButton = ({
+  entityLabel,
+  selectedKeys,
+  selectedRows,
+  delRun,
+  onDeleted,
+}: DelBtnProps) => {
+  const [open, setOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const selectedCount = selectedKeys.length;
+
+  const batchDelete = async () => {
+    if (!selectedCount) {
+      message.warning(`请先选择要批量删除的${entityLabel}`);
+      return;
+    }
+
+    setDeleting(true);
+
+    try {
+      const response = await delRun?.(selectedKeys);
+
+      if (!response || response.code !== API_RESPONSE_SUCCESS_CODE) {
+        message.error(response?.message || `批量删除${entityLabel}失败`);
+        return;
+      }
+
+      setOpen(false);
+      await onDeleted?.();
+      message.success(`已删除 ${selectedCount} 个${entityLabel}`);
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   return (
-    <Button
-      danger
-      disabled={!selectedCount}
-      loading={deleting}
-      onClick={() => {
-        batchDelete();
-      }}
-    >
-      批量删除
-    </Button>
+    <>
+      <Button
+        danger
+        disabled={!selectedCount}
+        loading={deleting}
+        onClick={() => {
+          if (!selectedCount) {
+            message.warning(`请先选择要批量删除的${entityLabel}`);
+            return;
+          }
+
+          setOpen(true);
+        }}
+      >
+        批量删除
+      </Button>
+      <Modal
+        title={`批量删除${entityLabel}`}
+        open={open}
+        destroyOnHidden
+        confirmLoading={deleting}
+        okText="确认删除"
+        cancelText="取消"
+        okButtonProps={{ danger: true }}
+        width={560}
+        onCancel={() => {
+          if (!deleting) {
+            setOpen(false);
+          }
+        }}
+        onOk={() => {
+          void batchDelete();
+        }}
+      >
+        <Divider style={{ margin: '0 0 20px' }} />
+        <Typography.Paragraph type="secondary" style={{ marginBottom: 16 }}>
+          {`已选择 ${selectedCount} 个${entityLabel}，删除后将无法恢复。`}
+        </Typography.Paragraph>
+        <Table<BatchRow>
+          rowKey="id"
+          size="small"
+          pagination={false}
+          dataSource={selectedRows}
+          scroll={{ y: 320 }}
+          columns={[
+            {
+              title: 'ID',
+              dataIndex: 'id',
+              width: 160,
+            },
+            {
+              title: '昵称',
+              dataIndex: 'nickname',
+            },
+          ]}
+        />
+      </Modal>
+    </>
   );
 };
 
@@ -477,23 +645,30 @@ const ExportButton = ({ entityLabel, exportRequest }: ExportProps) => {
 
 export const batchActions = ({
   entityLabel,
-  selectedCount,
+  selectedKeys,
+  selectedRows,
+  statusRun,
+  onStatused,
+  delRun,
+  onDeleted,
   exportRequest,
 }: BatchOptions) => {
   return [
-    <Button
+    <BatchStatusButton
       key="batch-status"
-      disabled={!selectedCount}
-      onClick={() => {
-        batchMessage('批量修改状态', entityLabel, selectedCount);
-      }}
-    >
-      批量修改状态
-    </Button>,
+      entityLabel={entityLabel}
+      selectedKeys={selectedKeys}
+      selectedRows={selectedRows}
+      statusRun={statusRun}
+      onStatused={onStatused}
+    />,
     <BatchDeleteButton
       key="batch-delete"
       entityLabel={entityLabel}
-      selectedCount={selectedCount}
+      selectedKeys={selectedKeys}
+      selectedRows={selectedRows}
+      delRun={delRun}
+      onDeleted={onDeleted}
     />,
     <ExportButton
       key="export"

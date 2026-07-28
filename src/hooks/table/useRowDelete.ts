@@ -1,5 +1,6 @@
-import { message, Modal } from 'antd';
-import { useCallback, useState } from 'react';
+import { message } from '@/utils/message';
+import { App, Divider } from 'antd';
+import { createElement, Fragment, useCallback, useState } from 'react';
 
 interface DelOpts<T> {
   entityLabel: string;
@@ -16,6 +17,7 @@ export const useRowDelete = <T>({
   request,
   onSuccess,
 }: DelOpts<T>) => {
+  const { modal } = App.useApp();
   const [deleting, setDeleting] = useState(false);
 
   const confirmDelete = useCallback(
@@ -23,9 +25,16 @@ export const useRowDelete = <T>({
       const itemName = getName(record);
       const description = getDesc?.(record);
 
-      Modal.confirm({
+      modal.confirm({
         title: `确认删除该${entityLabel}吗？`,
-        content: description || `${itemName} 删除后将无法恢复。`,
+        closable: true,
+        content: createElement(Fragment, null, [
+          createElement(Divider, {
+            key: 'divider',
+            style: { margin: '0 0 20px' },
+          }),
+          description || `${itemName} 删除后将无法恢复。`,
+        ]),
         okText: '确认',
         cancelText: '取消',
         okButtonProps: {
@@ -45,7 +54,7 @@ export const useRowDelete = <T>({
         },
       });
     },
-    [deleting, entityLabel, getDesc, getName, onSuccess, request],
+    [deleting, entityLabel, getDesc, getName, modal, onSuccess, request],
   );
 
   return {

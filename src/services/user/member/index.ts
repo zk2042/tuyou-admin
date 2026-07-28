@@ -1,7 +1,7 @@
 import type { ApiResponse } from '@/constants';
 import { apiRequest, postDownload } from '@/lib/apiRequest';
 
-import type { MemberItem, MemberQuery, PageData } from './types';
+import type { MemberEdit, MemberItem, MemberQuery, PageData } from './types';
 
 export async function queryMember(
   params: MemberQuery,
@@ -16,12 +16,61 @@ export async function queryMember(
 }
 
 export async function getMember(
-  id: string | number,
+  id: string,
   options?: { [key: string]: any },
 ): Promise<ApiResponse<MemberItem>> {
   return apiRequest<MemberItem>({
     url: `/v1/admin/users/${id}`,
     method: 'GET',
+    ...(options || {}),
+  });
+}
+
+export async function editMember(
+  id: string,
+  data: MemberEdit,
+  options?: { [key: string]: any },
+): Promise<ApiResponse<MemberItem>> {
+  return apiRequest<MemberItem>({
+    url: `/v1/admin/users/${id}`,
+    method: 'PUT',
+    data,
+    ...(options || {}),
+  });
+}
+
+export async function delMember(
+  id: string,
+  options?: { [key: string]: any },
+): Promise<ApiResponse<null>> {
+  return apiRequest<null>({
+    url: `/v1/admin/users/${id}`,
+    method: 'DELETE',
+    ...(options || {}),
+  });
+}
+
+export async function batchDelMember(
+  ids: string[],
+  options?: { [key: string]: any },
+): Promise<ApiResponse<null>> {
+  return apiRequest<null>({
+    url: '/v1/admin/users/batch-delete',
+    method: 'POST',
+    data: { ids },
+    ...(options || {}),
+  });
+}
+
+export async function batchStatusMember(
+  ids: string[],
+  status: boolean,
+  options?: { [key: string]: any },
+): Promise<ApiResponse<null>> {
+  return apiRequest<null>({
+    url: '/v1/admin/users/batch-status',
+    method: 'POST',
+    data: { ids, status },
     ...(options || {}),
   });
 }

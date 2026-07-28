@@ -1,8 +1,17 @@
 import ListPage from '@/components/ListPage';
 import { API_RESPONSE_SUCCESS_CODE, PAGE_SIZE } from '@/constants';
-import { exportLeader, getLeader, queryLeader } from '@/services/user/leader';
+import {
+  batchDelLeader,
+  batchStatusLeader,
+  delLeader,
+  editLeader,
+  exportLeader,
+  getLeader,
+  queryLeader,
+} from '@/services/user/leader';
+import type { ActionType } from '@ant-design/pro-components';
 import { Grid } from 'antd';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 
 import { batchActions, getBioWidth, type UserQuery } from '../shared';
 import { leaderColumns, type LeaderRecord } from './leaderConfig';
@@ -35,19 +44,30 @@ const leaderRequest = async (params: UserQuery) => {
 };
 
 const LeaderPage: React.FC = () => {
+  const actionRef = useRef<ActionType>();
   const screens = Grid.useBreakpoint();
   const bioWidth = getBioWidth(screens);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
+  const [selectedRows, setSelectedRows] = useState<LeaderRecord[]>([]);
 
   const columns = useMemo(() => {
-    return leaderColumns(async (id) => {
-      const response = await getLeader(id);
-      return response.data ?? null;
-    }, bioWidth);
+    return leaderColumns(
+      async (id) => {
+        const response = await getLeader(id);
+        return response.data ?? null;
+      },
+      editLeader,
+      delLeader,
+      () => {
+        actionRef.current?.reload();
+      },
+      bioWidth,
+    );
   }, [bioWidth]);
 
   return (
     <ListPage<LeaderRecord, UserQuery>
+      actionRef={actionRef}
       rowKey="id"
       headerTitle="领队列表"
       columns={columns}
@@ -59,11 +79,27 @@ const LeaderPage: React.FC = () => {
       }}
       rowSelection={{
         selectedRowKeys,
-        onChange: setSelectedRowKeys,
+        onChange: (keys, rows) => {
+          setSelectedRowKeys(keys as string[]);
+          setSelectedRows(rows as LeaderRecord[]);
+        },
       }}
       toolbarActions={batchActions({
         entityLabel: '领队',
-        selectedCount: selectedRowKeys.length,
+        selectedKeys: selectedRowKeys,
+        selectedRows,
+        statusRun: batchStatusLeader,
+        onStatused: () => {
+          setSelectedRowKeys([]);
+          setSelectedRows([]);
+          actionRef.current?.reload();
+        },
+        delRun: batchDelLeader,
+        onDeleted: () => {
+          setSelectedRowKeys([]);
+          setSelectedRows([]);
+          actionRef.current?.reload();
+        },
         exportRequest: exportLeader,
       })}
     />

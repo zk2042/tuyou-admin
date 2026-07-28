@@ -1,6 +1,6 @@
 import type { ProColumns } from '@ant-design/pro-components';
 
-import type { DetailLoad, UserRecord } from '../shared';
+import type { DelRun, DetailLoad, EditSave, UserRecord } from '../shared';
 import {
   dateRange,
   roleTag,
@@ -14,6 +14,9 @@ export type MemberRecord = UserRecord;
 
 export const memberColumns = (
   loadDetail: DetailLoad,
+  editSave: EditSave | undefined,
+  delRun: DelRun | undefined,
+  onEdited: (() => void) | undefined,
   bioWidth: number,
 ): ProColumns<MemberRecord>[] => {
   return [
@@ -100,7 +103,8 @@ export const memberColumns = (
       key: 'option',
       valueType: 'option',
       width: 220,
-      render: (_, record) => tableActions('会员', loadDetail, record),
+      render: (_, record) =>
+        tableActions('会员', loadDetail, editSave, delRun, onEdited, record),
     },
   ];
 };

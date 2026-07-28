@@ -1,5 +1,5 @@
 export interface UserItem {
-  id: string | number;
+  id: string;
   avatar: string;
   cover?: string;
   cover_style?: string;
@@ -90,9 +90,176 @@ export const detailResult = <T>(data: T | null) => {
 
 export const findItem = <T extends UserItem>(
   source: T[],
-  id?: string | number,
+  id?: string,
 ): T | undefined => {
   return source.find((item) => String(item.id) === String(id));
+};
+
+interface UpdateData {
+  status?: boolean;
+  role?: '普通会员' | '领队';
+}
+
+interface BatchData {
+  ids?: string[];
+}
+
+interface BatchStatusData extends BatchData {
+  status?: boolean;
+}
+
+const normalizeUpdate = (body?: UpdateData | string): UpdateData => {
+  if (!body) {
+    return {};
+  }
+
+  if (typeof body === 'string') {
+    try {
+      return JSON.parse(body) as UpdateData;
+    } catch {
+      return {};
+    }
+  }
+
+  return body;
+};
+
+const normalizeBatch = (body?: BatchData | string): BatchData => {
+  if (!body) {
+    return {};
+  }
+
+  if (typeof body === 'string') {
+    try {
+      return JSON.parse(body) as BatchData;
+    } catch {
+      return {};
+    }
+  }
+
+  return body;
+};
+
+const normalizeBatchStatus = (
+  body?: BatchStatusData | string,
+): BatchStatusData => {
+  if (!body) {
+    return {};
+  }
+
+  if (typeof body === 'string') {
+    try {
+      return JSON.parse(body) as BatchStatusData;
+    } catch {
+      return {};
+    }
+  }
+
+  return body;
+};
+
+export const updateItem = <T extends UserItem>(
+  source: T[],
+  id?: string,
+  body?: UpdateData | string,
+) => {
+  const current = findItem(source, id);
+
+  if (!current) {
+    return detailResult(null);
+  }
+
+  const data = normalizeUpdate(body);
+
+  if (typeof data.status === 'boolean') {
+    current.status = data.status ? '正常' : '禁用';
+  }
+
+  if (data.role) {
+    current.role = data.role;
+  }
+
+  return detailResult(current);
+};
+
+export const removeItem = <T extends UserItem>(source: T[], id?: string) => {
+  const index = source.findIndex((item) => String(item.id) === String(id));
+
+  if (index < 0) {
+    return detailResult(null);
+  }
+
+  source.splice(index, 1);
+
+  return {
+    code: 0,
+    message: '删除成功',
+    data: null,
+  };
+};
+
+export const removeItems = <T extends UserItem>(
+  source: T[],
+  body?: BatchData | string,
+) => {
+  const data = normalizeBatch(body);
+  const ids = new Set((data.ids || []).map((id) => String(id)));
+
+  if (!ids.size) {
+    return {
+      code: 400,
+      message: '请选择要删除的数据',
+      data: null,
+    };
+  }
+
+  for (let i = source.length - 1; i >= 0; i -= 1) {
+    if (ids.has(String(source[i].id))) {
+      source.splice(i, 1);
+    }
+  }
+
+  return {
+    code: 0,
+    message: '删除成功',
+    data: null,
+  };
+};
+
+export const updateStatusItems = <T extends UserItem>(
+  source: T[],
+  body?: BatchStatusData | string,
+) => {
+  const data = normalizeBatchStatus(body);
+  const ids = new Set((data.ids || []).map((id) => String(id)));
+
+  if (!ids.size) {
+    return {
+      code: 400,
+      message: '请选择要修改状态的数据',
+      data: null,
+    };
+  }
+
+  if (typeof data.status !== 'boolean') {
+    return {
+      code: 400,
+      message: '请选择目标状态',
+      data: null,
+    };
+  }
+
+  source.forEach((item) => {
+    if (ids.has(item.id)) {
+      item.status = data.status ? '正常' : '禁用';
+    }
+  });
+
+  return {
+    code: 0,
+    message: '状态更新成功',
+    data: null,
+  };
 };
 
 const escapeCell = (value: unknown) => {

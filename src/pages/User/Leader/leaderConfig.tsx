@@ -1,6 +1,6 @@
 import type { ProColumns } from '@ant-design/pro-components';
 
-import type { DetailLoad, UserRecord } from '../shared';
+import type { DelRun, DetailLoad, EditSave, UserRecord } from '../shared';
 import {
   dateRange,
   roleTag,
@@ -16,6 +16,9 @@ export interface LeaderRecord extends UserRecord {
 
 export const leaderColumns = (
   loadDetail: DetailLoad,
+  editSave: EditSave | undefined,
+  delRun: DelRun | undefined,
+  onEdited: (() => void) | undefined,
   bioWidth: number,
 ): ProColumns<LeaderRecord>[] => {
   return [
@@ -109,7 +112,8 @@ export const leaderColumns = (
       key: 'option',
       valueType: 'option',
       width: 220,
-      render: (_, record) => tableActions('领队', loadDetail, record),
+      render: (_, record) =>
+        tableActions('领队', loadDetail, editSave, delRun, onEdited, record),
     },
   ];
 };

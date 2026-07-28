@@ -1,4 +1,5 @@
-import { message, Modal } from 'antd';
+import { message } from '@/utils/message';
+import { App } from 'antd';
 import { useCallback, useState } from 'react';
 
 interface BatchOpts {
@@ -14,6 +15,7 @@ export const useBatchDelete = ({
   request,
   onSuccess,
 }: BatchOpts) => {
+  const { modal } = App.useApp();
   const [deleting, setDeleting] = useState(false);
 
   const batchDelete = useCallback(() => {
@@ -24,7 +26,7 @@ export const useBatchDelete = ({
       return;
     }
 
-    Modal.confirm({
+    modal.confirm({
       title: `确认批量删除这些${entityLabel}吗？`,
       content: `已选择 ${selectedCount} 个${entityLabel}，删除后将无法恢复。`,
       okText: '确认',
@@ -45,7 +47,7 @@ export const useBatchDelete = ({
         }
       },
     });
-  }, [deleting, entityLabel, getCount, onSuccess, request]);
+  }, [deleting, entityLabel, getCount, modal, onSuccess, request]);
 
   return {
     deleting,

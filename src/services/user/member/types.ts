@@ -9,7 +9,7 @@ export interface MemberQuery {
 }
 
 export interface MemberItem {
-  id: string | number;
+  id: string;
   avatar: string;
   cover?: string;
   cover_style?: string;
@@ -20,6 +20,11 @@ export interface MemberItem {
   role: string;
   register_time: string;
   last_login: string;
+}
+
+export interface MemberEdit {
+  status?: boolean;
+  role?: '普通会员' | '领队';
 }
 
 export interface PageData<T> {
