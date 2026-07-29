@@ -26,7 +26,10 @@ export const requestConfig: RequestConfig = {
       }
 
       const method = (config.method || 'GET').toUpperCase();
-      if (['POST', 'PUT', 'PATCH'].includes(method)) {
+      const isFormData =
+        typeof FormData !== 'undefined' && config.data instanceof FormData;
+
+      if (['POST', 'PUT', 'PATCH'].includes(method) && !isFormData) {
         config.headers = {
           ...config.headers,
           'Content-Type': 'application/json; charset=utf-8',

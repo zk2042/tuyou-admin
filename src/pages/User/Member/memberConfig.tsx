@@ -86,7 +86,7 @@ export const memberColumns = (
       valueType: 'dateRange',
       hideInTable: true,
       fieldProps: {
-        placeholder: ['年/月/日', '年/月/日'],
+        placeholder: ['请选择', '请选择'],
       },
       search: {
         transform: dateRange,
