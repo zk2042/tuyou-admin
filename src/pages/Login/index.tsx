@@ -3,6 +3,7 @@ import {
   adminLogin,
   getCaptcha,
   type CaptchaData,
+  type LoginData,
   type LoginForm,
 } from '@/services/login';
 import { setToken, setUser } from '@/utils/auth';
@@ -17,7 +18,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { carouselImages } from './carouselConfig';
 import styles from './index.less';
 
-type FormValue = Omit<LoginForm, 'captchaKey'>;
+type FormValue = Pick<LoginForm, 'username' | 'password' | 'captcha'>;
 
 const LoginPage: React.FC = () => {
   const { message } = App.useApp();
@@ -44,13 +45,8 @@ const LoginPage: React.FC = () => {
 
     try {
       const response = await getCaptcha({ skipErrorHandler: true });
-      if (!response.data) {
-        message.error('验证码加载失败，请稍后重试');
-        return;
-      }
-
-      setCodeData(response.data);
-      form.setFieldValue('captchaCode', undefined);
+      setCodeData(response.data as CaptchaData);
+      form.setFieldValue('captcha', undefined);
     } catch {
       message.error('验证码加载失败，请稍后重试');
     } finally {
@@ -63,7 +59,7 @@ const LoginPage: React.FC = () => {
   }, [loadCode]);
 
   const handleLogin = async (values: FormValue) => {
-    if (!codeData?.captchaKey) {
+    if (!codeData?.captcha_id) {
       message.error('验证码未准备好，请刷新后重试');
       return;
     }
@@ -74,23 +70,18 @@ const LoginPage: React.FC = () => {
       const response = await adminLogin({
         username: values.username,
         password: values.password,
-        captchaCode: values.captchaCode,
-        captchaKey: codeData.captchaKey,
-        remember: values.remember,
+        captcha: values.captcha,
+        captcha_id: codeData.captcha_id,
       });
+      const loginData = response.data as LoginData;
 
-      if (!response.data) {
-        message.error('登录失败，请稍后重试');
-        return;
-      }
-
-      setToken(response.data, values.remember);
-      setUser(response.data.admin);
-      setInitialState(response.data.admin);
+      setToken(loginData);
+      setUser(loginData.admin);
+      setInitialState(loginData.admin);
 
       await refresh();
 
-      message.success('登录成功');
+      message.success(response.message || '登录成功');
 
       const redirect =
         new URLSearchParams(window.location.search).get('redirect') || '/';
@@ -162,7 +153,11 @@ const LoginPage: React.FC = () => {
               name="username"
               rules={[{ required: true, message: '请输入管理员账号' }]}
             >
-              <Input prefix={<UserOutlined />} placeholder="请输入管理员账号" />
+              <Input
+                prefix={<UserOutlined />}
+                placeholder="请输入管理员账号"
+                autoComplete="username"
+              />
             </Form.Item>
 
             <Form.Item
@@ -172,12 +167,13 @@ const LoginPage: React.FC = () => {
               <Input.Password
                 prefix={<LockOutlined />}
                 placeholder="请输入密码"
+                autoComplete="current-password"
               />
             </Form.Item>
 
             <div className={styles.captchaRow}>
               <Form.Item
-                name="captchaCode"
+                name="captcha"
                 className={styles.captchaInput}
                 rules={[{ required: true, message: '请输入图片验证码' }]}
               >
@@ -193,8 +189,8 @@ const LoginPage: React.FC = () => {
                 aria-label="刷新图片验证码"
                 disabled={codeLoad}
               >
-                {codeData?.imageUrl ? (
-                  <img src={codeData.imageUrl} alt="图片验证码" />
+                {codeData?.captcha_image ? (
+                  <img src={codeData.captcha_image} alt="图片验证码" />
                 ) : (
                   <span className={styles.captchaText}>
                     {codeLoad ? '加载中...' : '点击刷新'}

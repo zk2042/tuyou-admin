@@ -326,7 +326,7 @@ const matchDate = (value: string, start?: string, end?: string) => {
 };
 
 const matchSelect = (source: string, current?: string) => {
-  if (!current || current === '全部') {
+  if (!current) {
     return true;
   }
 

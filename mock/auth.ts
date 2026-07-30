@@ -62,7 +62,7 @@ function sendBiz(res: any, code: number, message: string, data: any = null) {
 }
 
 export default {
-  'GET /api/v1/admin/auth/captcha': (_req: any, res: any) => {
+  'GET /api/v1/amdin/captcha': (_req: any, res: any) => {
     const code = makeCode();
     const key = `mock_${Date.now().toString(36)}`;
 
@@ -70,23 +70,22 @@ export default {
 
     res.json({
       code: 0,
-      message: '获取成功',
       data: {
-        captchaKey: key,
-        imageUrl: makeImage(code),
+        captcha_id: key,
+        captcha_image: makeImage(code),
       },
     });
   },
-  'POST /api/v1/admin/auth/login': (req: any, res: any) => {
-    const { username, password, captchaCode, captchaKey } = req.body || {};
-    const code = capMap.get(captchaKey);
+  'POST /api/v1/admin/login': (req: any, res: any) => {
+    const { username, password, captcha_id, captcha } = req.body || {};
+    const code = capMap.get(captcha_id);
 
-    if (!username || !password || !captchaCode || !captchaKey) {
+    if (!username || !password || !captcha_id || !captcha) {
       sendBiz(res, 2002, '缺少必要参数');
       return;
     }
 
-    if (!code || code.toUpperCase() !== String(captchaCode).toUpperCase()) {
+    if (!code || code.toUpperCase() !== String(captcha).toUpperCase()) {
       sendBiz(res, 2003, '验证码错误');
       return;
     }
@@ -96,15 +95,12 @@ export default {
       return;
     }
 
-    capMap.delete(captchaKey);
+    capMap.delete(captcha_id);
 
     const token = makeToken('mock_access');
-    const refreshToken = makeToken('mock_refresh');
 
     sendBiz(res, 0, '登录成功', {
       token,
-      refreshToken,
-      expires_in: 86400000,
       admin: admUser,
     });
   },
@@ -117,22 +113,5 @@ export default {
     }
 
     sendBiz(res, 0, '获取成功', admUser);
-  },
-  'POST /api/v1/admin/auth/refresh': (req: any, res: any) => {
-    const { refreshToken } = req.body || {};
-
-    if (!isTokenValid(String(refreshToken || ''), 'mock_refresh')) {
-      sendBiz(res, 1006, '刷新令牌已失效');
-      return;
-    }
-
-    const token = makeToken('mock_access');
-    const nextRefresh = makeToken('mock_refresh');
-
-    sendBiz(res, 0, '刷新成功', {
-      token,
-      refreshToken: nextRefresh,
-      expires_in: 86400000,
-    });
   },
 };

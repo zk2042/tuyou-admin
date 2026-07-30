@@ -170,8 +170,8 @@ const ActivityPage: React.FC = () => {
     setCreating(true);
 
     try {
-      await createActivity(toReq(vals));
-      message.success('创建活动成功');
+      const response = await createActivity(toReq(vals));
+      message.success(response.message || '创建活动成功');
       setCreateOpen(false);
       setSelectedKeys([]);
       setSelectedRows([]);
@@ -253,16 +253,13 @@ const ActivityPage: React.FC = () => {
         ids: selectedKeys as string[],
       });
 
-      if (response.code !== API_RESPONSE_SUCCESS_CODE) {
-        message.error(response.message || '批量删除活动失败');
-        return;
-      }
-
       setBatchOpen(false);
       setSelectedKeys([]);
       setSelectedRows([]);
       actionRef.current?.reload();
-      message.success(`已删除 ${selectedKeys.length} 个活动`);
+      message.success(
+        response.message || `已删除 ${selectedKeys.length} 个活动`,
+      );
     } finally {
       setBatchDel(false);
     }

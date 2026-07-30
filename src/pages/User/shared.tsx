@@ -1,4 +1,4 @@
-import { API_RESPONSE_SUCCESS_CODE, type ApiResponse } from '@/constants';
+import type { ApiResponse } from '@/constants';
 import { useExportExcel } from '@/hooks/table/useExportExcel';
 import { useRowDelete } from '@/hooks/table/useRowDelete';
 import DetailModal from '@/pages/User/components/DetailModal';
@@ -277,16 +277,13 @@ const RowActions = ({
     try {
       const response = await editSave(record.id, editData(values));
 
-      if (response.code !== API_RESPONSE_SUCCESS_CODE) {
-        message.error(response.message || `更新${entityLabel}失败`);
-        return;
-      }
-
       if (response.data) {
         setDetailData(response.data);
       }
 
-      message.success(`已更新${entityLabel} ${record.nickname}`);
+      message.success(
+        response.message || `已更新${entityLabel} ${record.nickname}`,
+      );
       setEditOpen(false);
       onEdited?.();
     } finally {
@@ -421,19 +418,21 @@ const BatchStatusButton = ({
       return;
     }
 
+    if (!statusRun) {
+      return;
+    }
+
     setUpdating(true);
 
     try {
-      const response = await statusRun?.(selectedKeys, status);
-
-      if (!response || response.code !== API_RESPONSE_SUCCESS_CODE) {
-        message.error(response?.message || `批量更新${entityLabel}状态失败`);
-        return;
-      }
+      const response = await statusRun(selectedKeys, status);
 
       setOpen(false);
       await onStatused?.();
-      message.success(`已将 ${selectedCount} 个${entityLabel}设为${nextText}`);
+      message.success(
+        response.message ||
+          `已将 ${selectedCount} 个${entityLabel}设为${nextText}`,
+      );
     } finally {
       setUpdating(false);
     }
@@ -538,19 +537,20 @@ const BatchDeleteButton = ({
       return;
     }
 
+    if (!delRun) {
+      return;
+    }
+
     setDeleting(true);
 
     try {
-      const response = await delRun?.(selectedKeys);
-
-      if (!response || response.code !== API_RESPONSE_SUCCESS_CODE) {
-        message.error(response?.message || `批量删除${entityLabel}失败`);
-        return;
-      }
+      const response = await delRun(selectedKeys);
 
       setOpen(false);
       await onDeleted?.();
-      message.success(`已删除 ${selectedCount} 个${entityLabel}`);
+      message.success(
+        response.message || `已删除 ${selectedCount} 个${entityLabel}`,
+      );
     } finally {
       setDeleting(false);
     }

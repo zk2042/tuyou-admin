@@ -19,7 +19,6 @@ export interface ActQuery {
 }
 
 const levelEnum = {
-  全部: { text: '全部' },
   入门: { text: '入门' },
   中等: { text: '中等' },
   中高等: { text: '中高等' },
@@ -27,14 +26,12 @@ const levelEnum = {
 };
 
 const actStatusEnum = {
-  全部: { text: '全部' },
   报名中: { text: '报名中' },
   进行中: { text: '进行中' },
   已结束: { text: '已结束' },
 };
 
 const categoryEnum = {
-  全部: { text: '全部' },
   徒步: { text: '徒步' },
   登山: { text: '登山' },
   骑行: { text: '骑行' },
@@ -45,7 +42,6 @@ const categoryEnum = {
 };
 
 const feeEnum = {
-  全部: { text: '全部' },
   免费: { text: '免费' },
   收费: { text: '收费' },
 };
@@ -248,7 +244,6 @@ export const activityColumns = ({
       title: '活动状态',
       dataIndex: 'activity_status',
       valueType: 'select',
-      initialValue: '全部',
       valueEnum: actStatusEnum,
       width: 70,
       render: (_, record) => (
@@ -262,14 +257,12 @@ export const activityColumns = ({
       dataIndex: 'difficulty',
       valueType: 'select',
       width: 70,
-      initialValue: '全部',
       valueEnum: levelEnum,
     },
     {
       title: '类型',
       dataIndex: 'activity_type',
       valueType: 'select',
-      initialValue: '全部',
       width: 80,
       valueEnum: categoryEnum,
     },
@@ -300,16 +293,13 @@ export const activityColumns = ({
       dataIndex: 'fee',
       valueType: 'select',
       hideInTable: true,
-      initialValue: '全部',
       valueEnum: feeEnum,
     },
     {
       title: '是否为幻灯片',
       dataIndex: 'is_slide',
       valueType: 'select',
-      initialValue: '全部',
       valueEnum: {
-        全部: { text: '全部' },
         是: { text: '是' },
         否: { text: '否' },
       },

@@ -4,9 +4,8 @@ import { apiRequest } from '@/lib/apiRequest';
 export type LoginForm = {
   username: string;
   password: string;
-  captchaCode: string;
-  captchaKey: string;
-  remember: boolean;
+  captcha_id: string;
+  captcha: string;
 };
 
 export type AdminInfo = {
@@ -18,14 +17,12 @@ export type AdminInfo = {
 
 export type LoginData = {
   token: string;
-  refreshToken: string;
-  expires_in: number;
   admin: AdminInfo;
 };
 
 export type CaptchaData = {
-  captchaKey: string;
-  imageUrl: string;
+  captcha_id: string;
+  captcha_image: string;
 };
 
 export async function adminLogin(
@@ -33,8 +30,9 @@ export async function adminLogin(
   options?: { [key: string]: any },
 ): Promise<ApiResponse<LoginData>> {
   return apiRequest<LoginData>({
-    url: '/v1/admin/auth/login',
+    url: '/v1/admin/login',
     method: 'POST',
+    skipAuthToken: true,
     data,
     ...(options || {}),
   });
@@ -54,8 +52,9 @@ export async function getCaptcha(options?: {
   [key: string]: any;
 }): Promise<ApiResponse<CaptchaData>> {
   return apiRequest<CaptchaData>({
-    url: '/v1/admin/auth/captcha',
+    url: '/v1/amdin/captcha',
     method: 'GET',
+    skipAuthToken: true,
     ...(options || {}),
   });
 }
