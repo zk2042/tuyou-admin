@@ -10,8 +10,7 @@
  * }
  */
 import { handleRequestError } from '@/api/requestErrorConfig';
-import { type ApiResponse, isNeedLogin } from '@/constants';
-import { clearAuth, getRefresh, updateToken } from '@/utils/auth';
+import type { ApiResponse } from '@/constants';
 import { message } from '@/utils/message';
 import { request, type RequestOptions } from '@umijs/max';
 
@@ -30,90 +29,17 @@ type RequestMethod = NonNullable<RequestOptions['method']>;
 interface RequestExecutorOptions extends RequestOptions {
   url: string;
   method?: RequestMethod;
-  skipAuthRefresh?: boolean;
   skipAuthToken?: boolean;
-}
-
-type RefreshData = {
-  token?: string;
-  accessToken?: string;
-  access_token?: string;
-  refreshToken?: string;
-  refresh_token?: string;
-};
-
-const REFRESH_URL = '/v1/admin/auth/refresh';
-const AUTH_PATHS = [
-  '/v1/admin/auth/login',
-  '/v1/admin/auth/captcha',
-  REFRESH_URL,
-];
-
-let refreshTask: Promise<boolean> | null = null;
-
-function isAuthPath(url: string) {
-  return AUTH_PATHS.includes(url);
-}
-
-function needRefresh(error: any) {
-  const status = error?.response?.status;
-  const code = error?.info?.code;
-
-  return status === 401 || (typeof code === 'number' && isNeedLogin(code));
 }
 
 async function sendRequest<T = unknown>(
   url: string,
   options: Omit<RequestExecutorOptions, 'url'>,
-) {
+): Promise<ApiResponse<T>> {
   return request<ApiResponse<T>>(url, {
     ...options,
     skipErrorHandler: true,
   });
-}
-
-async function refreshToken() {
-  if (refreshTask) {
-    return refreshTask;
-  }
-
-  const refreshValue = getRefresh();
-  if (!refreshValue) {
-    return false;
-  }
-
-  refreshTask = sendRequest<RefreshData>(REFRESH_URL, {
-    method: 'POST',
-    data: {
-      refreshToken: refreshValue,
-    },
-    skipAuthToken: true,
-    skipAuthRefresh: true,
-  })
-    .then((response) => {
-      if (!response.data) {
-        clearAuth();
-        return false;
-      }
-
-      updateToken({
-        token: response.data.token,
-        accessToken: response.data.accessToken,
-        access_token: response.data.access_token,
-        refreshToken: response.data.refreshToken || refreshValue,
-        refresh_token: response.data.refresh_token || refreshValue,
-      });
-      return true;
-    })
-    .catch(() => {
-      clearAuth();
-      return false;
-    })
-    .finally(() => {
-      refreshTask = null;
-    });
-
-  return refreshTask;
 }
 
 async function requestWithAuth<T>(
@@ -128,26 +54,6 @@ async function requestWithAuth<T>(
   try {
     return await sender(url, options);
   } catch (error) {
-    if (!options.skipAuthRefresh && !isAuthPath(url) && needRefresh(error)) {
-      const refreshed = await refreshToken();
-
-      if (refreshed) {
-        try {
-          return await sender(url, {
-            ...options,
-            skipAuthRefresh: true,
-          });
-        } catch (retryError) {
-          if (onError) {
-            onError(retryError, options);
-          } else {
-            handleRequestError(retryError, options);
-          }
-          return Promise.reject(retryError);
-        }
-      }
-    }
-
     if (onError) {
       onError(error, options);
     } else {

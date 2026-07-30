@@ -11,6 +11,12 @@ export default [
     redirect: '/user/member',
   },
   {
+    name: '活动管理',
+    path: '/activity',
+    disabledTooltip: true,
+    component: './Activity',
+  },
+  {
     name: '用户管理',
     path: '/user',
     disabledTooltip: true,

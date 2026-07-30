@@ -1,12 +1,7 @@
 // 运行时配置
 import { getMe, type AdminInfo } from '@/services/login';
 import { store } from '@/store';
-import {
-  clearAuth as clearToken,
-  getRefresh,
-  getToken,
-  setUser,
-} from '@/utils/auth';
+import { clearAuth as clearToken, getToken, setUser } from '@/utils/auth';
 import { setAppInstance } from '@/utils/message';
 import {
   BellOutlined,
@@ -272,9 +267,8 @@ export function rootContainer(container: ReactNode) {
 // 更多信息见文档：https://umijs.org/docs/api/runtime-config#getinitialstate
 export async function getInitialState(): Promise<InitialState | undefined> {
   const token = getToken();
-  const refreshToken = getRefresh();
 
-  if (!token && !refreshToken) {
+  if (!token) {
     clearToken();
     return undefined;
   }
