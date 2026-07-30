@@ -1,0 +1,225 @@
+import type { UserItem } from './shared';
+import {
+  detailResult,
+  exportText,
+  findItem,
+  pageResult,
+  removeItem,
+  removeItems,
+  updateItem,
+  updateStatusItems,
+} from './shared';
+
+const DEFAULT_COVER =
+  'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png';
+
+const memberList: UserItem[] = [
+  {
+    id: '10001',
+    avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=zhangyifeng',
+    cover: DEFAULT_COVER,
+    cover_style: 'linear-gradient(135deg,#c8e6c9,#81c784)',
+    nickname: '张一丰',
+    phone: '130****0880',
+    status: '正常',
+    bio: '热爱户外，喜欢和山野对话。',
+    role: '普通会员',
+    register_time: '2026-07-20',
+    last_login: '2026-07-22 09:30',
+  },
+  {
+    id: '10002',
+    avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=lihongyue',
+    cover: DEFAULT_COVER,
+    cover_style: 'linear-gradient(135deg,#dcedc8,#aed581)',
+    nickname: '李鸿越',
+    phone: '159****6666',
+    status: '正常',
+    bio: '行也无忧，知行万里皆风景。',
+    role: '普通会员',
+    register_time: '2026-07-19',
+    last_login: '2026-07-22 00:15',
+  },
+  {
+    id: '10003',
+    avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=wangxiaoguan',
+    cover: DEFAULT_COVER,
+    cover_style: 'linear-gradient(135deg,#fff9c4,#fff176)',
+    nickname: '王小关',
+    phone: '177****9999',
+    status: '正常',
+    bio: '在路上，故事会比目的地更动人。',
+    role: '普通会员',
+    register_time: '2026-07-18',
+    last_login: '2026-07-21 17:45',
+  },
+  {
+    id: '10004',
+    avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=zhaolan',
+    cover: DEFAULT_COVER,
+    cover_style: 'linear-gradient(135deg,#ffe0b2,#ffb74d)',
+    nickname: '赵岚',
+    phone: '186****3333',
+    status: '正常',
+    bio: '旅行友好者，用脚步丈量每一段未知。',
+    role: '普通会员',
+    register_time: '2026-07-17',
+    last_login: '2026-07-21 14:20',
+  },
+  {
+    id: '10005',
+    avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=chennianqi',
+    cover: DEFAULT_COVER,
+    cover_style: 'linear-gradient(135deg,#f8bbd0,#f48fb1)',
+    nickname: '陈念琪',
+    phone: '133****2222',
+    status: '禁用',
+    bio: '暂未填写个性签名。',
+    role: '普通会员',
+    register_time: '2026-07-16',
+    last_login: '2026-07-20 11:30',
+  },
+  {
+    id: '10006',
+    avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=zhoujielun',
+    cover: DEFAULT_COVER,
+    cover_style: 'linear-gradient(135deg,#d1c4e9,#9575cd)',
+    nickname: '周杰伦',
+    phone: '150****7777',
+    status: '正常',
+    bio: '说走就走，把远方写成生活的一部分。',
+    role: '普通会员',
+    register_time: '2026-07-15',
+    last_login: '2026-07-19 16:00',
+  },
+  {
+    id: '10007',
+    avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=shennanqiao',
+    cover: DEFAULT_COVER,
+    cover_style: 'linear-gradient(135deg,#cfd8dc,#90a4ae)',
+    nickname: '沈南乔',
+    phone: '137****8899',
+    status: '禁用',
+    bio: '擅长整理攻略，也乐于分享路线经验。',
+    role: '普通会员',
+    register_time: '2026-07-14',
+    last_login: '2026-07-18 20:18',
+  },
+  {
+    id: '10008',
+    avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=guqingzhou',
+    cover: DEFAULT_COVER,
+    cover_style: 'linear-gradient(135deg,#b2dfdb,#4db6ac)',
+    nickname: '顾轻舟',
+    phone: '188****4556',
+    status: '正常',
+    bio: '晨起登山，夜晚观星，理想周末不过如此。',
+    role: '普通会员',
+    register_time: '2026-07-13',
+    last_login: '2026-07-18 08:46',
+  },
+  {
+    id: '10009',
+    avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=linzhiyi',
+    cover: DEFAULT_COVER,
+    cover_style: 'linear-gradient(135deg,#c5cae9,#7986cb)',
+    nickname: '林知意',
+    phone: '156****7890',
+    status: '正常',
+    bio: '想把每一段旅途都过成值得纪念的日子。',
+    role: '普通会员',
+    register_time: '2026-07-12',
+    last_login: '2026-07-17 18:22',
+  },
+  {
+    id: '10010',
+    avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=xuqinghe',
+    cover: DEFAULT_COVER,
+    cover_style: 'linear-gradient(135deg,#f0f4c3,#dce775)',
+    nickname: '许青禾',
+    phone: '139****1100',
+    status: '禁用',
+    bio: '正在休整，下次出发会去更远的地方。',
+    role: '普通会员',
+    register_time: '2026-07-11',
+    last_login: '2026-07-16 10:05',
+  },
+  {
+    id: '10011',
+    avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=suyuanshan',
+    cover: DEFAULT_COVER,
+    cover_style: 'linear-gradient(135deg,#d7ccc8,#a1887f)',
+    nickname: '苏远山',
+    phone: '158****5521',
+    status: '正常',
+    bio: '越野、露营、轻徒步都想试试看。',
+    role: '普通会员',
+    register_time: '2026-07-10',
+    last_login: '2026-07-15 21:43',
+  },
+  {
+    id: '10012',
+    avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=lushiyu',
+    cover: DEFAULT_COVER,
+    cover_style: 'linear-gradient(135deg,#bbdefb,#64b5f6)',
+    nickname: '陆时雨',
+    phone: '136****2048',
+    status: '正常',
+    bio: '总想在周末给生活加一点海风和日落。',
+    role: '普通会员',
+    register_time: '2026-07-09',
+    last_login: '2026-07-15 09:12',
+  },
+];
+
+export default {
+  'GET /api/v1/admin/users': (req: any, res: any) => {
+    res.json(pageResult(memberList, req.query || {}));
+  },
+  'GET /api/v1/admin/users/:id': (req: any, res: any) => {
+    res.json(detailResult(findItem(memberList, req.params.id) || null));
+  },
+  'PUT /api/v1/admin/users/:id': (req: any, res: any) => {
+    res.json(updateItem(memberList, req.params.id, req.body));
+  },
+  'DELETE /api/v1/admin/users/:id': (req: any, res: any) => {
+    res.json(removeItem(memberList, req.params.id));
+  },
+  'POST /api/v1/admin/users/batch-delete': (req: any, res: any) => {
+    res.json(removeItems(memberList, req.body));
+  },
+  'POST /api/v1/admin/users/batch-status': (req: any, res: any) => {
+    res.json(updateStatusItems(memberList, req.body));
+  },
+  'POST /api/v1/admin/users/export': (_req: any, res: any) => {
+    const content = exportText(
+      [
+        'ID',
+        '昵称',
+        '手机号',
+        '状态',
+        '角色',
+        '个性签名',
+        '注册时间',
+        '最近登录',
+      ],
+      memberList.map((item) => [
+        item.id,
+        item.nickname,
+        item.phone,
+        item.status,
+        item.role,
+        item.bio,
+        item.register_time,
+        item.last_login,
+      ]),
+    );
+
+    res.setHeader('Content-Type', 'application/vnd.ms-excel; charset=utf-8');
+    res.setHeader(
+      'Content-Disposition',
+      "attachment; filename*=UTF-8''members.xls",
+    );
+    res.send(`\uFEFF${content}`);
+  },
+};

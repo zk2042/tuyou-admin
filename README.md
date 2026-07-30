@@ -1,93 +1,226 @@
 # tuyou-admin
 
+途友管理后台项目，基于 `@umijs/max`、`Ant Design`、`Redux Toolkit`、`react-redux` 搭建，适合中后台管理系统开发。
 
+## 项目概览
 
-## Getting started
+- 路由与框架配置统一放在 `config/`
+- 页面级 UI 放在 `src/pages/`
+- 接口请求代码放在 `src/services/`
+- 全局初始化数据通过 `getInitialState()` 提供
+- 运行期全局共享状态统一使用 `Redux Toolkit`
+- 当前登录态仍为前端 mock + 本地缓存方案，后续可替换为真实登录接口
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+当前示例页面包括：
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+- `首页`
+- `权限演示`
+- `CRUD 示例`
+- `登录页`
 
-## Add your files
+## 技术栈
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+- `@umijs/max`
+- `Ant Design` / `@ant-design/pro-components`
+- `Redux Toolkit`
+- `react-redux`
+- `TypeScript`
+- `wangEditor`
 
+## 环境要求
+
+- Node.js：推荐 `20.20.0`
+- npm：建议使用与当前 Node.js 版本匹配的默认 npm
+
+首次切换 Node.js 版本后，建议重新执行一次 `npm install`。
+
+## 快速开始
+
+### 1. 安装依赖
+
+```bash
+npm install
 ```
-cd existing_repo
-git remote add origin http://192.168.10.6:9980/tuyou/tuyou-admin.git
-git branch -M master
-git push -uf origin master
+
+### 2. 本地开发
+
+开发环境启动：
+
+```bash
+npm run dev
 ```
 
-## Integrate with your tools
+测试环境启动：
 
-- [ ] [Set up project integrations](http://192.168.10.6/tuyou/tuyou-admin/-/settings/integrations)
+```bash
+npm run dev:test
+```
 
-## Collaborate with your team
+预发环境启动：
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+```bash
+npm run dev:pre
+```
 
-## Test and Deploy
+### 3. 构建打包
 
-Use the built-in continuous integration in GitLab.
+开发环境构建：
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+```bash
+npm run build
+```
 
-***
+测试环境构建：
 
-# Editing this README
+```bash
+npm run build:test
+```
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+预发环境构建：
 
-## Suggestions for a good README
+```bash
+npm run build:pre
+```
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+生产环境构建：
 
-## Name
-Choose a self-explaining name for your project.
+```bash
+npm run build:prod
+```
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+### 4. 代码格式化
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+```bash
+npm run format
+```
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+## 多环境说明
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+项目当前统一使用 `UMI_ENV` 作为环境入口，默认值为 `dev`。
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+可选环境值：
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+- `dev`
+- `test`
+- `pre`
+- `prod`
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+环境切换由 `package.json` 脚本负责，例如：
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+- `npm run build` -> `UMI_ENV=dev`
+- `npm run build:test` -> `UMI_ENV=test`
+- `npm run build:pre` -> `UMI_ENV=pre`
+- `npm run build:prod` -> `UMI_ENV=prod`
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+`config/config.ts` 中会输出两条日志，便于确认当前启用的环境：
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+```text
+[Umi Config] rawEnv: dev
+[Umi Config] currentEnv: dev
+```
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+含义说明：
 
-## License
-For open source projects, say how it is licensed.
+- `rawEnv`：脚本传入的原始环境值
+- `currentEnv`：最终生效的环境值；如果传入值不在代理配置中，会自动回退到 `dev`
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+## 代理配置
+
+代理文件位于 `config/proxy.ts`，当前预留了以下环境配置入口：
+
+- `dev`
+- `localhost`
+- `test`
+- `pre`
+- `prod`
+
+本地联调时，请根据实际后端地址补充对应环境下的代理规则。
+
+## 目录结构
+
+```text
+config/
+  config.ts         Umi 主配置
+  routes.ts         路由配置
+  proxy.ts          多环境代理配置
+
+docs/
+  开发手册.md       项目开发说明
+
+src/
+  app.tsx           Umi 运行时配置、Provider 挂载、初始化数据
+  access.ts         权限定义
+  api/              请求配置与错误处理
+  components/       公共组件
+  constants/        常量
+  pages/            页面目录
+  services/         接口调用层
+  store/            Redux Toolkit 状态管理
+  utils/            工具函数
+```
+
+## 核心约定
+
+### 1. 状态管理
+
+- `getInitialState()` 负责应用启动初始化与当前用户上下文
+- `Redux Toolkit` 负责应用运行期共享状态
+- 业务层不新增 `Umi model`
+- `config/config.ts` 中保留 `model: {}` 仅用于满足 Umi 框架层依赖
+
+### 2. 登录与权限
+
+- 当前用户信息来自前端 mock + `localStorage`
+- 布局用户区和权限入口依赖 `getInitialState()`
+- 权限逻辑统一在 `src/access.ts` 中维护
+
+### 3. 请求层
+
+请求基础设施位于：
+
+- `src/api/requestConfig.ts`
+- `src/api/requestErrorConfig.ts`
+
+当前约定如下：
+
+- 基础前缀：`/api`
+- 默认超时：`30000ms`
+- 业务成功码：`10000`
+- 登录失效码：`30007`、`30008`
+- 权限不足码：`30005`
+
+已内置：
+
+- token 注入
+- 常见 HTTP 错误处理
+- 业务错误统一提示
+- 登录失效自动跳转
+
+## 公共组件
+
+当前仓库已提供以下可复用组件：
+
+- `ApiSelect`：基于接口数据的通用下拉组件
+- `WangRichTextEditor`：基于 wangEditor 的富文本编辑器封装
+- `Footer`：后台底部组件
+- `Guide`：首页欢迎区组件
+
+## 开发建议
+
+- 修改页面前先确认 `config/routes.ts` 和 `src/access.ts`
+- 新增接口时按业务域拆分到 `src/services/`
+- 跨页面共享状态优先考虑 `Redux Toolkit`
+- 不要在多个页面重复写相同权限判断
+- 不要重新引入业务 `Umi model`
+
+## 相关文档
+
+- 项目开发手册：`docs/开发手册.md`
+- Umi Max 文档：https://umijs.org/docs/max/introduce
+
+## 后续可完善项
+
+- 补齐各环境真实代理地址
+- 接入真实登录与当前用户接口
+- 补充 API 类型生成规范
+- 补充测试与发布流程说明
