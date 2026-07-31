@@ -69,4 +69,11 @@ export default [
       },
     ],
   },
+  {
+    name: '评论管理',
+    path: '/comment',
+    icon: 'comment',
+    disabledTooltip: true,
+    component: './Comment',
+  },
 ];
