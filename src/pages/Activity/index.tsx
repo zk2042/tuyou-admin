@@ -26,9 +26,9 @@ import type {
 } from '@/services/activity/types';
 import { uploadImage } from '@/services/upload';
 import { activityColumns, type ActQuery } from './activityConfig';
-import CreateModal, { type CreateVals } from './CreateModal';
-import DetailModal from './DetailModal';
-import EditModal, { type EditVals } from './EditModal';
+import CreateModal, { type CreateVals } from './components/CreateModal';
+import DetailModal from './components/DetailModal';
+import EditModal, { type EditVals } from './components/EditModal';
 
 const activityRequest = async (params: ActQuery) => {
   try {
@@ -323,7 +323,7 @@ const ActivityPage: React.FC = () => {
         request={activityRequest}
         options={false}
         search={{
-          defaultCollapsed: false,
+          defaultCollapsed: true,
           span: 8,
         }}
         rowSelection={{
