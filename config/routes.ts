@@ -43,4 +43,30 @@ export default [
     disabledTooltip: true,
     component: './Activity',
   },
+  {
+    name: '内容管理',
+    path: '/content',
+    icon: 'read',
+    disabledTooltip: true,
+    routes: [
+      {
+        path: '/content',
+        redirect: '/content/note',
+      },
+      {
+        name: '笔记管理',
+        path: '/content/note',
+        icon: 'fileText',
+        disabledTooltip: true,
+        component: './Content/Note',
+      },
+      {
+        name: '攻略管理',
+        path: '/content/guide',
+        icon: 'book',
+        disabledTooltip: true,
+        component: './Content/Guide',
+      },
+    ],
+  },
 ];
