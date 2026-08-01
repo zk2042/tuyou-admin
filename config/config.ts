@@ -21,6 +21,7 @@ export default defineConfig({
 
   // ========== 代理（根据 UMI_ENV 自动切换环境） ==========
   proxy: proxy[currentEnv],
+  // mock: false,
 
   // ========== Umi Max 插件 ==========
   antd: {

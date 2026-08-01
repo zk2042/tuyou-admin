@@ -10,7 +10,7 @@
  * }
  */
 import { handleRequestError } from '@/api/requestErrorConfig';
-import type { ApiResponse } from '@/constants';
+import { API_RESPONSE_SUCCESS_CODE, type ApiResponse } from '@/constants';
 import { message } from '@/utils/message';
 import { request, type RequestOptions } from '@umijs/max';
 
@@ -32,14 +32,22 @@ interface RequestExecutorOptions extends RequestOptions {
   skipAuthToken?: boolean;
 }
 
-async function sendRequest<T = unknown>(
-  url: string,
-  options: Omit<RequestExecutorOptions, 'url'>,
-): Promise<ApiResponse<T>> {
-  return request<ApiResponse<T>>(url, {
-    ...options,
-    skipErrorHandler: true,
-  });
+function throwBizError<T>(response: ApiResponse<T>) {
+  if (
+    typeof response?.code === 'number' &&
+    response.code !== API_RESPONSE_SUCCESS_CODE
+  ) {
+    const error: any = new Error(response.message || '请求失败');
+    error.name = 'BizError';
+    error.info = {
+      code: response.code,
+      message: response.message,
+      data: response.data,
+    };
+    throw error;
+  }
+
+  return response;
 }
 
 async function requestWithAuth<T>(
@@ -72,14 +80,20 @@ export async function apiRequest<T = unknown>(
   options: RequestExecutorOptions,
 ): Promise<ApiResponse<T>> {
   const { url, method = 'GET', ...restOptions } = options;
-
   return requestWithAuth<ApiResponse<T>>(
     url,
     {
       method,
       ...restOptions,
     },
-    sendRequest,
+    async (path, requestOptions) => {
+      const response = await request<ApiResponse<T>>(path, {
+        ...requestOptions,
+        skipErrorHandler: true,
+      });
+
+      return throwBizError(response);
+    },
   );
 }
 
