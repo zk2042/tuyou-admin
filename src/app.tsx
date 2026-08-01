@@ -368,7 +368,10 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => ({
   },
   onPageChange: () => {
     const { pathname, search } = history.location;
-    const hasLogin = Boolean(initialState);
+    const cachedUser = getUser<AdminInfo>();
+    const hasLogin = Boolean(
+      getToken() && (initialState?.id || cachedUser?.id),
+    );
     const isLogin = pathname === '/login';
 
     if (!hasLogin && !isLogin) {
