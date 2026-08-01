@@ -52,7 +52,7 @@ export async function getCaptcha(options?: {
   [key: string]: any;
 }): Promise<ApiResponse<CaptchaData>> {
   return apiRequest<CaptchaData>({
-    url: '/v1/amdin/captcha',
+    url: '/v1/admin/captcha',
     method: 'GET',
     skipAuthToken: true,
     ...(options || {}),

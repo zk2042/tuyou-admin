@@ -62,7 +62,7 @@ function sendBiz(res: any, code: number, message: string, data: any = null) {
 }
 
 export default {
-  'GET /api/v1/amdin/captcha': (_req: any, res: any) => {
+  'GET /api/v1/admin/captcha': (_req: any, res: any) => {
     const code = makeCode();
     const key = `mock_${Date.now().toString(36)}`;
 

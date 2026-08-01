@@ -1,7 +1,12 @@
 // 运行时配置
 import { getMe, type AdminInfo } from '@/services/login';
 import { store } from '@/store';
-import { clearAuth as clearToken, getToken, setUser } from '@/utils/auth';
+import {
+  clearAuth as clearToken,
+  getToken,
+  getUser,
+  setUser,
+} from '@/utils/auth';
 import { setAppInstance } from '@/utils/message';
 import {
   BellOutlined,
@@ -239,6 +244,41 @@ function LayoutHeader() {
   );
 }
 
+function InitialStateSync() {
+  const { initialState, setInitialState } = useModel('@@initialState');
+
+  useEffect(() => {
+    if (!getToken() || !initialState?.id) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const syncInitialState = async () => {
+      try {
+        const response = await getMe();
+
+        if (!response.data || cancelled) {
+          return;
+        }
+
+        setUser(response.data);
+        setInitialState(response.data);
+      } catch {
+        // 全局错误处理已兜底，这里只避免未处理的 Promise 拒绝。
+      }
+    };
+
+    void syncInitialState();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [initialState?.id, setInitialState]);
+
+  return null;
+}
+
 function AppMessageBridge(props: { children: ReactNode }) {
   const app = App.useApp();
 
@@ -273,8 +313,13 @@ export async function getInitialState(): Promise<InitialState | undefined> {
     return undefined;
   }
 
+  const cachedUser = getUser<AdminInfo>();
+  if (cachedUser?.id) {
+    return cachedUser;
+  }
+
   try {
-    const response = await getMe({ skipErrorHandler: true });
+    const response = await getMe();
     if (!response.data) {
       clearToken();
       return undefined;
@@ -284,7 +329,6 @@ export async function getInitialState(): Promise<InitialState | undefined> {
 
     return response.data;
   } catch {
-    clearToken();
     return undefined;
   }
 }
@@ -339,6 +383,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => ({
   },
   childrenRender: (children) => (
     <div className="app-layout-content">
+      <InitialStateSync />
       <LayoutHeader />
       <div className="app-layout-body">{children}</div>
     </div>
