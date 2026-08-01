@@ -23,7 +23,7 @@ type FormValue = Pick<LoginForm, 'username' | 'password' | 'captcha'>;
 const LoginPage: React.FC = () => {
   const { message } = App.useApp();
   const [form] = Form.useForm();
-  const { refresh, setInitialState } = useModel('@@initialState');
+  const { setInitialState } = useModel('@@initialState');
   const [submitting, setSubmitting] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [codeData, setCodeData] = useState<CaptchaData>();
@@ -78,8 +78,6 @@ const LoginPage: React.FC = () => {
       setToken(loginData);
       setUser(loginData.admin);
       setInitialState(loginData.admin);
-
-      await refresh();
 
       message.success(response.message || '登录成功');
 

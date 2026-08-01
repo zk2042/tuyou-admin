@@ -34,6 +34,11 @@ export interface BatchReq {
   ids: string[];
 }
 
+export interface LeaderItem {
+  id: string;
+  leader_name: string;
+}
+
 export interface ActivityItem {
   id: string;
   cover_img: string;

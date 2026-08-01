@@ -74,7 +74,7 @@ const LeaderPage: React.FC = () => {
       request={leaderRequest}
       options={false}
       search={{
-        defaultCollapsed: false,
+        defaultCollapsed: true,
         span: 8,
       }}
       rowSelection={{

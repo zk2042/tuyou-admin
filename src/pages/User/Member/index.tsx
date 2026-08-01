@@ -74,7 +74,7 @@ const MemberPage: React.FC = () => {
       request={memberRequest}
       options={false}
       search={{
-        defaultCollapsed: false,
+        defaultCollapsed: true,
         span: 8,
       }}
       rowSelection={{

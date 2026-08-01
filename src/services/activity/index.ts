@@ -8,6 +8,7 @@ import type {
   BatchReq,
   CreateReq,
   EditReq,
+  LeaderItem,
   PageData,
 } from './types';
 
@@ -42,6 +43,16 @@ export async function createActivity(
     url: '/v1/admin/activities',
     method: 'POST',
     data,
+    ...(options || {}),
+  });
+}
+
+export async function getLeaderNames(options?: {
+  [key: string]: any;
+}): Promise<ApiResponse<LeaderItem[]>> {
+  return apiRequest<LeaderItem[]>({
+    url: '/v1/admin/leadernames',
+    method: 'GET',
     ...(options || {}),
   });
 }

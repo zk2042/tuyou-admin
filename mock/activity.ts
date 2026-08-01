@@ -42,12 +42,32 @@ interface PageQuery {
   finish_time?: string;
 }
 
+interface LeaderItem {
+  id: string;
+  leader_name: string;
+}
+
 const coverList = [
   'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=240&q=80',
   'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=240&q=80',
   'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=240&q=80',
   'https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&w=240&q=80',
   'https://images.unsplash.com/photo-1501554728187-ce583db33af7?auto=format&fit=crop&w=240&q=80',
+];
+
+const leaderList: LeaderItem[] = [
+  { id: 'M001', leader_name: '登山领队小王登山领队' },
+  { id: 'M002', leader_name: '骑行长歌' },
+  { id: 'M003', leader_name: '户外达人' },
+  { id: 'M004', leader_name: '攀岩教练' },
+  { id: 'M005', leader_name: '徒步导师' },
+  { id: 'M006', leader_name: '山林率人' },
+  { id: 'M007', leader_name: '露营领队阿哲' },
+  { id: 'M008', leader_name: '徒步队长阿远' },
+  { id: 'M009', leader_name: '骑行教练木子' },
+  { id: 'M010', leader_name: '攀岩教官子恒' },
+  { id: 'M011', leader_name: '高山向导阿布' },
+  { id: 'M012', leader_name: '阿海' },
 ];
 
 const activityList: ActivityMockItem[] = [
@@ -351,8 +371,8 @@ const nextId = () => {
 };
 
 const nextLead = () => {
-  const maxId = activityList.reduce((max, item) => {
-    const num = Number(item.leader_member_id.slice(1));
+  const maxId = leaderList.reduce((max, item) => {
+    const num = Number(item.id.slice(1));
     return Number.isNaN(num) ? max : Math.max(max, num);
   }, 0);
 
@@ -420,6 +440,13 @@ export default {
       },
     });
   },
+  'GET /api/v1/admin/leadernames': (_req: any, res: any) => {
+    res.json({
+      code: 0,
+      message: '成功',
+      data: leaderList,
+    });
+  },
   'GET /api/v1/admin/activities': (req: any, res: any) => {
     res.json(pageResult(activityList, req.query || {}));
   },
@@ -444,8 +471,8 @@ export default {
   'POST /api/v1/admin/activities': (req: any, res: any) => {
     const body = (req.body || {}) as CreateBody;
     const leaderId =
-      activityList.find((item) => item.leader_name === body.leader_name)
-        ?.leader_member_id || nextLead();
+      leaderList.find((item) => item.leader_name === body.leader_name)?.id ||
+      nextLead();
 
     const newItem: ActivityMockItem = {
       id: nextId(),

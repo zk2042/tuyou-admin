@@ -28,6 +28,23 @@ export function getToken() {
   );
 }
 
+export function getUser<T>() {
+  const userValue =
+    localStorage.getItem(LOCAL_STORAGE_KEY.USER_INFO) ||
+    sessionStorage.getItem(LOCAL_STORAGE_KEY.USER_INFO);
+
+  if (!userValue) {
+    return undefined;
+  }
+
+  try {
+    return JSON.parse(userValue) as T;
+  } catch {
+    clearKey(LOCAL_STORAGE_KEY.USER_INFO);
+    return undefined;
+  }
+}
+
 export function setToken(data: TokenData) {
   const accessValue = getAccessValue(data);
 

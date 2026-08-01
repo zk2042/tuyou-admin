@@ -15,18 +15,20 @@ import {
   editActivity,
   exportActivity,
   getActivity,
+  getLeaderNames,
   queryActivity,
 } from '@/services/activity';
 import type {
   ActDetail,
   ActivityItem as ActItem,
   CreateReq,
+  LeaderItem,
 } from '@/services/activity/types';
 import { uploadImage } from '@/services/upload';
 import { activityColumns, type ActQuery } from './activityConfig';
-import CreateModal, { type CreateVals } from './CreateModal';
-import DetailModal from './DetailModal';
-import EditModal, { type EditVals } from './EditModal';
+import CreateModal, { type CreateVals } from './components/CreateModal';
+import DetailModal from './components/DetailModal';
+import EditModal, { type EditVals } from './components/EditModal';
 
 const activityRequest = async (params: ActQuery) => {
   try {
@@ -96,6 +98,8 @@ const ActivityPage: React.FC = () => {
   const [batchDel, setBatchDel] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [leaderList, setLeaderList] = useState<LeaderItem[]>([]);
+  const [leaderLoading, setLeaderLoading] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [editFetching, setEditFetching] = useState(false);
   const [editSaving, setEditSaving] = useState(false);
@@ -160,6 +164,39 @@ const ActivityPage: React.FC = () => {
   const openCreate = React.useCallback(() => {
     setCreateOpen(true);
   }, []);
+
+  React.useEffect(() => {
+    if (!createOpen || leaderList.length) {
+      return;
+    }
+
+    let active = true;
+
+    const loadLeaders = async () => {
+      setLeaderLoading(true);
+
+      try {
+        const response = await getLeaderNames();
+        if (!active) {
+          return;
+        }
+
+        setLeaderList(response.data || []);
+      } catch {
+        return;
+      } finally {
+        if (active) {
+          setLeaderLoading(false);
+        }
+      }
+    };
+
+    void loadLeaders();
+
+    return () => {
+      active = false;
+    };
+  }, [createOpen, leaderList.length]);
 
   const closeCreate = React.useCallback(() => {
     setCreateOpen(false);
@@ -286,7 +323,7 @@ const ActivityPage: React.FC = () => {
         request={activityRequest}
         options={false}
         search={{
-          defaultCollapsed: false,
+          defaultCollapsed: true,
           span: 8,
         }}
         rowSelection={{
@@ -334,6 +371,8 @@ const ActivityPage: React.FC = () => {
       <CreateModal
         open={createOpen}
         saving={creating}
+        leaderLoading={leaderLoading}
+        leaderList={leaderList}
         onCancel={closeCreate}
         onSubmit={submitCreate}
         uploadRequest={uploadCover}

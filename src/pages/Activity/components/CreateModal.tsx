@@ -1,4 +1,5 @@
 import ImageUpload from '@/components/ImageUpload';
+import type { LeaderItem } from '@/services/activity/types';
 import {
   Button,
   Col,
@@ -49,6 +50,8 @@ export interface CreateVals {
 interface CreateProps {
   open: boolean;
   saving: boolean;
+  leaderLoading: boolean;
+  leaderList: LeaderItem[];
   onCancel: () => void;
   onSubmit: (vals: CreateVals) => void;
   uploadRequest?: (file: File) => Promise<string>;
@@ -57,6 +60,8 @@ interface CreateProps {
 const CreateModal = ({
   open,
   saving,
+  leaderLoading,
+  leaderList,
   onCancel,
   onSubmit,
   uploadRequest,
@@ -116,9 +121,19 @@ const CreateModal = ({
             <Form.Item
               label="领队名字"
               name="leader_name"
-              rules={[{ required: true, message: '请输入领队名字' }]}
+              rules={[{ required: true, message: '请选择领队名字' }]}
             >
-              <Input placeholder="请输入领队名字" />
+              <Select
+                showSearch
+                loading={leaderLoading}
+                options={leaderList.map((item) => ({
+                  label: item.leader_name,
+                  value: item.leader_name,
+                }))}
+                placeholder="请选择领队名字"
+                optionFilterProp="label"
+                notFoundContent={leaderLoading ? '加载中' : '暂无领队'}
+              />
             </Form.Item>
           </Col>
           <Col span={12}>
