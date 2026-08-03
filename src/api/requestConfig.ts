@@ -6,7 +6,7 @@ const TOKEN_HEADER = 'Authorization';
 
 // ========== 请求配置 ==========
 export const requestConfig: RequestConfig = {
-  baseURL: '/api',
+  baseURL: '/api/v1',
   timeout: 30000,
   ...errorConfig,
 

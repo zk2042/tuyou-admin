@@ -15,7 +15,7 @@ export async function queryGuide(
   options?: { [key: string]: any },
 ): Promise<ApiResponse<PageData<GuideItem>>> {
   return apiRequest<PageData<GuideItem>>({
-    url: '/v1/admin/guides',
+    url: '/admin/guides',
     method: 'GET',
     params,
     ...(options || {}),
@@ -27,7 +27,7 @@ export async function getGuide(
   options?: { [key: string]: any },
 ): Promise<ApiResponse<GuideDetail>> {
   return apiRequest<GuideDetail>({
-    url: `/v1/admin/guides/${id}`,
+    url: `/admin/guides/${id}`,
     method: 'GET',
     ...(options || {}),
   });
@@ -39,7 +39,7 @@ export async function editGuide(
   options?: { [key: string]: any },
 ): Promise<ApiResponse<GuideDetail>> {
   return apiRequest<GuideDetail>({
-    url: `/v1/admin/guides/${id}`,
+    url: `/admin/guides/${id}`,
     method: 'PUT',
     data,
     ...(options || {}),
@@ -51,7 +51,7 @@ export async function deleteGuide(
   options?: { [key: string]: any },
 ): Promise<ApiResponse<null>> {
   return apiRequest<null>({
-    url: `/v1/admin/guides/${id}`,
+    url: `/admin/guides/${id}`,
     method: 'DELETE',
     ...(options || {}),
   });
@@ -62,7 +62,7 @@ export async function batchDeleteGuide(
   options?: { [key: string]: any },
 ): Promise<ApiResponse<null>> {
   return apiRequest<null>({
-    url: '/v1/admin/guides/batch-delete',
+    url: '/admin/guides/batch-delete',
     method: 'POST',
     data,
     ...(options || {}),
@@ -70,4 +70,4 @@ export async function batchDeleteGuide(
 }
 
 export const exportGuide = (data: BatchReq) =>
-  postDownload('/v1/admin/guides/export', data);
+  postDownload('/admin/guides/export', data);

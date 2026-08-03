@@ -30,7 +30,7 @@ export async function adminLogin(
   options?: { [key: string]: any },
 ): Promise<ApiResponse<LoginData>> {
   return apiRequest<LoginData>({
-    url: '/v1/admin/login',
+    url: '/admin/login',
     method: 'POST',
     skipAuthToken: true,
     data,
@@ -42,7 +42,7 @@ export async function getMe(options?: {
   [key: string]: any;
 }): Promise<ApiResponse<AdminInfo>> {
   return apiRequest<AdminInfo>({
-    url: '/v1/admin/auth/me',
+    url: '/admin/auth/me',
     method: 'GET',
     ...(options || {}),
   });
@@ -52,7 +52,7 @@ export async function getCaptcha(options?: {
   [key: string]: any;
 }): Promise<ApiResponse<CaptchaData>> {
   return apiRequest<CaptchaData>({
-    url: '/v1/admin/captcha',
+    url: '/admin/captcha',
     method: 'GET',
     skipAuthToken: true,
     ...(options || {}),
