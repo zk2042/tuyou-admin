@@ -13,7 +13,7 @@ export async function uploadImage(
   data.append('file', file);
 
   return apiRequest<ImgRes>({
-    url: '/v1/admin/upload/image',
+    url: '/admin/upload/image',
     method: 'POST',
     data,
     ...(options || {}),

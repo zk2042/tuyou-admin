@@ -15,7 +15,7 @@ export async function queryNote(
   options?: { [key: string]: any },
 ): Promise<ApiResponse<PageData<NoteItem>>> {
   return apiRequest<PageData<NoteItem>>({
-    url: '/v1/admin/notes',
+    url: '/admin/notes',
     method: 'GET',
     params,
     ...(options || {}),
@@ -27,7 +27,7 @@ export async function getNote(
   options?: { [key: string]: any },
 ): Promise<ApiResponse<NoteDetail>> {
   return apiRequest<NoteDetail>({
-    url: `/v1/admin/notes/${id}`,
+    url: `/admin/notes/${id}`,
     method: 'GET',
     ...(options || {}),
   });
@@ -39,7 +39,7 @@ export async function editNote(
   options?: { [key: string]: any },
 ): Promise<ApiResponse<NoteDetail>> {
   return apiRequest<NoteDetail>({
-    url: `/v1/admin/notes/${id}`,
+    url: `/admin/notes/${id}`,
     method: 'PUT',
     data,
     ...(options || {}),
@@ -51,7 +51,7 @@ export async function deleteNote(
   options?: { [key: string]: any },
 ): Promise<ApiResponse<null>> {
   return apiRequest<null>({
-    url: `/v1/admin/notes/${id}`,
+    url: `/admin/notes/${id}`,
     method: 'DELETE',
     ...(options || {}),
   });
@@ -62,7 +62,7 @@ export async function batchDeleteNote(
   options?: { [key: string]: any },
 ): Promise<ApiResponse<null>> {
   return apiRequest<null>({
-    url: '/v1/admin/notes/batch-delete',
+    url: '/admin/notes/batch-delete',
     method: 'POST',
     data,
     ...(options || {}),
@@ -70,4 +70,4 @@ export async function batchDeleteNote(
 }
 
 export const exportNote = (data: BatchReq) =>
-  postDownload('/v1/admin/notes/export', data);
+  postDownload('/admin/notes/export', data);

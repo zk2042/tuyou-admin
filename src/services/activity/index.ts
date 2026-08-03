@@ -17,7 +17,7 @@ export async function queryActivity(
   options?: { [key: string]: any },
 ): Promise<ApiResponse<PageData<ActivityItem>>> {
   return apiRequest<PageData<ActivityItem>>({
-    url: '/v1/admin/activities',
+    url: '/admin/activities',
     method: 'GET',
     params,
     ...(options || {}),
@@ -29,7 +29,7 @@ export async function getActivity(
   options?: { [key: string]: any },
 ): Promise<ApiResponse<ActDetail>> {
   return apiRequest<ActDetail>({
-    url: `/v1/admin/activities/${id}`,
+    url: `/admin/activities/${id}`,
     method: 'GET',
     ...(options || {}),
   });
@@ -40,7 +40,7 @@ export async function createActivity(
   options?: { [key: string]: any },
 ): Promise<ApiResponse<null>> {
   return apiRequest<null>({
-    url: '/v1/admin/activities',
+    url: '/admin/activities',
     method: 'POST',
     data,
     ...(options || {}),
@@ -51,7 +51,7 @@ export async function getLeaderNames(options?: {
   [key: string]: any;
 }): Promise<ApiResponse<LeaderItem[]>> {
   return apiRequest<LeaderItem[]>({
-    url: '/v1/admin/leadernames',
+    url: '/admin/leadernames',
     method: 'GET',
     ...(options || {}),
   });
@@ -63,7 +63,7 @@ export async function editActivity(
   options?: { [key: string]: any },
 ): Promise<ApiResponse<ActDetail>> {
   return apiRequest<ActDetail>({
-    url: `/v1/admin/activities/${id}`,
+    url: `/admin/activities/${id}`,
     method: 'PUT',
     data,
     ...(options || {}),
@@ -75,7 +75,7 @@ export async function deleteActivity(
   options?: { [key: string]: any },
 ): Promise<ApiResponse<null>> {
   return apiRequest<null>({
-    url: `/v1/admin/activities/${id}`,
+    url: `/admin/activities/${id}`,
     method: 'DELETE',
     ...(options || {}),
   });
@@ -86,7 +86,7 @@ export async function batchDeleteActivity(
   options?: { [key: string]: any },
 ): Promise<ApiResponse<null>> {
   return apiRequest<null>({
-    url: '/v1/admin/activities/batch-delete',
+    url: '/admin/activities/batch-delete',
     method: 'POST',
     data,
     ...(options || {}),
@@ -94,4 +94,4 @@ export async function batchDeleteActivity(
 }
 
 export const exportActivity = (data: BatchReq) =>
-  postDownload('/v1/admin/activities/export', data);
+  postDownload('/admin/activities/export', data);

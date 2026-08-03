@@ -7,15 +7,19 @@ import type { CSSProperties, ReactNode } from 'react';
 type DetailRecord = {
   id: string;
   avatar: string;
-  cover?: string;
+  bg_img?: string;
   nickname: string;
   phone: string;
+  follow_count?: number;
+  favorite_count?: number;
+  publish_count?: number;
+  fans_count?: number;
   status: string;
   bio: string;
   role: string;
   register_time: string;
   last_login: string;
-  lead_count?: number;
+  leading_count?: number;
 };
 
 interface PreviewProps {
@@ -48,6 +52,10 @@ const roleTag = (role: string) => {
   const color = role === '领队' ? 'warning' : 'processing';
 
   return <Tag color={color}>{role}</Tag>;
+};
+
+const countText = (value?: number) => {
+  return typeof value === 'number' ? `${value}` : '-';
 };
 
 const PreviewImage = ({
@@ -125,12 +133,32 @@ const detailItems = (
       label: '角色',
       children: roleTag(record.role),
     },
-    ...(typeof record.lead_count === 'number'
+    {
+      key: 'follow_count',
+      label: '关注数',
+      children: countText(record.follow_count),
+    },
+    {
+      key: 'favorite_count',
+      label: '收藏数',
+      children: countText(record.favorite_count),
+    },
+    {
+      key: 'publish_count',
+      label: '发布数',
+      children: countText(record.publish_count),
+    },
+    {
+      key: 'fans_count',
+      label: '粉丝数',
+      children: countText(record.fans_count),
+    },
+    ...(typeof record.leading_count === 'number'
       ? [
           {
-            key: 'lead_count',
+            key: 'leading_count',
             label: '带队次数',
-            children: `${record.lead_count}`,
+            children: `${record.leading_count}`,
           },
         ]
       : []),
@@ -140,19 +168,19 @@ const detailItems = (
       children: record.bio || '-',
     },
     {
-      key: 'cover',
-      label: '封面图',
+      key: 'bg_img',
+      label: '背景图',
       children: (
         <PreviewImage
-          src={record.cover}
-          alt={`${record.nickname}封面图`}
+          src={record.bg_img}
+          alt={`${record.nickname}背景图`}
           width={160}
           height={100}
           bordered
           borderColor={token.colorBorder}
           fillColor={token.colorFillAlter}
           fallback={
-            <Typography.Text type="secondary">暂无封面图</Typography.Text>
+            <Typography.Text type="secondary">暂无背景图</Typography.Text>
           }
         />
       ),

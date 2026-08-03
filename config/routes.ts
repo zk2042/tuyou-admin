@@ -76,4 +76,23 @@ export default [
     disabledTooltip: true,
     component: './Comment',
   },
+  {
+    name: '权限管理',
+    path: '/authority',
+    icon: 'safetyCertificate',
+    disabledTooltip: true,
+    routes: [
+      {
+        path: '/authority',
+        redirect: '/authority/manager',
+      },
+      {
+        name: '管理员管理',
+        path: '/authority/manager',
+        icon: 'userSwitch',
+        disabledTooltip: true,
+        component: './Authority/Manager',
+      },
+    ],
+  },
 ];

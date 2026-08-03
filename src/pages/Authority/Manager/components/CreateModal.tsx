@@ -1,0 +1,89 @@
+import { Form, Input, Modal, Select } from 'antd';
+import { useEffect } from 'react';
+
+import type { CreateValues } from '../managerConfig';
+import { ROLE_OPTIONS } from '../managerConfig';
+
+interface CreateModalProps {
+  open: boolean;
+  saving: boolean;
+  onCancel: () => void;
+  onSubmit: (values: CreateValues) => void;
+}
+
+const DEFAULT_VALUES: CreateValues = {
+  username: '',
+  adminname: '',
+  password: '123456',
+  role: '',
+};
+
+const CreateModal = ({
+  open,
+  saving,
+  onCancel,
+  onSubmit,
+}: CreateModalProps) => {
+  const [form] = Form.useForm<CreateValues>();
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    form.setFieldsValue(DEFAULT_VALUES);
+  }, [form, open]);
+
+  return (
+    <Modal
+      title="新增管理员"
+      open={open}
+      destroyOnHidden
+      confirmLoading={saving}
+      onCancel={onCancel}
+      onOk={() => {
+        void form.validateFields().then((values) => {
+          onSubmit(values);
+        });
+      }}
+    >
+      <Form<CreateValues>
+        form={form}
+        layout="vertical"
+        initialValues={DEFAULT_VALUES}
+      >
+        <Form.Item
+          label="登录账号"
+          name="username"
+          rules={[{ required: true, message: '请输入登录账号' }]}
+        >
+          <Input maxLength={30} placeholder="请输入登录账号" />
+        </Form.Item>
+        <Form.Item
+          label="真实姓名"
+          name="adminname"
+          rules={[{ required: true, message: '请输入管理员真实姓名' }]}
+        >
+          <Input maxLength={20} placeholder="请输入管理员真实姓名" />
+        </Form.Item>
+        <Form.Item
+          label="密码"
+          name="password"
+          rules={[{ required: true, message: '请输入密码' }]}
+          extra="默认密码为 123456"
+        >
+          <Input.Password placeholder="请输入密码" />
+        </Form.Item>
+        <Form.Item
+          label="所属角色"
+          name="role"
+          rules={[{ required: true, message: '请选择所属角色' }]}
+        >
+          <Select options={ROLE_OPTIONS} placeholder="请选择所属角色" />
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+};
+
+export default CreateModal;

@@ -11,7 +11,7 @@ import {
 } from '../shared';
 
 export interface LeaderRecord extends UserRecord {
-  lead_count: number;
+  leading_count: number;
 }
 
 export const leaderColumns = (
@@ -70,7 +70,7 @@ export const leaderColumns = (
     },
     {
       title: '带队次数',
-      dataIndex: 'lead_count',
+      dataIndex: 'leading_count',
       width: 80,
       hideInSearch: true,
     },
