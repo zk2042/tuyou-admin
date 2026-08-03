@@ -1,3 +1,8 @@
+import type {
+  ManagerCreate,
+  ManagerEdit,
+  ManagerItem,
+} from '@/services/authority/manager/types';
 import { DeleteOutlined, EditOutlined, KeyOutlined } from '@ant-design/icons';
 import type { ProColumns } from '@ant-design/pro-components';
 import { Button, Space, Tag } from 'antd';
@@ -10,23 +15,17 @@ export interface ManagerQueryParams {
   pageSize?: number;
 }
 
-export interface ManagerRecord {
-  id: string;
-  username: string;
-  adminname: string;
-  role: string;
-  status: boolean;
-  create_time: string;
-  last_login: string;
-}
-
-const ROLE_OPTIONS = [
+export type ManagerRecord = ManagerItem;
+export type CreateValues = ManagerCreate;
+export type EditValues = ManagerEdit;
+export const ROLE_OPTIONS = [
   { label: '内容管理员', value: '内容管理员' },
+  { label: '运营专员', value: '运营专员' },
   { label: '用户管理员', value: '用户管理员' },
   { label: '活动管理员', value: '活动管理员' },
 ];
 
-const STATUS_OPTIONS = [
+export const STATUS_OPTIONS = [
   { label: '启用', value: true },
   { label: '禁用', value: false },
 ];
@@ -37,16 +36,32 @@ const renderStatus = (status: boolean) => {
   );
 };
 
-const renderActions = () => {
+interface ColumnOptions {
+  onEdit: (record: ManagerRecord) => void;
+  onResetPassword: (record: ManagerRecord) => void;
+  onDelete: (record: ManagerRecord) => void;
+}
+
+const renderActions = (record: ManagerRecord, options: ColumnOptions) => {
   return (
     <Space size={0}>
-      <Button type="link" icon={<EditOutlined />} style={{ paddingInline: 4 }}>
+      <Button
+        type="link"
+        icon={<EditOutlined />}
+        style={{ paddingInline: 4 }}
+        onClick={() => {
+          options.onEdit(record);
+        }}
+      >
         编辑
       </Button>
       <Button
         type="link"
         icon={<KeyOutlined />}
         style={{ color: '#faad14', paddingInline: 4 }}
+        onClick={() => {
+          options.onResetPassword(record);
+        }}
       >
         重置密码
       </Button>
@@ -55,6 +70,9 @@ const renderActions = () => {
         type="link"
         icon={<DeleteOutlined />}
         style={{ paddingInline: 4 }}
+        onClick={() => {
+          options.onDelete(record);
+        }}
       >
         删除
       </Button>
@@ -62,7 +80,9 @@ const renderActions = () => {
   );
 };
 
-export const managerColumns: ProColumns<ManagerRecord>[] = [
+export const managerColumns = (
+  options: ColumnOptions,
+): ProColumns<ManagerRecord>[] => [
   {
     title: 'ID',
     dataIndex: 'id',
@@ -121,6 +141,6 @@ export const managerColumns: ProColumns<ManagerRecord>[] = [
     key: 'option',
     valueType: 'option',
     width: 220,
-    render: () => renderActions(),
+    render: (_, record) => renderActions(record, options),
   },
 ];

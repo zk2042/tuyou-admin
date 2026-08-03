@@ -16,6 +16,24 @@ export interface ManagerItem {
   last_login: string;
 }
 
+export interface ManagerCreate {
+  username: string;
+  adminname: string;
+  password: string;
+  role: string;
+}
+
+export interface ManagerEdit {
+  username: string;
+  adminname: string;
+  role: string;
+  status: boolean;
+}
+
+export interface ManagerResetPassword {
+  new_password: string;
+}
+
 export interface PageData<T> {
   list: T[];
   total: number;

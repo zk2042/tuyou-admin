@@ -16,6 +16,24 @@ interface ManagerQuery {
   status?: string | boolean;
 }
 
+interface ManagerCreateBody {
+  username?: string;
+  adminname?: string;
+  password?: string;
+  role?: string;
+}
+
+interface ManagerEditBody {
+  username?: string;
+  adminname?: string;
+  role?: string;
+  status?: boolean;
+}
+
+interface ManagerResetPasswordBody {
+  new_password?: string;
+}
+
 const managerList: ManagerItem[] = [
   {
     id: '1',
@@ -30,7 +48,7 @@ const managerList: ManagerItem[] = [
     id: '2',
     username: 'operate',
     adminname: '李敏',
-    role: '活动管理员',
+    role: '运营专员',
     status: true,
     create_time: '2025-02-18 09:30:00',
     last_login: '2026-07-28 09:12:00',
@@ -97,6 +115,22 @@ const normalizeBoolean = (value?: string | boolean) => {
   return undefined;
 };
 
+const normalizeBody = <T extends object>(body?: T | string) => {
+  if (!body) {
+    return {} as T;
+  }
+
+  if (typeof body === 'string') {
+    try {
+      return JSON.parse(body) as T;
+    } catch {
+      return {} as T;
+    }
+  }
+
+  return body;
+};
+
 const pageResult = (query: ManagerQuery) => {
   const page = Number(query.page || 1);
   const size = Number(query.size || 10);
@@ -124,11 +158,168 @@ const pageResult = (query: ManagerQuery) => {
   };
 };
 
-const handler = (req: any, res: any) => {
+const listHandler = (req: any, res: any) => {
   res.json(pageResult(req.query || {}));
 };
 
+const createHandler = (req: any, res: any) => {
+  const body = normalizeBody<ManagerCreateBody>(req.body);
+
+  if (!body.username || !body.adminname || !body.password || !body.role) {
+    res.json({
+      code: 400,
+      message: '缺少必要参数',
+      data: null,
+    });
+    return;
+  }
+
+  const exists = managerList.some((item) => item.username === body.username);
+
+  if (exists) {
+    res.json({
+      code: 400,
+      message: '登录账号已存在',
+      data: null,
+    });
+    return;
+  }
+
+  const nextId = String(
+    managerList.reduce((max, item) => Math.max(max, Number(item.id)), 0) + 1,
+  );
+  const created: ManagerItem = {
+    id: nextId,
+    username: body.username,
+    adminname: body.adminname,
+    role: body.role,
+    status: true,
+    create_time: '2026-08-03 10:00:00',
+    last_login: '-',
+  };
+
+  managerList.unshift(created);
+
+  res.json({
+    code: 0,
+    message: 'success',
+    data: created,
+  });
+};
+
+const editHandler = (req: any, res: any) => {
+  const body = normalizeBody<ManagerEditBody>(req.body);
+  const current = managerList.find((item) => item.id === String(req.params.id));
+
+  if (!current) {
+    res.json({
+      code: 404,
+      message: '数据不存在',
+      data: null,
+    });
+    return;
+  }
+
+  if (
+    !body.username ||
+    !body.adminname ||
+    !body.role ||
+    typeof body.status !== 'boolean'
+  ) {
+    res.json({
+      code: 400,
+      message: '缺少必要参数',
+      data: null,
+    });
+    return;
+  }
+
+  const exists = managerList.some(
+    (item) => item.id !== current.id && item.username === body.username,
+  );
+
+  if (exists) {
+    res.json({
+      code: 400,
+      message: '登录账号已存在',
+      data: null,
+    });
+    return;
+  }
+
+  current.username = body.username;
+  current.adminname = body.adminname;
+  current.role = body.role;
+  current.status = body.status;
+
+  res.json({
+    code: 0,
+    message: 'success',
+    data: current,
+  });
+};
+
+const deleteHandler = (req: any, res: any) => {
+  const index = managerList.findIndex(
+    (item) => item.id === String(req.params.id),
+  );
+
+  if (index < 0) {
+    res.json({
+      code: 404,
+      message: '数据不存在',
+      data: null,
+    });
+    return;
+  }
+
+  managerList.splice(index, 1);
+
+  res.json({
+    code: 0,
+    message: '删除成功',
+    data: null,
+  });
+};
+
+const resetPasswordHandler = (req: any, res: any) => {
+  const body = normalizeBody<ManagerResetPasswordBody>(req.body);
+  const current = managerList.find((item) => item.id === String(req.params.id));
+
+  if (!current) {
+    res.json({
+      code: 404,
+      message: '数据不存在',
+      data: null,
+    });
+    return;
+  }
+
+  if (!body.new_password) {
+    res.json({
+      code: 400,
+      message: '请输入新密码',
+      data: null,
+    });
+    return;
+  }
+
+  res.json({
+    code: 0,
+    message: `已重置 ${current.username} 的密码`,
+    data: null,
+  });
+};
+
 export default {
-  'GET /api/v1/admin/admins': handler,
-  'GET /admin/admins': handler,
+  'GET /api/v1/admin/admins': listHandler,
+  'GET /admin/admins': listHandler,
+  'POST /api/v1/admin/admins': createHandler,
+  'POST /admin/admins': createHandler,
+  'PUT /api/v1/admin/admins/:id': editHandler,
+  'PUT /admin/admins/:id': editHandler,
+  'DELETE /api/v1/admin/admins/:id': deleteHandler,
+  'DELETE /admin/admins/:id': deleteHandler,
+  'PUT /api/v1/admin/admins/:id/reset-password': resetPasswordHandler,
+  'PUT /admin/admins/:id/reset-password': resetPasswordHandler,
 };
