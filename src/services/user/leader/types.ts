@@ -11,12 +11,15 @@ export interface LeaderQuery {
 export interface LeaderItem {
   id: string;
   avatar: string;
-  cover?: string;
-  cover_style?: string;
+  bg_img?: string;
   nickname: string;
   phone: string;
+  follow_count: number;
+  favorite_count: number;
+  publish_count: number;
+  fans_count: number;
   bio: string;
-  lead_count: number;
+  leading_count: number;
   status: string;
   role: string;
   register_time: string;

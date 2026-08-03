@@ -1,10 +1,13 @@
 export interface UserItem {
   id: string;
   avatar: string;
-  cover?: string;
-  cover_style?: string;
+  bg_img?: string;
   nickname: string;
   phone: string;
+  follow_count: number;
+  favorite_count: number;
+  publish_count: number;
+  fans_count: number;
   status: string;
   bio: string;
   role: string;

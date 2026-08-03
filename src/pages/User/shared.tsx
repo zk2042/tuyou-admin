@@ -45,10 +45,13 @@ export interface UserQuery {
 export interface UserRecord {
   id: string;
   avatar: string;
-  cover?: string;
-  cover_style?: string;
+  bg_img?: string;
   nickname: string;
   phone: string;
+  follow_count?: number;
+  favorite_count?: number;
+  publish_count?: number;
+  fans_count?: number;
   status: string;
   bio: string;
   role: string;
@@ -94,7 +97,7 @@ export const editData = (
 };
 
 export type DetailRecord = UserRecord & {
-  lead_count?: number;
+  leading_count?: number;
 };
 
 export type DetailLoad = (
