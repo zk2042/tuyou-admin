@@ -1,0 +1,730 @@
+{
+  "info": {
+    "name": "途友管理后台 API - 活动管理",
+    "description": "根据总 Postman Collection 拆分出的活动管理集合，可直接导入 Postman。",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "活动管理",
+      "item": [
+        {
+          "name": "获取领队名称列表",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/leadernames",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "leadernames"],
+              "variable": [],
+              "query": []
+            },
+            "description": "获取领队名称列表",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/leadernames",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "leadernames"],
+                  "variable": [],
+                  "query": []
+                },
+                "description": "获取领队名称列表",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": [\n    {\n      \"id\": \"M001\",\n      \"leader_name\": \"登山领队小王登山领队\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "分页查询活动",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/activities",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "activities"],
+              "variable": [],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "页码"
+                },
+                {
+                  "key": "size",
+                  "value": "10",
+                  "description": "每页条数"
+                },
+                {
+                  "key": "title",
+                  "value": "",
+                  "description": "活动标题"
+                },
+                {
+                  "key": "leader_name",
+                  "value": "",
+                  "description": "领队名称"
+                },
+                {
+                  "key": "activity_type",
+                  "value": "徒步",
+                  "description": "活动类型"
+                },
+                {
+                  "key": "difficulty",
+                  "value": "中等",
+                  "description": "难度"
+                },
+                {
+                  "key": "fee",
+                  "value": "免费",
+                  "description": "费用类型"
+                },
+                {
+                  "key": "activity_status",
+                  "value": "报名中",
+                  "description": "活动状态"
+                },
+                {
+                  "key": "is_slide",
+                  "value": "是",
+                  "description": "是否轮播"
+                },
+                {
+                  "key": "begin_time",
+                  "value": "2026-08-01",
+                  "description": "开始日期"
+                },
+                {
+                  "key": "finish_time",
+                  "value": "2026-08-31",
+                  "description": "结束日期"
+                }
+              ]
+            },
+            "description": "分页查询活动",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/activities",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "activities"],
+                  "variable": [],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "页码"
+                    },
+                    {
+                      "key": "size",
+                      "value": "10",
+                      "description": "每页条数"
+                    },
+                    {
+                      "key": "title",
+                      "value": "",
+                      "description": "活动标题"
+                    },
+                    {
+                      "key": "leader_name",
+                      "value": "",
+                      "description": "领队名称"
+                    },
+                    {
+                      "key": "activity_type",
+                      "value": "徒步",
+                      "description": "活动类型"
+                    },
+                    {
+                      "key": "difficulty",
+                      "value": "中等",
+                      "description": "难度"
+                    },
+                    {
+                      "key": "fee",
+                      "value": "免费",
+                      "description": "费用类型"
+                    },
+                    {
+                      "key": "activity_status",
+                      "value": "报名中",
+                      "description": "活动状态"
+                    },
+                    {
+                      "key": "is_slide",
+                      "value": "是",
+                      "description": "是否轮播"
+                    },
+                    {
+                      "key": "begin_time",
+                      "value": "2026-08-01",
+                      "description": "开始日期"
+                    },
+                    {
+                      "key": "finish_time",
+                      "value": "2026-08-31",
+                      "description": "结束日期"
+                    }
+                  ]
+                },
+                "description": "分页查询活动",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"list\": [\n      {\n        \"id\": \"A001\",\n        \"cover_img\": \"\",\n        \"title\": \"四姑娘山大峰攀登大峰攀登\",\n        \"leader_member_id\": \"M001\",\n        \"leader_name\": \"登山领队小王登山领队\",\n        \"activity_type\": \"登山\",\n        \"start_time\": \"2026-08-15\",\n        \"end_time\": \"2026-08-17\",\n        \"price\": 1280,\n        \"current_people\": 8,\n        \"max_people\": 20,\n        \"difficulty\": \"中等\",\n        \"is_slide\": \"是\",\n        \"activity_status\": \"报名中\",\n        \"is_del\": \"正常\",\n        \"delete_time\": null\n      }\n    ],\n    \"total\": 12,\n    \"page\": 1,\n    \"size\": 10,\n    \"total_page\": 2\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "创建活动",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/activities",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "activities"],
+              "variable": [],
+              "query": []
+            },
+            "description": "创建活动",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"四姑娘山大峰攀登\",\n  \"leader_name\": \"登山领队小王登山领队\",\n  \"cover_img\": \"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=240&q=80\",\n  \"activity_type\": \"登山\",\n  \"address\": \"四川阿坝州小金县\",\n  \"start_time\": \"2026-08-15\",\n  \"end_time\": \"2026-08-17\",\n  \"max_people\": 20,\n  \"price\": 1280,\n  \"difficulty\": \"中等\",\n  \"activity_content\": \"集合后统一乘车进山，完成营地适应与基础技术讲解。\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/activities",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "activities"],
+                  "variable": [],
+                  "query": []
+                },
+                "description": "创建活动",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"四姑娘山大峰攀登\",\n  \"leader_name\": \"登山领队小王登山领队\",\n  \"cover_img\": \"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=240&q=80\",\n  \"activity_type\": \"登山\",\n  \"address\": \"四川阿坝州小金县\",\n  \"start_time\": \"2026-08-15\",\n  \"end_time\": \"2026-08-17\",\n  \"max_people\": 20,\n  \"price\": 1280,\n  \"difficulty\": \"中等\",\n  \"activity_content\": \"集合后统一乘车进山，完成营地适应与基础技术讲解。\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "获取活动详情",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/activities/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "activities", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "获取活动详情",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/activities/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "activities", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "获取活动详情",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"id\": \"A001\",\n    \"cover_img\": \"\",\n    \"title\": \"四姑娘山大峰攀登大峰攀登\",\n    \"leader_member_id\": \"M001\",\n    \"leader_name\": \"登山领队小王登山领队\",\n    \"activity_type\": \"登山\",\n    \"start_time\": \"2026-08-15\",\n    \"end_time\": \"2026-08-17\",\n    \"price\": 1280,\n    \"current_people\": 8,\n    \"max_people\": 20,\n    \"difficulty\": \"中等\",\n    \"is_slide\": \"是\",\n    \"activity_status\": \"报名中\",\n    \"is_del\": \"正常\",\n    \"delete_time\": null,\n    \"activity_content\": \"集合后从映秀统一乘车进山，第一天完成营地适应与基础技术讲解。\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "编辑活动展示状态",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/activities/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "activities", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "编辑活动展示状态",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_slide\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/activities/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "activities", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "编辑活动展示状态",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"is_slide\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"id\": \"A001\",\n    \"cover_img\": \"\",\n    \"title\": \"四姑娘山大峰攀登大峰攀登\",\n    \"leader_member_id\": \"M001\",\n    \"leader_name\": \"登山领队小王登山领队\",\n    \"activity_type\": \"登山\",\n    \"start_time\": \"2026-08-15\",\n    \"end_time\": \"2026-08-17\",\n    \"price\": 1280,\n    \"current_people\": 8,\n    \"max_people\": 20,\n    \"difficulty\": \"中等\",\n    \"is_slide\": \"是\",\n    \"activity_status\": \"报名中\",\n    \"is_del\": \"正常\",\n    \"delete_time\": null,\n    \"activity_content\": \"集合后从映秀统一乘车进山，第一天完成营地适应与基础技术讲解。\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "删除活动",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/activities/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "activities", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "删除活动",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/activities/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "activities", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "删除活动",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "批量删除活动",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/activities/batch-delete",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "activities", "batch-delete"],
+              "variable": [],
+              "query": []
+            },
+            "description": "批量删除活动",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [\n    \"A001\",\n    \"A002\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/activities/batch-delete",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "activities", "batch-delete"],
+                  "variable": [],
+                  "query": []
+                },
+                "description": "批量删除活动",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"A001\",\n    \"A002\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "导出活动",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/activities/export",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "activities", "export"],
+              "variable": [],
+              "query": []
+            },
+            "description": "导出活动",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [\n    \"A001\",\n    \"A002\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000/api/v1"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ]
+}

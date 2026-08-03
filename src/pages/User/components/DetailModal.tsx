@@ -14,7 +14,7 @@ type DetailRecord = {
   favorite_count?: number;
   publish_count?: number;
   fans_count?: number;
-  status: string;
+  status: boolean;
   bio: string;
   role: string;
   register_time: string;
@@ -42,10 +42,10 @@ interface DetailProps {
   onClose: () => void;
 }
 
-const statusTag = (status: string) => {
-  const color = status === '正常' ? 'success' : 'error';
+const statusTag = (status: boolean) => {
+  const color = status ? 'success' : 'error';
 
-  return <Tag color={color}>{status}</Tag>;
+  return <Tag color={color}>{status ? '正常' : '禁用'}</Tag>;
 };
 
 const roleTag = (role: string) => {

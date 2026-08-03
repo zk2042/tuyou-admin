@@ -1,0 +1,558 @@
+{
+  "info": {
+    "name": "途友管理后台 API - 笔记管理",
+    "description": "根据总 Postman Collection 拆分出的笔记管理集合，可直接导入 Postman。",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "内容-笔记",
+      "item": [
+        {
+          "name": "分页查询笔记",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/notes",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "notes"],
+              "variable": [],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "页码"
+                },
+                {
+                  "key": "size",
+                  "value": "10",
+                  "description": "每页条数"
+                },
+                {
+                  "key": "title",
+                  "value": "",
+                  "description": "标题"
+                },
+                {
+                  "key": "category",
+                  "value": "露营",
+                  "description": "分类"
+                },
+                {
+                  "key": "is_slide",
+                  "value": "是",
+                  "description": "是否轮播"
+                },
+                {
+                  "key": "sort_field",
+                  "value": "热度",
+                  "description": "排序字段"
+                },
+                {
+                  "key": "sort_order",
+                  "value": "升序",
+                  "description": "排序方式"
+                },
+                {
+                  "key": "begin_time",
+                  "value": "",
+                  "description": "开始时间"
+                },
+                {
+                  "key": "finish_time",
+                  "value": "",
+                  "description": "结束时间"
+                }
+              ]
+            },
+            "description": "分页查询笔记",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/notes",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "notes"],
+                  "variable": [],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "页码"
+                    },
+                    {
+                      "key": "size",
+                      "value": "10",
+                      "description": "每页条数"
+                    },
+                    {
+                      "key": "title",
+                      "value": "",
+                      "description": "标题"
+                    },
+                    {
+                      "key": "category",
+                      "value": "露营",
+                      "description": "分类"
+                    },
+                    {
+                      "key": "is_slide",
+                      "value": "是",
+                      "description": "是否轮播"
+                    },
+                    {
+                      "key": "sort_field",
+                      "value": "热度",
+                      "description": "排序字段"
+                    },
+                    {
+                      "key": "sort_order",
+                      "value": "升序",
+                      "description": "排序方式"
+                    },
+                    {
+                      "key": "begin_time",
+                      "value": "",
+                      "description": "开始时间"
+                    },
+                    {
+                      "key": "finish_time",
+                      "value": "",
+                      "description": "结束时间"
+                    }
+                  ]
+                },
+                "description": "分页查询笔记",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"list\": [\n      {\n        \"id\": \"N001\",\n        \"cover_img\": \"\",\n        \"title\": \"稻城亚丁徒步攻略笔记\",\n        \"nickname\": \"旅行达人\",\n        \"category\": \"徒步\",\n        \"tags\": [\n          \"川西\",\n          \"稻城\"\n        ],\n        \"publish_time\": \"2026-07-20 00:00:00\",\n        \"view_count\": 2340,\n        \"like_count\": 328,\n        \"collect_count\": 120,\n        \"comment_count\": 56,\n        \"heat\": 2844,\n        \"is_slide\": \"是\",\n        \"status\": \"正常\"\n      }\n    ],\n    \"total\": 8,\n    \"page\": 1,\n    \"size\": 10,\n    \"total_page\": 1\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "获取笔记详情",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/notes/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "notes", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "获取笔记详情",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/notes/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "notes", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "获取笔记详情",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"id\": \"N001\",\n    \"cover_img\": \"\",\n    \"title\": \"稻城亚丁徒步攻略笔记\",\n    \"nickname\": \"旅行达人\",\n    \"category\": \"徒步\",\n    \"tags\": [\n      \"川西\",\n      \"稻城\"\n    ],\n    \"publish_time\": \"2026-07-20 00:00:00\",\n    \"view_count\": 2340,\n    \"like_count\": 328,\n    \"collect_count\": 120,\n    \"comment_count\": 56,\n    \"heat\": 2844,\n    \"is_slide\": \"是\",\n    \"status\": \"正常\",\n    \"content\": \"这条路线建议拆成三天完成，第一天适应海拔，第二天重点走长线。\",\n    \"delete_time\": \"\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "编辑笔记",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/notes/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "notes", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "编辑笔记",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category\": \"露营\",\n  \"is_slide\": \"否\",\n  \"status\": \"正常\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/notes/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "notes", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "编辑笔记",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"category\": \"露营\",\n  \"is_slide\": \"否\",\n  \"status\": \"正常\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"id\": \"N001\",\n    \"cover_img\": \"\",\n    \"title\": \"稻城亚丁徒步攻略笔记\",\n    \"nickname\": \"旅行达人\",\n    \"category\": \"徒步\",\n    \"tags\": [\n      \"川西\",\n      \"稻城\"\n    ],\n    \"publish_time\": \"2026-07-20 00:00:00\",\n    \"view_count\": 2340,\n    \"like_count\": 328,\n    \"collect_count\": 120,\n    \"comment_count\": 56,\n    \"heat\": 2844,\n    \"is_slide\": \"是\",\n    \"status\": \"正常\",\n    \"content\": \"这条路线建议拆成三天完成，第一天适应海拔，第二天重点走长线。\",\n    \"delete_time\": \"\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "删除笔记",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/notes/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "notes", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "删除笔记",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/notes/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "notes", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "删除笔记",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "批量删除笔记",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/notes/batch-delete",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "notes", "batch-delete"],
+              "variable": [],
+              "query": []
+            },
+            "description": "批量删除笔记",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [\n    \"A001\",\n    \"A002\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/notes/batch-delete",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "notes", "batch-delete"],
+                  "variable": [],
+                  "query": []
+                },
+                "description": "批量删除笔记",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"A001\",\n    \"A002\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "导出笔记",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/notes/export",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "notes", "export"],
+              "variable": [],
+              "query": []
+            },
+            "description": "导出笔记",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [\n    \"A001\",\n    \"A002\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000/api/v1"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ]
+}

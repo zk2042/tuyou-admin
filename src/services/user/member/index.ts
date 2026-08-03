@@ -8,7 +8,7 @@ export async function queryMember(
   options?: { [key: string]: any },
 ): Promise<ApiResponse<PageData<MemberItem>>> {
   return apiRequest<PageData<MemberItem>>({
-    url: '/admin/users',
+    url: '/admin/members',
     method: 'GET',
     params,
     ...(options || {}),
@@ -20,7 +20,7 @@ export async function getMember(
   options?: { [key: string]: any },
 ): Promise<ApiResponse<MemberItem>> {
   return apiRequest<MemberItem>({
-    url: `/admin/users/${id}`,
+    url: `/admin/members/${id}`,
     method: 'GET',
     ...(options || {}),
   });
@@ -32,7 +32,7 @@ export async function editMember(
   options?: { [key: string]: any },
 ): Promise<ApiResponse<MemberItem>> {
   return apiRequest<MemberItem>({
-    url: `/admin/users/${id}`,
+    url: `/admin/members/${id}`,
     method: 'PUT',
     data,
     ...(options || {}),
@@ -44,7 +44,7 @@ export async function delMember(
   options?: { [key: string]: any },
 ): Promise<ApiResponse<null>> {
   return apiRequest<null>({
-    url: `/admin/users/${id}`,
+    url: `/admin/members/${id}`,
     method: 'DELETE',
     ...(options || {}),
   });
@@ -55,7 +55,7 @@ export async function batchDelMember(
   options?: { [key: string]: any },
 ): Promise<ApiResponse<null>> {
   return apiRequest<null>({
-    url: '/admin/users/batch-delete',
+    url: '/admin/members/batch-delete',
     method: 'POST',
     data: { ids },
     ...(options || {}),
@@ -68,7 +68,7 @@ export async function batchStatusMember(
   options?: { [key: string]: any },
 ): Promise<ApiResponse<null>> {
   return apiRequest<null>({
-    url: '/admin/users/batch-status',
+    url: '/admin/members/batch-status',
     method: 'POST',
     data: { ids, status },
     ...(options || {}),
@@ -76,4 +76,4 @@ export async function batchStatusMember(
 }
 
 export const exportMember = (data?: Partial<MemberQuery>) =>
-  postDownload('/admin/users/export', data || {});
+  postDownload('/admin/members/export', data || {});
