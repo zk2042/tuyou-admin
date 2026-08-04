@@ -99,6 +99,13 @@ export default [
         disabledTooltip: true,
         component: './Authority/Manager',
       },
+      {
+        name: '角色管理',
+        path: '/authority/role',
+        icon: 'solution',
+        disabledTooltip: true,
+        component: './Authority/Role',
+      },
     ],
   },
 ];
