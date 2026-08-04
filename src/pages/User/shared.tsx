@@ -251,6 +251,8 @@ const RowActions = ({
     try {
       const current = await loadDetail(record.id);
       setDetailData(current ?? record);
+    } catch {
+      setDetailOpen(false);
     } finally {
       setDetailLoading(false);
     }
@@ -265,6 +267,8 @@ const RowActions = ({
     try {
       const current = await loadDetail(record.id);
       setDetailData(current ?? record);
+    } catch {
+      setEditOpen(false);
     } finally {
       setEditFetching(false);
     }
@@ -289,6 +293,8 @@ const RowActions = ({
       );
       setEditOpen(false);
       onEdited?.();
+    } catch {
+      return;
     } finally {
       setEditLoading(false);
     }
@@ -436,6 +442,8 @@ const BatchStatusButton = ({
         response.message ||
           `已将 ${selectedCount} 个${entityLabel}设为${nextText}`,
       );
+    } catch {
+      return;
     } finally {
       setUpdating(false);
     }
@@ -554,6 +562,8 @@ const BatchDeleteButton = ({
       message.success(
         response.message || `已删除 ${selectedCount} 个${entityLabel}`,
       );
+    } catch {
+      return;
     } finally {
       setDeleting(false);
     }
