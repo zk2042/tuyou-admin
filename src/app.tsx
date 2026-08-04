@@ -244,21 +244,21 @@ function LayoutHeader() {
   }, [dispatch, initialState?.id, location.pathname]);
 
   const noticeContent = (
-    <div className="app-notice-pop">
-      <div className="app-notice-list">
+    <div className="notice-pop">
+      <div className="notice-list">
         <Spin spinning={noticeLoading}>
           {noticeList.length ? (
             noticeList.map((item) => (
-              <div key={item.id} className="app-notice-item">
-                <div className="app-notice-item-top">
-                  <span className="app-notice-item-title">
+              <div key={item.id} className="notice-item">
+                <div className="notice-top">
+                  <span className="notice-title">
                     {headerNoticeMap[item.type]}
                   </span>
-                  <span className="app-notice-item-time">
+                  <span className="notice-time">
                     {formatNoticeTime(item.created_at)}
                   </span>
                 </div>
-                <div className="app-notice-item-text">{item.content}</div>
+                <div className="notice-text">{item.content}</div>
               </div>
             ))
           ) : (
@@ -270,7 +270,7 @@ function LayoutHeader() {
         </Spin>
       </div>
       <div
-        className="app-notice-more"
+        className="notice-more"
         onClick={() => {
           setNoticeOpen(false);
           history.push('/center');
@@ -282,9 +282,9 @@ function LayoutHeader() {
   );
 
   return (
-    <div className="app-page-header">
-      <Space size={16} className="app-page-header-left">
-        <span className="app-header-action" onClick={toggleMenu}>
+    <div className="app-header">
+      <Space size={16} className="header-left">
+        <span className="header-action" onClick={toggleMenu}>
           {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
         </span>
         <Breadcrumb
@@ -294,7 +294,7 @@ function LayoutHeader() {
                 item.title
               ) : (
                 <span
-                  className="app-page-breadcrumb-link"
+                  className="crumb-link"
                   onClick={() => history.push(item.path)}
                 >
                   {item.title}
@@ -304,7 +304,7 @@ function LayoutHeader() {
         />
       </Space>
 
-      <Space size={20} className="app-page-header-actions">
+      <Space size={20} className="header-actions">
         <Popover
           trigger="click"
           open={noticeOpen}
@@ -318,12 +318,8 @@ function LayoutHeader() {
             }
           }}
         >
-          <span className="app-header-action">
-            <Badge
-              count={noticeUnread}
-              overflowCount={99}
-              className="app-header-badge"
-            >
+          <span className="header-action">
+            <Badge dot={noticeUnread > 0} className="header-badge">
               <BellOutlined />
             </Badge>
           </span>
@@ -336,11 +332,11 @@ function LayoutHeader() {
             onClick: handleUserMenuClick,
           }}
         >
-          <Space size={10} className="app-user-trigger">
+          <Space size={10} className="user-trigger">
             <Avatar src={initialState?.avatar || undefined} alt={displayName}>
               {displayName.slice(0, 1).toUpperCase()}
             </Avatar>
-            <Typography.Text ellipsis className="app-user-name">
+            <Typography.Text ellipsis className="user-name">
               {displayName}
             </Typography.Text>
           </Space>
@@ -495,10 +491,10 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => ({
     }
   },
   childrenRender: (children) => (
-    <div className="app-layout-content">
+    <div className="app-layout">
       <InitialStateSync />
       <LayoutHeader />
-      <div className="app-layout-body">{children}</div>
+      <div className="layout-body">{children}</div>
     </div>
   ),
   logout: () => {
