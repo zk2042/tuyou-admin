@@ -3,7 +3,6 @@ import {
   adminLogin,
   getCaptcha,
   type CaptchaData,
-  type LoginData,
   type LoginForm,
 } from '@/services/login';
 import { setToken, setUser } from '@/utils/auth';
@@ -73,7 +72,12 @@ const LoginPage: React.FC = () => {
         captcha: values.captcha,
         captcha_id: codeData.captcha_id,
       });
-      const loginData = response.data as LoginData;
+      const loginData = response.data;
+
+      if (!loginData) {
+        message.error('登录失败，请稍后重试');
+        return;
+      }
 
       setToken(loginData);
       setUser(loginData.admin);

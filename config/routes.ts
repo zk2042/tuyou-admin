@@ -11,6 +11,12 @@ export default [
     redirect: '/user/member',
   },
   {
+    name: '个人中心',
+    path: '/center',
+    hideInMenu: true,
+    component: './Center',
+  },
+  {
     name: '用户管理',
     path: '/user',
     icon: 'team',

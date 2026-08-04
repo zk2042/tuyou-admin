@@ -38,16 +38,6 @@ export async function adminLogin(
   });
 }
 
-export async function getMe(options?: {
-  [key: string]: any;
-}): Promise<ApiResponse<AdminInfo>> {
-  return apiRequest<AdminInfo>({
-    url: '/admin/auth/me',
-    method: 'GET',
-    ...(options || {}),
-  });
-}
-
 export async function getCaptcha(options?: {
   [key: string]: any;
 }): Promise<ApiResponse<CaptchaData>> {

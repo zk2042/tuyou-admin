@@ -62,7 +62,7 @@
   height: 36px;
   color: rgba(0, 0, 0, 65%);
   font-size: 18px;
-  border-radius: 50%;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -91,7 +91,7 @@
 
 .app-user-trigger {
   padding: 6px 10px;
-  border-radius: 999px;
+  border-radius: 10px;
   cursor: pointer;
   transition: background 0.2s ease;
 }
@@ -99,4 +99,63 @@
 .app-user-name {
   max-width: 120px;
   color: rgba(0, 0, 0, 88%);
+}
+
+.app-notice-pop {
+  width: 360px;
+}
+
+.app-notice-list {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.app-notice-item {
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.app-notice-item:first-child {
+  padding-top: 0;
+}
+
+.app-notice-item:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.app-notice-item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.app-notice-item-title {
+  min-width: 0;
+  color: rgba(0, 0, 0, 88%);
+  font-weight: 600;
+}
+
+.app-notice-item-time {
+  flex-shrink: 0;
+  color: #bfbfbf;
+  font-size: 12px;
+}
+
+.app-notice-item-text {
+  overflow: hidden;
+  color: rgba(0, 0, 0, 65%);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.app-notice-more {
+  margin-top: 12px;
+  padding-top: 12px;
+  color: #2e7d32;
+  text-align: center;
+  border-top: 1px solid #f0f0f0;
+  cursor: pointer;
 }
