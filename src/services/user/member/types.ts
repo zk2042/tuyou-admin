@@ -18,7 +18,7 @@ export interface MemberItem {
   favorite_count: number;
   publish_count: number;
   fans_count: number;
-  status: string;
+  status: boolean;
   bio: string;
   role: string;
   register_time: string;

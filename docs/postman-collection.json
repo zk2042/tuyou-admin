@@ -1,0 +1,4196 @@
+{
+  "info": {
+    "name": "途友管理后台 API",
+    "description": "根据前端 `src/services` 与 `mock` 生成的 Postman Collection 数据源。",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "认证",
+      "item": [
+        {
+          "name": "获取验证码",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/captcha",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "captcha"],
+              "variable": [],
+              "query": []
+            },
+            "description": "获取验证码"
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/captcha",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "captcha"],
+                  "variable": [],
+                  "query": []
+                },
+                "description": "获取验证码"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"captcha_id\": \"mock_lx92k7\",\n    \"captcha_image\": \"data:image/svg+xml;utf8,...\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "管理员登录",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "login"],
+              "variable": [],
+              "query": []
+            },
+            "description": "管理员登录",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"123456\",\n  \"captcha_id\": \"mock_lx92k7\",\n  \"captcha\": \"1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/login",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "login"],
+                  "variable": [],
+                  "query": []
+                },
+                "description": "管理员登录",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"123456\",\n  \"captcha_id\": \"mock_lx92k7\",\n  \"captcha\": \"1234\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"token\": \"mock_access_mdx4n9_ak31es\",\n    \"admin\": {\n      \"id\": 1,\n      \"username\": \"admin\",\n      \"role\": \"超级管理员\",\n      \"avatar\": \"\"\n    }\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "获取当前管理员信息",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "auth", "me"],
+              "variable": [],
+              "query": []
+            },
+            "description": "获取当前管理员信息",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/auth/me",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "auth", "me"],
+                  "variable": [],
+                  "query": []
+                },
+                "description": "获取当前管理员信息",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"id\": 1,\n    \"username\": \"admin\",\n    \"role\": \"超级管理员\",\n    \"avatar\": \"\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "上传",
+      "item": [
+        {
+          "name": "上传图片",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/upload/image",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "upload", "image"],
+              "variable": [],
+              "query": []
+            },
+            "description": "上传图片",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/upload/image",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "upload", "image"],
+                  "variable": [],
+                  "query": []
+                },
+                "description": "上传图片",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": ""
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"url\": \"https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&w=1200&q=80\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "权限-管理员",
+      "item": [
+        {
+          "name": "分页查询管理员",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/admins",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "admins"],
+              "variable": [],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "页码"
+                },
+                {
+                  "key": "size",
+                  "value": "10",
+                  "description": "每页条数"
+                },
+                {
+                  "key": "username",
+                  "value": "content",
+                  "description": "登录账号"
+                },
+                {
+                  "key": "role",
+                  "value": "内容管理员",
+                  "description": "角色名称"
+                },
+                {
+                  "key": "status",
+                  "value": "true",
+                  "description": "启用状态"
+                }
+              ]
+            },
+            "description": "分页查询管理员",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/admins",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "admins"],
+                  "variable": [],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "页码"
+                    },
+                    {
+                      "key": "size",
+                      "value": "10",
+                      "description": "每页条数"
+                    },
+                    {
+                      "key": "username",
+                      "value": "content",
+                      "description": "登录账号"
+                    },
+                    {
+                      "key": "role",
+                      "value": "内容管理员",
+                      "description": "角色名称"
+                    },
+                    {
+                      "key": "status",
+                      "value": "true",
+                      "description": "启用状态"
+                    }
+                  ]
+                },
+                "description": "分页查询管理员",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"list\": [\n      {\n        \"id\": \"1\",\n        \"username\": \"content\",\n        \"adminname\": \"张三\",\n        \"role\": \"内容管理员\",\n        \"status\": true,\n        \"create_time\": \"2025-02-15 10:00:00\",\n        \"last_login\": \"2026-07-19 14:20:00\"\n      }\n    ],\n    \"total\": 6,\n    \"page\": 1,\n    \"size\": 10,\n    \"total_page\": 1\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "新增管理员",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/admins",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "admins"],
+              "variable": [],
+              "query": []
+            },
+            "description": "新增管理员",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"new_admin\",\n  \"adminname\": \"王五\",\n  \"password\": \"12345678\",\n  \"role\": \"活动管理员\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/admins",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "admins"],
+                  "variable": [],
+                  "query": []
+                },
+                "description": "新增管理员",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"new_admin\",\n  \"adminname\": \"王五\",\n  \"password\": \"12345678\",\n  \"role\": \"活动管理员\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"id\": \"1\",\n    \"username\": \"content\",\n    \"adminname\": \"张三\",\n    \"role\": \"内容管理员\",\n    \"status\": true,\n    \"create_time\": \"2025-02-15 10:00:00\",\n    \"last_login\": \"2026-07-19 14:20:00\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "编辑管理员",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/admins/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "admins", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "编辑管理员",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"content\",\n  \"adminname\": \"张三\",\n  \"role\": \"内容管理员\",\n  \"status\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/admins/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "admins", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "编辑管理员",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"content\",\n  \"adminname\": \"张三\",\n  \"role\": \"内容管理员\",\n  \"status\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"id\": \"1\",\n    \"username\": \"content\",\n    \"adminname\": \"张三\",\n    \"role\": \"内容管理员\",\n    \"status\": true,\n    \"create_time\": \"2025-02-15 10:00:00\",\n    \"last_login\": \"2026-07-19 14:20:00\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "删除管理员",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/admins/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "admins", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "删除管理员",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/admins/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "admins", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "删除管理员",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "重置管理员密码",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/admins/:id/reset-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "admins", ":id", "reset-password"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "重置管理员密码",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"new_password\": \"new-password-123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/admins/:id/reset-password",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "admins", ":id", "reset-password"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "重置管理员密码",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"new_password\": \"new-password-123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": null\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "活动管理",
+      "item": [
+        {
+          "name": "获取领队名称列表",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/leadernames",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "leadernames"],
+              "variable": [],
+              "query": []
+            },
+            "description": "获取领队名称列表",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/leadernames",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "leadernames"],
+                  "variable": [],
+                  "query": []
+                },
+                "description": "获取领队名称列表",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": [\n    {\n      \"id\": \"M001\",\n      \"leader_name\": \"登山领队小王登山领队\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "分页查询活动",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/activities",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "activities"],
+              "variable": [],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "页码"
+                },
+                {
+                  "key": "size",
+                  "value": "10",
+                  "description": "每页条数"
+                },
+                {
+                  "key": "title",
+                  "value": "",
+                  "description": "活动标题"
+                },
+                {
+                  "key": "leader_name",
+                  "value": "",
+                  "description": "领队名称"
+                },
+                {
+                  "key": "activity_type",
+                  "value": "徒步",
+                  "description": "活动类型"
+                },
+                {
+                  "key": "difficulty",
+                  "value": "中等",
+                  "description": "难度"
+                },
+                {
+                  "key": "fee",
+                  "value": "免费",
+                  "description": "费用类型"
+                },
+                {
+                  "key": "activity_status",
+                  "value": "报名中",
+                  "description": "活动状态"
+                },
+                {
+                  "key": "is_slide",
+                  "value": "是",
+                  "description": "是否轮播"
+                },
+                {
+                  "key": "begin_time",
+                  "value": "2026-08-01",
+                  "description": "开始日期"
+                },
+                {
+                  "key": "finish_time",
+                  "value": "2026-08-31",
+                  "description": "结束日期"
+                }
+              ]
+            },
+            "description": "分页查询活动",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/activities",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "activities"],
+                  "variable": [],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "页码"
+                    },
+                    {
+                      "key": "size",
+                      "value": "10",
+                      "description": "每页条数"
+                    },
+                    {
+                      "key": "title",
+                      "value": "",
+                      "description": "活动标题"
+                    },
+                    {
+                      "key": "leader_name",
+                      "value": "",
+                      "description": "领队名称"
+                    },
+                    {
+                      "key": "activity_type",
+                      "value": "徒步",
+                      "description": "活动类型"
+                    },
+                    {
+                      "key": "difficulty",
+                      "value": "中等",
+                      "description": "难度"
+                    },
+                    {
+                      "key": "fee",
+                      "value": "免费",
+                      "description": "费用类型"
+                    },
+                    {
+                      "key": "activity_status",
+                      "value": "报名中",
+                      "description": "活动状态"
+                    },
+                    {
+                      "key": "is_slide",
+                      "value": "是",
+                      "description": "是否轮播"
+                    },
+                    {
+                      "key": "begin_time",
+                      "value": "2026-08-01",
+                      "description": "开始日期"
+                    },
+                    {
+                      "key": "finish_time",
+                      "value": "2026-08-31",
+                      "description": "结束日期"
+                    }
+                  ]
+                },
+                "description": "分页查询活动",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"list\": [\n      {\n        \"id\": \"A001\",\n        \"cover_img\": \"\",\n        \"title\": \"四姑娘山大峰攀登大峰攀登\",\n        \"leader_member_id\": \"M001\",\n        \"leader_name\": \"登山领队小王登山领队\",\n        \"activity_type\": \"登山\",\n        \"start_time\": \"2026-08-15\",\n        \"end_time\": \"2026-08-17\",\n        \"price\": 1280,\n        \"current_people\": 8,\n        \"max_people\": 20,\n        \"difficulty\": \"中等\",\n        \"is_slide\": \"是\",\n        \"activity_status\": \"报名中\",\n        \"is_del\": \"正常\",\n        \"delete_time\": null\n      }\n    ],\n    \"total\": 12,\n    \"page\": 1,\n    \"size\": 10,\n    \"total_page\": 2\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "创建活动",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/activities",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "activities"],
+              "variable": [],
+              "query": []
+            },
+            "description": "创建活动",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"四姑娘山大峰攀登\",\n  \"leader_name\": \"登山领队小王登山领队\",\n  \"cover_img\": \"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=240&q=80\",\n  \"activity_type\": \"登山\",\n  \"address\": \"四川阿坝州小金县\",\n  \"start_time\": \"2026-08-15\",\n  \"end_time\": \"2026-08-17\",\n  \"max_people\": 20,\n  \"price\": 1280,\n  \"difficulty\": \"中等\",\n  \"activity_content\": \"集合后统一乘车进山，完成营地适应与基础技术讲解。\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/activities",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "activities"],
+                  "variable": [],
+                  "query": []
+                },
+                "description": "创建活动",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"四姑娘山大峰攀登\",\n  \"leader_name\": \"登山领队小王登山领队\",\n  \"cover_img\": \"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=240&q=80\",\n  \"activity_type\": \"登山\",\n  \"address\": \"四川阿坝州小金县\",\n  \"start_time\": \"2026-08-15\",\n  \"end_time\": \"2026-08-17\",\n  \"max_people\": 20,\n  \"price\": 1280,\n  \"difficulty\": \"中等\",\n  \"activity_content\": \"集合后统一乘车进山，完成营地适应与基础技术讲解。\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "获取活动详情",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/activities/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "activities", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "获取活动详情",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/activities/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "activities", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "获取活动详情",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"id\": \"A001\",\n    \"cover_img\": \"\",\n    \"title\": \"四姑娘山大峰攀登大峰攀登\",\n    \"leader_member_id\": \"M001\",\n    \"leader_name\": \"登山领队小王登山领队\",\n    \"activity_type\": \"登山\",\n    \"start_time\": \"2026-08-15\",\n    \"end_time\": \"2026-08-17\",\n    \"price\": 1280,\n    \"current_people\": 8,\n    \"max_people\": 20,\n    \"difficulty\": \"中等\",\n    \"is_slide\": \"是\",\n    \"activity_status\": \"报名中\",\n    \"is_del\": \"正常\",\n    \"delete_time\": null,\n    \"activity_content\": \"集合后从映秀统一乘车进山，第一天完成营地适应与基础技术讲解。\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "编辑活动展示状态",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/activities/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "activities", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "编辑活动展示状态",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_slide\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/activities/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "activities", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "编辑活动展示状态",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"is_slide\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"id\": \"A001\",\n    \"cover_img\": \"\",\n    \"title\": \"四姑娘山大峰攀登大峰攀登\",\n    \"leader_member_id\": \"M001\",\n    \"leader_name\": \"登山领队小王登山领队\",\n    \"activity_type\": \"登山\",\n    \"start_time\": \"2026-08-15\",\n    \"end_time\": \"2026-08-17\",\n    \"price\": 1280,\n    \"current_people\": 8,\n    \"max_people\": 20,\n    \"difficulty\": \"中等\",\n    \"is_slide\": \"是\",\n    \"activity_status\": \"报名中\",\n    \"is_del\": \"正常\",\n    \"delete_time\": null,\n    \"activity_content\": \"集合后从映秀统一乘车进山，第一天完成营地适应与基础技术讲解。\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "删除活动",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/activities/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "activities", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "删除活动",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/activities/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "activities", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "删除活动",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "批量删除活动",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/activities/batch-delete",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "activities", "batch-delete"],
+              "variable": [],
+              "query": []
+            },
+            "description": "批量删除活动",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [\n    \"A001\",\n    \"A002\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/activities/batch-delete",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "activities", "batch-delete"],
+                  "variable": [],
+                  "query": []
+                },
+                "description": "批量删除活动",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"A001\",\n    \"A002\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "导出活动",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/activities/export",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "activities", "export"],
+              "variable": [],
+              "query": []
+            },
+            "description": "导出活动",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [\n    \"A001\",\n    \"A002\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "评论管理",
+      "item": [
+        {
+          "name": "分页查询评论",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "comments"],
+              "variable": [],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "页码"
+                },
+                {
+                  "key": "size",
+                  "value": "10",
+                  "description": "每页条数"
+                },
+                {
+                  "key": "target_type",
+                  "value": "笔记",
+                  "description": "评论目标类型"
+                },
+                {
+                  "key": "nickname",
+                  "value": "",
+                  "description": "评论用户昵称"
+                },
+                {
+                  "key": "title",
+                  "value": "",
+                  "description": "目标标题"
+                },
+                {
+                  "key": "begin_time",
+                  "value": "",
+                  "description": "开始时间"
+                },
+                {
+                  "key": "finish_time",
+                  "value": "",
+                  "description": "结束时间"
+                },
+                {
+                  "key": "level",
+                  "value": "一级",
+                  "description": "评论层级"
+                },
+                {
+                  "key": "sort_field",
+                  "value": "likes",
+                  "description": "排序字段"
+                },
+                {
+                  "key": "sort_order",
+                  "value": "升序",
+                  "description": "排序方式"
+                }
+              ]
+            },
+            "description": "分页查询评论",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/comments",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "comments"],
+                  "variable": [],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "页码"
+                    },
+                    {
+                      "key": "size",
+                      "value": "10",
+                      "description": "每页条数"
+                    },
+                    {
+                      "key": "target_type",
+                      "value": "笔记",
+                      "description": "评论目标类型"
+                    },
+                    {
+                      "key": "nickname",
+                      "value": "",
+                      "description": "评论用户昵称"
+                    },
+                    {
+                      "key": "title",
+                      "value": "",
+                      "description": "目标标题"
+                    },
+                    {
+                      "key": "begin_time",
+                      "value": "",
+                      "description": "开始时间"
+                    },
+                    {
+                      "key": "finish_time",
+                      "value": "",
+                      "description": "结束时间"
+                    },
+                    {
+                      "key": "level",
+                      "value": "一级",
+                      "description": "评论层级"
+                    },
+                    {
+                      "key": "sort_field",
+                      "value": "likes",
+                      "description": "排序字段"
+                    },
+                    {
+                      "key": "sort_order",
+                      "value": "升序",
+                      "description": "排序方式"
+                    }
+                  ]
+                },
+                "description": "分页查询评论",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"list\": [\n      {\n        \"id\": \"C001\",\n        \"nickname\": \"旅行爱好者\",\n        \"avatar\": \"\",\n        \"target_type\": \"笔记\",\n        \"target_title\": \"稻城亚丁徒步攻略笔记\",\n        \"content\": \"太美了！非常详细的攻略，收藏了。\",\n        \"level\": \"一级\",\n        \"reply_to_nickname\": \"\",\n        \"like_count\": 28,\n        \"heat\": 86,\n        \"create_time\": \"2026-07-20 14:30:00\",\n        \"status\": \"正常\",\n        \"delete_time\": \"\"\n      }\n    ],\n    \"total\": 10,\n    \"page\": 1,\n    \"size\": 10,\n    \"total_page\": 1\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "获取评论详情",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/comments/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "comments", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "获取评论详情",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/comments/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "comments", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "获取评论详情",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"id\": \"C001\",\n    \"nickname\": \"旅行爱好者\",\n    \"avatar\": \"\",\n    \"target_type\": \"笔记\",\n    \"target_title\": \"稻城亚丁徒步攻略笔记\",\n    \"content\": \"太美了！非常详细的攻略，收藏了。\",\n    \"level\": \"一级\",\n    \"reply_to_nickname\": \"\",\n    \"like_count\": 28,\n    \"heat\": 86,\n    \"create_time\": \"2026-07-20 14:30:00\",\n    \"status\": \"正常\",\n    \"delete_time\": \"\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "删除评论",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/comments/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "comments", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "删除评论",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/comments/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "comments", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "删除评论",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "批量删除评论",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/comments/batch-delete",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "comments", "batch-delete"],
+              "variable": [],
+              "query": []
+            },
+            "description": "批量删除评论",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [\n    \"A001\",\n    \"A002\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/comments/batch-delete",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "comments", "batch-delete"],
+                  "variable": [],
+                  "query": []
+                },
+                "description": "批量删除评论",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"A001\",\n    \"A002\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": null\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "内容-攻略",
+      "item": [
+        {
+          "name": "分页查询攻略",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/guides",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "guides"],
+              "variable": [],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "页码"
+                },
+                {
+                  "key": "size",
+                  "value": "10",
+                  "description": "每页条数"
+                },
+                {
+                  "key": "title",
+                  "value": "",
+                  "description": "标题"
+                },
+                {
+                  "key": "category",
+                  "value": "徒步",
+                  "description": "分类"
+                },
+                {
+                  "key": "difficulty",
+                  "value": "中等",
+                  "description": "难度"
+                },
+                {
+                  "key": "is_slide",
+                  "value": "是",
+                  "description": "是否轮播"
+                },
+                {
+                  "key": "sort_field",
+                  "value": "热度",
+                  "description": "排序字段"
+                },
+                {
+                  "key": "sort_order",
+                  "value": "升序",
+                  "description": "排序方式"
+                },
+                {
+                  "key": "begin_time",
+                  "value": "",
+                  "description": "开始时间"
+                },
+                {
+                  "key": "finish_time",
+                  "value": "",
+                  "description": "结束时间"
+                }
+              ]
+            },
+            "description": "分页查询攻略",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/guides",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "guides"],
+                  "variable": [],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "页码"
+                    },
+                    {
+                      "key": "size",
+                      "value": "10",
+                      "description": "每页条数"
+                    },
+                    {
+                      "key": "title",
+                      "value": "",
+                      "description": "标题"
+                    },
+                    {
+                      "key": "category",
+                      "value": "徒步",
+                      "description": "分类"
+                    },
+                    {
+                      "key": "difficulty",
+                      "value": "中等",
+                      "description": "难度"
+                    },
+                    {
+                      "key": "is_slide",
+                      "value": "是",
+                      "description": "是否轮播"
+                    },
+                    {
+                      "key": "sort_field",
+                      "value": "热度",
+                      "description": "排序字段"
+                    },
+                    {
+                      "key": "sort_order",
+                      "value": "升序",
+                      "description": "排序方式"
+                    },
+                    {
+                      "key": "begin_time",
+                      "value": "",
+                      "description": "开始时间"
+                    },
+                    {
+                      "key": "finish_time",
+                      "value": "",
+                      "description": "结束时间"
+                    }
+                  ]
+                },
+                "description": "分页查询攻略",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"list\": [\n      {\n        \"id\": \"G001\",\n        \"cover_img\": \"\",\n        \"title\": \"西藏自驾游完整指南\",\n        \"nickname\": \"老司机\",\n        \"category\": \"徒步\",\n        \"tags\": [\n          \"西藏\",\n          \"风景\",\n          \"人文\"\n        ],\n        \"difficulty\": \"高等\",\n        \"publish_time\": \"2026-07-20 00:00:00\",\n        \"view_count\": 5620,\n        \"like_count\": 520,\n        \"collect_count\": 1280,\n        \"comment_count\": 89,\n        \"heat\": 7509,\n        \"is_slide\": \"是\",\n        \"status\": \"正常\"\n      }\n    ],\n    \"total\": 8,\n    \"page\": 1,\n    \"size\": 10,\n    \"total_page\": 1\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "获取攻略详情",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/guides/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "guides", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "获取攻略详情",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/guides/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "guides", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "获取攻略详情",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"id\": \"G001\",\n    \"cover_img\": \"\",\n    \"title\": \"西藏自驾游完整指南\",\n    \"nickname\": \"老司机\",\n    \"category\": \"徒步\",\n    \"tags\": [\n      \"西藏\",\n      \"风景\",\n      \"人文\"\n    ],\n    \"difficulty\": \"高等\",\n    \"publish_time\": \"2026-07-20 00:00:00\",\n    \"view_count\": 5620,\n    \"like_count\": 520,\n    \"collect_count\": 1280,\n    \"comment_count\": 89,\n    \"heat\": 7509,\n    \"is_slide\": \"是\",\n    \"status\": \"正常\",\n    \"content\": \"这篇攻略按线路准备、海拔适应、补给节点和住宿节奏拆分整理。\",\n    \"distance\": \"2200km\",\n    \"duration\": \"10天9晚\",\n    \"transport\": \"自驾\",\n    \"delete_time\": \"\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "编辑攻略",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/guides/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "guides", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "编辑攻略",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category\": \"徒步\",\n  \"difficulty\": \"高等\",\n  \"is_slide\": \"是\",\n  \"status\": \"正常\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/guides/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "guides", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "编辑攻略",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"category\": \"徒步\",\n  \"difficulty\": \"高等\",\n  \"is_slide\": \"是\",\n  \"status\": \"正常\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"id\": \"G001\",\n    \"cover_img\": \"\",\n    \"title\": \"西藏自驾游完整指南\",\n    \"nickname\": \"老司机\",\n    \"category\": \"徒步\",\n    \"tags\": [\n      \"西藏\",\n      \"风景\",\n      \"人文\"\n    ],\n    \"difficulty\": \"高等\",\n    \"publish_time\": \"2026-07-20 00:00:00\",\n    \"view_count\": 5620,\n    \"like_count\": 520,\n    \"collect_count\": 1280,\n    \"comment_count\": 89,\n    \"heat\": 7509,\n    \"is_slide\": \"是\",\n    \"status\": \"正常\",\n    \"content\": \"这篇攻略按线路准备、海拔适应、补给节点和住宿节奏拆分整理。\",\n    \"distance\": \"2200km\",\n    \"duration\": \"10天9晚\",\n    \"transport\": \"自驾\",\n    \"delete_time\": \"\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "删除攻略",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/guides/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "guides", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "删除攻略",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/guides/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "guides", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "删除攻略",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "批量删除攻略",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/guides/batch-delete",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "guides", "batch-delete"],
+              "variable": [],
+              "query": []
+            },
+            "description": "批量删除攻略",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [\n    \"A001\",\n    \"A002\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/guides/batch-delete",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "guides", "batch-delete"],
+                  "variable": [],
+                  "query": []
+                },
+                "description": "批量删除攻略",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"A001\",\n    \"A002\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "导出攻略",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/guides/export",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "guides", "export"],
+              "variable": [],
+              "query": []
+            },
+            "description": "导出攻略",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [\n    \"A001\",\n    \"A002\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "内容-笔记",
+      "item": [
+        {
+          "name": "分页查询笔记",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/notes",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "notes"],
+              "variable": [],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "页码"
+                },
+                {
+                  "key": "size",
+                  "value": "10",
+                  "description": "每页条数"
+                },
+                {
+                  "key": "title",
+                  "value": "",
+                  "description": "标题"
+                },
+                {
+                  "key": "category",
+                  "value": "露营",
+                  "description": "分类"
+                },
+                {
+                  "key": "is_slide",
+                  "value": "是",
+                  "description": "是否轮播"
+                },
+                {
+                  "key": "sort_field",
+                  "value": "热度",
+                  "description": "排序字段"
+                },
+                {
+                  "key": "sort_order",
+                  "value": "升序",
+                  "description": "排序方式"
+                },
+                {
+                  "key": "begin_time",
+                  "value": "",
+                  "description": "开始时间"
+                },
+                {
+                  "key": "finish_time",
+                  "value": "",
+                  "description": "结束时间"
+                }
+              ]
+            },
+            "description": "分页查询笔记",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/notes",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "notes"],
+                  "variable": [],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "页码"
+                    },
+                    {
+                      "key": "size",
+                      "value": "10",
+                      "description": "每页条数"
+                    },
+                    {
+                      "key": "title",
+                      "value": "",
+                      "description": "标题"
+                    },
+                    {
+                      "key": "category",
+                      "value": "露营",
+                      "description": "分类"
+                    },
+                    {
+                      "key": "is_slide",
+                      "value": "是",
+                      "description": "是否轮播"
+                    },
+                    {
+                      "key": "sort_field",
+                      "value": "热度",
+                      "description": "排序字段"
+                    },
+                    {
+                      "key": "sort_order",
+                      "value": "升序",
+                      "description": "排序方式"
+                    },
+                    {
+                      "key": "begin_time",
+                      "value": "",
+                      "description": "开始时间"
+                    },
+                    {
+                      "key": "finish_time",
+                      "value": "",
+                      "description": "结束时间"
+                    }
+                  ]
+                },
+                "description": "分页查询笔记",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"list\": [\n      {\n        \"id\": \"N001\",\n        \"cover_img\": \"\",\n        \"title\": \"稻城亚丁徒步攻略笔记\",\n        \"nickname\": \"旅行达人\",\n        \"category\": \"徒步\",\n        \"tags\": [\n          \"川西\",\n          \"稻城\"\n        ],\n        \"publish_time\": \"2026-07-20 00:00:00\",\n        \"view_count\": 2340,\n        \"like_count\": 328,\n        \"collect_count\": 120,\n        \"comment_count\": 56,\n        \"heat\": 2844,\n        \"is_slide\": \"是\",\n        \"status\": \"正常\"\n      }\n    ],\n    \"total\": 8,\n    \"page\": 1,\n    \"size\": 10,\n    \"total_page\": 1\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "获取笔记详情",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/notes/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "notes", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "获取笔记详情",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/notes/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "notes", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "获取笔记详情",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"id\": \"N001\",\n    \"cover_img\": \"\",\n    \"title\": \"稻城亚丁徒步攻略笔记\",\n    \"nickname\": \"旅行达人\",\n    \"category\": \"徒步\",\n    \"tags\": [\n      \"川西\",\n      \"稻城\"\n    ],\n    \"publish_time\": \"2026-07-20 00:00:00\",\n    \"view_count\": 2340,\n    \"like_count\": 328,\n    \"collect_count\": 120,\n    \"comment_count\": 56,\n    \"heat\": 2844,\n    \"is_slide\": \"是\",\n    \"status\": \"正常\",\n    \"content\": \"这条路线建议拆成三天完成，第一天适应海拔，第二天重点走长线。\",\n    \"delete_time\": \"\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "编辑笔记",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/notes/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "notes", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "编辑笔记",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category\": \"露营\",\n  \"is_slide\": \"否\",\n  \"status\": \"正常\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/notes/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "notes", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "编辑笔记",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"category\": \"露营\",\n  \"is_slide\": \"否\",\n  \"status\": \"正常\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"id\": \"N001\",\n    \"cover_img\": \"\",\n    \"title\": \"稻城亚丁徒步攻略笔记\",\n    \"nickname\": \"旅行达人\",\n    \"category\": \"徒步\",\n    \"tags\": [\n      \"川西\",\n      \"稻城\"\n    ],\n    \"publish_time\": \"2026-07-20 00:00:00\",\n    \"view_count\": 2340,\n    \"like_count\": 328,\n    \"collect_count\": 120,\n    \"comment_count\": 56,\n    \"heat\": 2844,\n    \"is_slide\": \"是\",\n    \"status\": \"正常\",\n    \"content\": \"这条路线建议拆成三天完成，第一天适应海拔，第二天重点走长线。\",\n    \"delete_time\": \"\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "删除笔记",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/notes/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "notes", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "删除笔记",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/notes/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "notes", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "删除笔记",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "批量删除笔记",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/notes/batch-delete",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "notes", "batch-delete"],
+              "variable": [],
+              "query": []
+            },
+            "description": "批量删除笔记",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [\n    \"A001\",\n    \"A002\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/notes/batch-delete",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "notes", "batch-delete"],
+                  "variable": [],
+                  "query": []
+                },
+                "description": "批量删除笔记",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"A001\",\n    \"A002\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "导出笔记",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/notes/export",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "notes", "export"],
+              "variable": [],
+              "query": []
+            },
+            "description": "导出笔记",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [\n    \"A001\",\n    \"A002\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "用户-会员",
+      "item": [
+        {
+          "name": "分页查询会员",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/members",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users"],
+              "variable": [],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "页码"
+                },
+                {
+                  "key": "size",
+                  "value": "10",
+                  "description": "每页条数"
+                },
+                {
+                  "key": "id",
+                  "value": "",
+                  "description": "会员 ID"
+                },
+                {
+                  "key": "nickname",
+                  "value": "",
+                  "description": "昵称"
+                },
+                {
+                  "key": "phone",
+                  "value": "",
+                  "description": "手机号"
+                },
+                {
+                  "key": "register_start",
+                  "value": "",
+                  "description": "注册开始日期"
+                },
+                {
+                  "key": "register_end",
+                  "value": "",
+                  "description": "注册结束日期"
+                }
+              ]
+            },
+            "description": "分页查询会员",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/members",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "users"],
+                  "variable": [],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "页码"
+                    },
+                    {
+                      "key": "size",
+                      "value": "10",
+                      "description": "每页条数"
+                    },
+                    {
+                      "key": "id",
+                      "value": "",
+                      "description": "会员 ID"
+                    },
+                    {
+                      "key": "nickname",
+                      "value": "",
+                      "description": "昵称"
+                    },
+                    {
+                      "key": "phone",
+                      "value": "",
+                      "description": "手机号"
+                    },
+                    {
+                      "key": "register_start",
+                      "value": "",
+                      "description": "注册开始日期"
+                    },
+                    {
+                      "key": "register_end",
+                      "value": "",
+                      "description": "注册结束日期"
+                    }
+                  ]
+                },
+                "description": "分页查询会员",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"list\": [\n      {\n        \"id\": \"10001\",\n        \"avatar\": \"\",\n        \"bg_img\": \"https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png\",\n        \"nickname\": \"张一丰\",\n        \"phone\": \"130****0880\",\n        \"follow_count\": 68,\n        \"favorite_count\": 24,\n        \"publish_count\": 11,\n        \"fans_count\": 135,\n        \"status\": \"正常\",\n        \"bio\": \"热爱户外，喜欢和山野对话。\",\n        \"role\": \"普通会员\",\n        \"register_time\": \"2026-07-20\",\n        \"last_login\": \"2026-07-22 09:30\"\n      }\n    ],\n    \"total\": 12,\n    \"page\": 1,\n    \"size\": 10,\n    \"total_page\": 2\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "获取会员详情",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/members/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "获取会员详情",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/members/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "users", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "获取会员详情",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"id\": \"10001\",\n    \"avatar\": \"\",\n    \"bg_img\": \"https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png\",\n    \"nickname\": \"张一丰\",\n    \"phone\": \"130****0880\",\n    \"follow_count\": 68,\n    \"favorite_count\": 24,\n    \"publish_count\": 11,\n    \"fans_count\": 135,\n    \"status\": \"正常\",\n    \"bio\": \"热爱户外，喜欢和山野对话。\",\n    \"role\": \"普通会员\",\n    \"register_time\": \"2026-07-20\",\n    \"last_login\": \"2026-07-22 09:30\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "编辑会员",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/members/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "编辑会员",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": true,\n  \"role\": \"普通会员\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/members/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "users", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "编辑会员",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": true,\n  \"role\": \"普通会员\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"id\": \"10001\",\n    \"avatar\": \"\",\n    \"bg_img\": \"https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png\",\n    \"nickname\": \"张一丰\",\n    \"phone\": \"130****0880\",\n    \"follow_count\": 68,\n    \"favorite_count\": 24,\n    \"publish_count\": 11,\n    \"fans_count\": 135,\n    \"status\": \"正常\",\n    \"bio\": \"热爱户外，喜欢和山野对话。\",\n    \"role\": \"普通会员\",\n    \"register_time\": \"2026-07-20\",\n    \"last_login\": \"2026-07-22 09:30\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "删除会员",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/members/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "删除会员",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/members/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "users", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "删除会员",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "批量删除会员",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/members/batch-delete",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "batch-delete"],
+              "variable": [],
+              "query": []
+            },
+            "description": "批量删除会员",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [\n    \"A001\",\n    \"A002\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/members/batch-delete",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "users", "batch-delete"],
+                  "variable": [],
+                  "query": []
+                },
+                "description": "批量删除会员",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"A001\",\n    \"A002\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "批量更新会员状态",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/members/batch-status",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "batch-status"],
+              "variable": [],
+              "query": []
+            },
+            "description": "批量更新会员状态",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [\n    \"10001\",\n    \"10002\"\n  ],\n  \"status\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/members/batch-status",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "users", "batch-status"],
+                  "variable": [],
+                  "query": []
+                },
+                "description": "批量更新会员状态",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"10001\",\n    \"10002\"\n  ],\n  \"status\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "导出会员",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/members/export",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "export"],
+              "variable": [],
+              "query": []
+            },
+            "description": "导出会员",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"page\": 1,\n  \"size\": 10,\n  \"id\": \"10001\",\n  \"nickname\": \"张一丰\",\n  \"phone\": \"130****0880\",\n  \"register_start\": \"2026-07-01\",\n  \"register_end\": \"2026-07-31\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "用户-领队",
+      "item": [
+        {
+          "name": "分页查询领队",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/leaders",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "leaders"],
+              "variable": [],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "页码"
+                },
+                {
+                  "key": "size",
+                  "value": "10",
+                  "description": "每页条数"
+                },
+                {
+                  "key": "id",
+                  "value": "",
+                  "description": "领队 ID"
+                },
+                {
+                  "key": "nickname",
+                  "value": "",
+                  "description": "昵称"
+                },
+                {
+                  "key": "phone",
+                  "value": "",
+                  "description": "手机号"
+                },
+                {
+                  "key": "register_start",
+                  "value": "",
+                  "description": "注册开始日期"
+                },
+                {
+                  "key": "register_end",
+                  "value": "",
+                  "description": "注册结束日期"
+                }
+              ]
+            },
+            "description": "分页查询领队",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/leaders",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "leaders"],
+                  "variable": [],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "页码"
+                    },
+                    {
+                      "key": "size",
+                      "value": "10",
+                      "description": "每页条数"
+                    },
+                    {
+                      "key": "id",
+                      "value": "",
+                      "description": "领队 ID"
+                    },
+                    {
+                      "key": "nickname",
+                      "value": "",
+                      "description": "昵称"
+                    },
+                    {
+                      "key": "phone",
+                      "value": "",
+                      "description": "手机号"
+                    },
+                    {
+                      "key": "register_start",
+                      "value": "",
+                      "description": "注册开始日期"
+                    },
+                    {
+                      "key": "register_end",
+                      "value": "",
+                      "description": "注册结束日期"
+                    }
+                  ]
+                },
+                "description": "分页查询领队",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"list\": [\n      {\n        \"id\": \"L1001\",\n        \"avatar\": \"\",\n        \"bg_img\": \"https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png\",\n        \"nickname\": \"张一丰\",\n        \"phone\": \"130****0880\",\n        \"follow_count\": 68,\n        \"favorite_count\": 24,\n        \"publish_count\": 11,\n        \"fans_count\": 135,\n        \"status\": \"正常\",\n        \"bio\": \"热爱户外，喜欢和山野对话。\",\n        \"role\": \"领队\",\n        \"register_time\": \"2026-07-20\",\n        \"last_login\": \"2026-07-22 09:30\",\n        \"leading_count\": 48\n      }\n    ],\n    \"total\": 6,\n    \"page\": 1,\n    \"size\": 10,\n    \"total_page\": 1\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "获取领队详情",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/leaders/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "leaders", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "获取领队详情",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/leaders/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "leaders", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "获取领队详情",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"id\": \"L1001\",\n    \"avatar\": \"\",\n    \"bg_img\": \"https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png\",\n    \"nickname\": \"张一丰\",\n    \"phone\": \"130****0880\",\n    \"follow_count\": 68,\n    \"favorite_count\": 24,\n    \"publish_count\": 11,\n    \"fans_count\": 135,\n    \"status\": \"正常\",\n    \"bio\": \"热爱户外，喜欢和山野对话。\",\n    \"role\": \"领队\",\n    \"register_time\": \"2026-07-20\",\n    \"last_login\": \"2026-07-22 09:30\",\n    \"leading_count\": 48\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "编辑领队",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/leaders/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "leaders", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "编辑领队",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": true,\n  \"role\": \"领队\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/leaders/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "leaders", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "编辑领队",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": true,\n  \"role\": \"领队\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"id\": \"L1001\",\n    \"avatar\": \"\",\n    \"bg_img\": \"https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png\",\n    \"nickname\": \"张一丰\",\n    \"phone\": \"130****0880\",\n    \"follow_count\": 68,\n    \"favorite_count\": 24,\n    \"publish_count\": 11,\n    \"fans_count\": 135,\n    \"status\": \"正常\",\n    \"bio\": \"热爱户外，喜欢和山野对话。\",\n    \"role\": \"领队\",\n    \"register_time\": \"2026-07-20\",\n    \"last_login\": \"2026-07-22 09:30\",\n    \"leading_count\": 48\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "删除领队",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/leaders/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "leaders", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "资源 ID"
+                }
+              ],
+              "query": []
+            },
+            "description": "删除领队",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/leaders/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "leaders", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "资源 ID"
+                    }
+                  ],
+                  "query": []
+                },
+                "description": "删除领队",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "批量删除领队",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/leaders/batch-delete",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "leaders", "batch-delete"],
+              "variable": [],
+              "query": []
+            },
+            "description": "批量删除领队",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [\n    \"A001\",\n    \"A002\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/leaders/batch-delete",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "leaders", "batch-delete"],
+                  "variable": [],
+                  "query": []
+                },
+                "description": "批量删除领队",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"A001\",\n    \"A002\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "批量更新领队状态",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/leaders/batch-status",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "leaders", "batch-status"],
+              "variable": [],
+              "query": []
+            },
+            "description": "批量更新领队状态",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [\n    \"10001\",\n    \"10002\"\n  ],\n  \"status\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/leaders/batch-status",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "leaders", "batch-status"],
+                  "variable": [],
+                  "query": []
+                },
+                "description": "批量更新领队状态",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"10001\",\n    \"10002\"\n  ],\n  \"status\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "导出领队",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/leaders/export",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "leaders", "export"],
+              "variable": [],
+              "query": []
+            },
+            "description": "导出领队",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"page\": 1,\n  \"size\": 10,\n  \"id\": \"L1001\",\n  \"nickname\": \"登山领队小王\",\n  \"phone\": \"158****1111\",\n  \"register_start\": \"2026-07-01\",\n  \"register_end\": \"2026-07-31\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000/api/v1"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ]
+}

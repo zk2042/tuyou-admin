@@ -52,7 +52,7 @@ export interface UserRecord {
   favorite_count?: number;
   publish_count?: number;
   fans_count?: number;
-  status: string;
+  status: boolean;
   bio: string;
   role: string;
   register_time: string;
@@ -75,13 +75,13 @@ export type EditVals = {
 
 type EditSrc = Pick<UserRecord, 'status' | 'role'>;
 
-const statusOn = (status?: string) => status === '正常';
+const statusText = (status?: boolean) => (status ? '正常' : '禁用');
 
 const roleOn = (role?: string) => role === '领队';
 
 export const editVals = (data: EditSrc): EditVals => {
   return {
-    status: statusOn(data.status),
+    status: data.status,
     roleFlag: roleOn(data.role),
   };
 };
@@ -144,10 +144,10 @@ export const userAvatar = (
   return <Avatar src={record.avatar} alt={record.nickname} />;
 };
 
-export const statusTag = (status: string) => {
-  const color = status === '正常' ? 'success' : 'error';
+export const statusTag = (status: boolean) => {
+  const color = status ? 'success' : 'error';
 
-  return <Tag color={color}>{status}</Tag>;
+  return <Tag color={color}>{statusText(status)}</Tag>;
 };
 
 export const roleTag = (role: string) => {
@@ -251,6 +251,8 @@ const RowActions = ({
     try {
       const current = await loadDetail(record.id);
       setDetailData(current ?? record);
+    } catch {
+      setDetailOpen(false);
     } finally {
       setDetailLoading(false);
     }
@@ -265,6 +267,8 @@ const RowActions = ({
     try {
       const current = await loadDetail(record.id);
       setDetailData(current ?? record);
+    } catch {
+      setEditOpen(false);
     } finally {
       setEditFetching(false);
     }
@@ -289,6 +293,8 @@ const RowActions = ({
       );
       setEditOpen(false);
       onEdited?.();
+    } catch {
+      return;
     } finally {
       setEditLoading(false);
     }
@@ -412,7 +418,7 @@ const BatchStatusButton = ({
       return;
     }
 
-    setStatus(selectedRows.every((row) => statusOn(row.status)));
+    setStatus(selectedRows.every((row) => row.status));
   }, [open, selectedRows]);
 
   const batchStatus = async () => {
@@ -436,6 +442,8 @@ const BatchStatusButton = ({
         response.message ||
           `已将 ${selectedCount} 个${entityLabel}设为${nextText}`,
       );
+    } catch {
+      return;
     } finally {
       setUpdating(false);
     }
@@ -554,6 +562,8 @@ const BatchDeleteButton = ({
       message.success(
         response.message || `已删除 ${selectedCount} 个${entityLabel}`,
       );
+    } catch {
+      return;
     } finally {
       setDeleting(false);
     }

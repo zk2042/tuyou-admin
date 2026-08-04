@@ -24,7 +24,7 @@ const memberList: UserItem[] = [
     favorite_count: 24,
     publish_count: 11,
     fans_count: 135,
-    status: '正常',
+    status: true,
     bio: '热爱户外，喜欢和山野对话。',
     role: '普通会员',
     register_time: '2026-07-20',
@@ -40,7 +40,7 @@ const memberList: UserItem[] = [
     favorite_count: 19,
     publish_count: 8,
     fans_count: 102,
-    status: '正常',
+    status: true,
     bio: '行也无忧，知行万里皆风景。',
     role: '普通会员',
     register_time: '2026-07-19',
@@ -56,7 +56,7 @@ const memberList: UserItem[] = [
     favorite_count: 37,
     publish_count: 16,
     fans_count: 186,
-    status: '正常',
+    status: true,
     bio: '在路上，故事会比目的地更动人。',
     role: '普通会员',
     register_time: '2026-07-18',
@@ -72,7 +72,7 @@ const memberList: UserItem[] = [
     favorite_count: 15,
     publish_count: 6,
     fans_count: 79,
-    status: '正常',
+    status: true,
     bio: '旅行友好者，用脚步丈量每一段未知。',
     role: '普通会员',
     register_time: '2026-07-17',
@@ -88,7 +88,7 @@ const memberList: UserItem[] = [
     favorite_count: 9,
     publish_count: 3,
     fans_count: 34,
-    status: '禁用',
+    status: false,
     bio: '暂未填写个性签名。',
     role: '普通会员',
     register_time: '2026-07-16',
@@ -104,7 +104,7 @@ const memberList: UserItem[] = [
     favorite_count: 28,
     publish_count: 13,
     fans_count: 142,
-    status: '正常',
+    status: true,
     bio: '说走就走，把远方写成生活的一部分。',
     role: '普通会员',
     register_time: '2026-07-15',
@@ -120,7 +120,7 @@ const memberList: UserItem[] = [
     favorite_count: 12,
     publish_count: 5,
     fans_count: 57,
-    status: '禁用',
+    status: false,
     bio: '擅长整理攻略，也乐于分享路线经验。',
     role: '普通会员',
     register_time: '2026-07-14',
@@ -136,7 +136,7 @@ const memberList: UserItem[] = [
     favorite_count: 41,
     publish_count: 18,
     fans_count: 208,
-    status: '正常',
+    status: true,
     bio: '晨起登山，夜晚观星，理想周末不过如此。',
     role: '普通会员',
     register_time: '2026-07-13',
@@ -152,7 +152,7 @@ const memberList: UserItem[] = [
     favorite_count: 22,
     publish_count: 10,
     fans_count: 121,
-    status: '正常',
+    status: true,
     bio: '想把每一段旅途都过成值得纪念的日子。',
     role: '普通会员',
     register_time: '2026-07-12',
@@ -168,7 +168,7 @@ const memberList: UserItem[] = [
     favorite_count: 7,
     publish_count: 2,
     fans_count: 29,
-    status: '禁用',
+    status: false,
     bio: '正在休整，下次出发会去更远的地方。',
     role: '普通会员',
     register_time: '2026-07-11',
@@ -184,7 +184,7 @@ const memberList: UserItem[] = [
     favorite_count: 26,
     publish_count: 9,
     fans_count: 118,
-    status: '正常',
+    status: true,
     bio: '越野、露营、轻徒步都想试试看。',
     role: '普通会员',
     register_time: '2026-07-10',
@@ -200,7 +200,7 @@ const memberList: UserItem[] = [
     favorite_count: 31,
     publish_count: 14,
     fans_count: 167,
-    status: '正常',
+    status: true,
     bio: '总想在周末给生活加一点海风和日落。',
     role: '普通会员',
     register_time: '2026-07-09',
@@ -209,25 +209,25 @@ const memberList: UserItem[] = [
 ];
 
 export default {
-  'GET /api/v1/admin/users': (req: any, res: any) => {
+  'GET /api/v1/admin/members': (req: any, res: any) => {
     res.json(pageResult(memberList, req.query || {}));
   },
-  'GET /api/v1/admin/users/:id': (req: any, res: any) => {
+  'GET /api/v1/admin/members/:id': (req: any, res: any) => {
     res.json(detailResult(findItem(memberList, req.params.id) || null));
   },
-  'PUT /api/v1/admin/users/:id': (req: any, res: any) => {
+  'PUT /api/v1/admin/members/:id': (req: any, res: any) => {
     res.json(updateItem(memberList, req.params.id, req.body));
   },
-  'DELETE /api/v1/admin/users/:id': (req: any, res: any) => {
+  'DELETE /api/v1/admin/members/:id': (req: any, res: any) => {
     res.json(removeItem(memberList, req.params.id));
   },
-  'POST /api/v1/admin/users/batch-delete': (req: any, res: any) => {
+  'POST /api/v1/admin/members/batch-delete': (req: any, res: any) => {
     res.json(removeItems(memberList, req.body));
   },
-  'POST /api/v1/admin/users/batch-status': (req: any, res: any) => {
+  'POST /api/v1/admin/members/batch-status': (req: any, res: any) => {
     res.json(updateStatusItems(memberList, req.body));
   },
-  'POST /api/v1/admin/users/export': (_req: any, res: any) => {
+  'POST /api/v1/admin/members/export': (_req: any, res: any) => {
     const content = exportText(
       [
         'ID',
@@ -243,7 +243,7 @@ export default {
         item.id,
         item.nickname,
         item.phone,
-        item.status,
+        item.status ? '正常' : '禁用',
         item.role,
         item.bio,
         item.register_time,
