@@ -18,7 +18,7 @@ import {
   type NoticeItem,
 } from '@/services/center';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { setNoticeUnread } from '@/store/slices/uiSlice';
+import { setUnreadCount } from '@/store/slices/noticeSlice';
 import { setUser } from '@/utils/auth';
 import { message } from '@/utils/message';
 import {
@@ -103,7 +103,7 @@ const CenterPage: React.FC = () => {
   const location = useLocation();
   const { initialState, setInitialState } = useModel('@@initialState');
   const dispatch = useAppDispatch();
-  const unreadCount = useAppSelector((state) => state.ui.noticeUnread);
+  const unreadCount = useAppSelector((state) => state.notice.unreadCount);
   const [profileLoading, setProfileLoading] = React.useState(false);
   const [noticeLoading, setNoticeLoading] = React.useState(false);
   const [noticeAct, setNoticeAct] = React.useState<number>();
@@ -172,7 +172,7 @@ const CenterPage: React.FC = () => {
   const loadUnread = React.useCallback(async () => {
     try {
       const response = await queryNoticeUnread();
-      dispatch(setNoticeUnread(response.data?.unread_count ?? 0));
+      dispatch(setUnreadCount(response.data?.unread_count ?? 0));
     } catch {
       return;
     }
@@ -189,8 +189,7 @@ const CenterPage: React.FC = () => {
   React.useEffect(() => {
     void loadProfile();
     void loadNotifications();
-    void loadUnread();
-  }, [loadNotifications, loadProfile, loadUnread]);
+  }, [loadNotifications, loadProfile]);
 
   React.useEffect(() => {
     const action = new URLSearchParams(location.search).get('action');
@@ -375,7 +374,7 @@ const CenterPage: React.FC = () => {
         try {
           const response = await clearNotice();
           message.success(response.message || '已清空所有消息');
-          dispatch(setNoticeUnread(0));
+          dispatch(setUnreadCount(0));
           setNotifications([]);
           setNoticeTotal(0);
           setNoticePage(1);

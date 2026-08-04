@@ -8,7 +8,7 @@ import {
 } from '@/services/center';
 import { store } from '@/store';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { setNoticeUnread } from '@/store/slices/uiSlice';
+import { setUnreadCount } from '@/store/slices/noticeSlice';
 import {
   clearAuth as clearToken,
   getToken,
@@ -74,7 +74,7 @@ const headerNoticeMap = {
 
 function redirectToLogin() {
   clearToken();
-  store.dispatch(setNoticeUnread(0));
+  store.dispatch(setUnreadCount(0));
 
   if (window.location.pathname === '/login') {
     return;
@@ -169,7 +169,7 @@ function LayoutHeader() {
   const { initialState } = useModel('@@initialState');
   const { collapsed, toggleMenu } = useSider();
   const dispatch = useAppDispatch();
-  const noticeUnread = useAppSelector((state) => state.ui.noticeUnread);
+  const unreadCount = useAppSelector((state) => state.notice.unreadCount);
   const [noticeOpen, setNoticeOpen] = useState(false);
   const [noticeLoading, setNoticeLoading] = useState(false);
   const [noticeList, setNoticeList] = useState<NoticeItem[]>([]);
@@ -211,7 +211,7 @@ function LayoutHeader() {
   const loadUnread = async () => {
     try {
       const response = await queryNoticeUnread();
-      dispatch(setNoticeUnread(response.data?.unread_count ?? 0));
+      dispatch(setUnreadCount(response.data?.unread_count ?? 0));
     } catch {
       return;
     }
@@ -236,7 +236,7 @@ function LayoutHeader() {
 
   useEffect(() => {
     if (!getToken() || !initialState?.id) {
-      dispatch(setNoticeUnread(0));
+      dispatch(setUnreadCount(0));
       return;
     }
 
@@ -319,7 +319,7 @@ function LayoutHeader() {
           }}
         >
           <span className="header-action">
-            <Badge dot={noticeUnread > 0} className="header-badge">
+            <Badge dot={unreadCount > 0} className="header-badge">
               <BellOutlined />
             </Badge>
           </span>
