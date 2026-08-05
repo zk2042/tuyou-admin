@@ -106,6 +106,13 @@ export default [
         disabledTooltip: true,
         component: './Authority/Role',
       },
+      {
+        name: '菜单管理',
+        path: '/authority/menu',
+        icon: 'menu',
+        disabledTooltip: true,
+        component: './Authority/Menu',
+      },
     ],
   },
 ];
