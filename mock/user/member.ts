@@ -224,10 +224,10 @@ export default {
   'POST /api/v1/admin/members/batch-delete': (req: any, res: any) => {
     res.json(removeItems(memberList, req.body));
   },
-  'POST /api/v1/admin/members/batch-status': (req: any, res: any) => {
+  'PUT /api/v1/admin/members/batch-status': (req: any, res: any) => {
     res.json(updateStatusItems(memberList, req.body));
   },
-  'POST /api/v1/admin/members/export': (_req: any, res: any) => {
+  'GET /api/v1/admin/members/export': (_req: any, res: any) => {
     const content = exportText(
       [
         'ID',
@@ -251,10 +251,13 @@ export default {
       ]),
     );
 
-    res.setHeader('Content-Type', 'application/vnd.ms-excel; charset=utf-8');
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
     res.setHeader(
       'Content-Disposition',
-      "attachment; filename*=UTF-8''members.xls",
+      'attachment; filename="member_export_20260804.xlsx"',
     );
     res.send(`\uFEFF${content}`);
   },

@@ -1,5 +1,5 @@
 export type CurrentInfo = {
-  id: number;
+  id: string;
   username: string;
   adminname: string;
   role: string;

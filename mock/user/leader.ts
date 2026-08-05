@@ -138,10 +138,10 @@ export default {
   'POST /api/v1/admin/leaders/batch-delete': (req: any, res: any) => {
     res.json(removeItems(leaderList, req.body));
   },
-  'POST /api/v1/admin/leaders/batch-status': (req: any, res: any) => {
+  'PUT /api/v1/admin/leaders/batch-status': (req: any, res: any) => {
     res.json(updateStatusItems(leaderList, req.body));
   },
-  'POST /api/v1/admin/leaders/export': (_req: any, res: any) => {
+  'GET /api/v1/admin/leaders/export': (_req: any, res: any) => {
     const content = exportText(
       [
         'ID',
@@ -167,10 +167,13 @@ export default {
       ]),
     );
 
-    res.setHeader('Content-Type', 'application/vnd.ms-excel; charset=utf-8');
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
     res.setHeader(
       'Content-Disposition',
-      "attachment; filename*=UTF-8''leaders.xls",
+      'attachment; filename="leader_export_20260804.xlsx"',
     );
     res.send(`\uFEFF${content}`);
   },

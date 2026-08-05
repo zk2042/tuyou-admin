@@ -1,5 +1,5 @@
 type CurrentAdminInfo = {
-  id: number;
+  id: string;
   username: string;
   adminname: string;
   role: string;
@@ -29,15 +29,8 @@ type NoticeItem = {
   created_at: string;
 };
 
-type LoginAdminInfo = {
-  id: number;
-  username: string;
-  role: string;
-  avatar: string;
-};
-
 const currentAdmin: CurrentAdminInfo = {
-  id: 1,
+  id: '1',
   username: 'admin11',
   adminname: '张三',
   role: '超级管理员',
@@ -361,15 +354,6 @@ function clearNotificationsHandler(req: any, res: any) {
   sendBiz(res, 0, '已清空所有消息', buildNotificationData(req.query || {}));
 }
 
-function getLoginAdminInfo(): LoginAdminInfo {
-  return {
-    id: currentAdmin.id,
-    username: currentAdmin.username,
-    role: currentAdmin.role,
-    avatar: currentAdmin.avatar,
-  };
-}
-
 export default {
   'GET /api/v1/admin/captcha': (_req: any, res: any) => {
     const code = makeCode();
@@ -410,7 +394,12 @@ export default {
 
     sendBiz(res, 0, '登录成功', {
       token,
-      admin: getLoginAdminInfo(),
+      id: currentAdmin.id,
+      username: currentAdmin.username,
+      role: currentAdmin.role,
+      avatar: currentAdmin.avatar,
+      menuTree: [],
+      permTree: [],
     });
   },
   'GET /api/v1/admin/auth/me': getMeHandler,

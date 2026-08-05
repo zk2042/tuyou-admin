@@ -47,7 +47,7 @@ const APP_LOGO =
   'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png';
 
 export type InitialState = {
-  id: number;
+  id: string | number;
   username: string;
   role: string;
   avatar: string;

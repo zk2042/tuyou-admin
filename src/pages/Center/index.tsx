@@ -60,7 +60,7 @@ const NOTICE_SIZE = 10;
 const NOTICE_PREVIEW = 5;
 
 type UserState = {
-  id: number;
+  id: string;
   username: string;
   role: string;
   avatar: string;

@@ -79,9 +79,21 @@ const LoginPage: React.FC = () => {
         return;
       }
 
+      if (!loginData.token || !loginData.id || !loginData.username) {
+        message.error('登录响应数据不完整，请联系系统管理员');
+        return;
+      }
+
+      const admin = {
+        id: loginData.id,
+        username: loginData.username,
+        role: loginData.role,
+        avatar: loginData.avatar,
+      };
+
       setToken(loginData);
-      setUser(loginData.admin);
-      setInitialState(loginData.admin);
+      setUser(admin);
+      setInitialState(admin);
 
       message.success(response.message || '登录成功');
 

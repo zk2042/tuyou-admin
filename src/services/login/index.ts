@@ -8,16 +8,37 @@ export type LoginForm = {
   captcha: string;
 };
 
-export type AdminInfo = {
-  id: number;
-  username: string;
-  role: string;
-  avatar: string;
+export type MenuItem = {
+  id: string;
+  menuName: string;
+  parentId: number;
+  menuType: number;
+  routePath: string;
+  sort: number;
+  children: MenuItem[];
+};
+
+export type PermItem = {
+  id: string;
+  permName: string;
+  permKey: string;
+  requestMethod: string;
+  apiPath: string;
+};
+
+export type PermGroup = {
+  module: string;
+  children: PermItem[];
 };
 
 export type LoginData = {
   token: string;
-  admin: AdminInfo;
+  id: string;
+  username: string;
+  role: string;
+  avatar: string;
+  menuTree: MenuItem[];
+  permTree: PermGroup[];
 };
 
 export type CaptchaData = {

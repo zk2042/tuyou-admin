@@ -3444,7 +3444,7 @@
         {
           "name": "批量更新会员状态",
           "request": {
-            "method": "POST",
+            "method": "PUT",
             "header": [
               {
                 "key": "Content-Type",
@@ -4053,7 +4053,7 @@
         {
           "name": "批量更新领队状态",
           "request": {
-            "method": "POST",
+            "method": "PUT",
             "header": [
               {
                 "key": "Content-Type",
