@@ -113,6 +113,13 @@ export default [
         disabledTooltip: true,
         component: './Authority/Menu',
       },
+      {
+        name: 'API 权限管理',
+        path: '/authority/permissions',
+        icon: 'api',
+        disabledTooltip: true,
+        component: './Authority/Permissions',
+      },
     ],
   },
 ];
