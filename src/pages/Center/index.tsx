@@ -104,7 +104,6 @@ const CenterPage: React.FC = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
   const dispatch = useAppDispatch();
   const unreadCount = useAppSelector((state) => state.notice.unreadCount);
-  const [profileLoading, setProfileLoading] = React.useState(false);
   const [noticeLoading, setNoticeLoading] = React.useState(false);
   const [noticeAct, setNoticeAct] = React.useState<number>();
   const [readAllLoading, setReadAllLoading] = React.useState(false);
@@ -133,8 +132,6 @@ const CenterPage: React.FC = () => {
   );
 
   const loadProfile = React.useCallback(async () => {
-    setProfileLoading(true);
-
     try {
       const response = await getMe();
 
@@ -145,8 +142,6 @@ const CenterPage: React.FC = () => {
       syncInfo(response.data);
     } catch {
       return;
-    } finally {
-      setProfileLoading(false);
     }
   }, [syncInfo]);
 
@@ -187,9 +182,8 @@ const CenterPage: React.FC = () => {
   }, [initialState]);
 
   React.useEffect(() => {
-    void loadProfile();
     void loadNotifications();
-  }, [loadNotifications, loadProfile]);
+  }, [loadNotifications]);
 
   React.useEffect(() => {
     const action = new URLSearchParams(location.search).get('action');
@@ -235,20 +229,16 @@ const CenterPage: React.FC = () => {
         const avatar = await toDataUrl();
         const response = await updateAvatar({ avatar });
 
-        if (!response.data) {
-          return;
-        }
-
-        syncInfo(response.data);
         message.success(response.message || '头像更新成功');
-        options.onSuccess?.(response.data);
+        await loadProfile();
+        options.onSuccess?.(response);
       } catch (error) {
         options.onError?.(error as Error);
       } finally {
         setAvatarSaving(false);
       }
     },
-    [syncInfo],
+    [loadProfile],
   );
 
   const submitName = React.useCallback(
@@ -258,12 +248,8 @@ const CenterPage: React.FC = () => {
       try {
         const response = await updateName(values);
 
-        if (!response.data) {
-          return;
-        }
-
-        syncInfo(response.data);
         message.success(response.message || '用户账号更新成功');
+        await loadProfile();
         setProfileOpen(false);
       } catch {
         return;
@@ -271,7 +257,7 @@ const CenterPage: React.FC = () => {
         setUsernameSaving(false);
       }
     },
-    [syncInfo],
+    [loadProfile],
   );
 
   const submitPwd = React.useCallback(
@@ -393,314 +379,310 @@ const CenterPage: React.FC = () => {
 
   return (
     <PageContainer ghost breadcrumbRender={false}>
-      <Spin spinning={profileLoading}>
-        <div className={styles.page}>
-          <div className={styles.leftColumn}>
-            <Card className={styles.card} variant="borderless">
-              <div className={styles.cardHeader}>
-                <span className={styles.cardTitle}>
-                  <UserOutlined />
-                  个人信息
-                </span>
-              </div>
+      <div className={styles.page}>
+        <div className={styles.leftColumn}>
+          <Card className={styles.card} variant="borderless">
+            <div className={styles.cardHeader}>
+              <span className={styles.cardTitle}>
+                <UserOutlined />
+                个人信息
+              </span>
+            </div>
 
-              <div className={styles.profileIntro}>
-                <div className={styles.avatarWrap}>
+            <div className={styles.profileIntro}>
+              <div className={styles.avatarWrap}>
+                <button
+                  type="button"
+                  className={styles.avatarPreview}
+                  onClick={() => {
+                    if (profile?.avatar) {
+                      setAvatarPreviewOpen(true);
+                    }
+                  }}
+                  aria-label={profile?.avatar ? '预览头像' : '头像预览不可用'}
+                >
+                  <div
+                    className={`${styles.avatarFrame} ${
+                      profile?.avatar ? styles.avatarFrameActive : ''
+                    }`}
+                  >
+                    <Avatar
+                      size={114}
+                      src={profile?.avatar || undefined}
+                      className={styles.avatar}
+                    >
+                      {(profile?.username || 'U').slice(0, 1).toUpperCase()}
+                    </Avatar>
+                  </div>
+                </button>
+                {profile?.avatar ? (
+                  <Image
+                    width={0}
+                    height={0}
+                    src={profile.avatar}
+                    preview={{
+                      visible: avatarPreviewOpen,
+                      onVisibleChange: setAvatarPreviewOpen,
+                    }}
+                  />
+                ) : null}
+                <Upload
+                  accept="image/*"
+                  showUploadList={false}
+                  customRequest={uploadAvatar}
+                  beforeUpload={(file) => {
+                    const oversize = file.size / 1024 / 1024 > 5;
+
+                    if (oversize) {
+                      message.warning('图片大小不能超过5MB');
+                      return Upload.LIST_IGNORE;
+                    }
+
+                    return true;
+                  }}
+                  disabled={avatarSaving}
+                >
                   <button
                     type="button"
-                    className={styles.avatarPreview}
-                    onClick={() => {
-                      if (profile?.avatar) {
-                        setAvatarPreviewOpen(true);
-                      }
-                    }}
-                    aria-label={profile?.avatar ? '预览头像' : '头像预览不可用'}
+                    className={styles.avatarAction}
+                    aria-label="修改头像"
                   >
-                    <div
-                      className={`${styles.avatarFrame} ${
-                        profile?.avatar ? styles.avatarFrameActive : ''
-                      }`}
-                    >
-                      <Avatar
-                        size={114}
-                        src={profile?.avatar || undefined}
-                        className={styles.avatar}
-                      >
-                        {(profile?.username || 'U').slice(0, 1).toUpperCase()}
-                      </Avatar>
-                    </div>
+                    <CameraOutlined />
                   </button>
-                  {profile?.avatar ? (
-                    <Image
-                      width={0}
-                      height={0}
-                      src={profile.avatar}
-                      preview={{
-                        visible: avatarPreviewOpen,
-                        onVisibleChange: setAvatarPreviewOpen,
-                      }}
-                    />
-                  ) : null}
-                  <Upload
-                    accept="image/*"
-                    showUploadList={false}
-                    customRequest={uploadAvatar}
-                    beforeUpload={(file) => {
-                      const oversize = file.size / 1024 / 1024 > 5;
-
-                      if (oversize) {
-                        message.warning('图片大小不能超过5MB');
-                        return Upload.LIST_IGNORE;
-                      }
-
-                      return true;
-                    }}
-                    disabled={avatarSaving}
-                  >
-                    <button
-                      type="button"
-                      className={styles.avatarAction}
-                      aria-label="修改头像"
-                    >
-                      <CameraOutlined />
-                    </button>
-                  </Upload>
-                </div>
-                <div className={styles.profileMeta}>
-                  <div className={styles.nameRow}>
-                    <Typography.Title level={4} className={styles.name}>
-                      {profile?.username || '-'}
-                    </Typography.Title>
-                    <Button
-                      type="link"
-                      icon={<EditOutlined />}
-                      className={styles.linkButton}
-                      onClick={() => {
-                        setProfileOpen(true);
-                      }}
-                    />
-                  </div>
-                  <Typography.Text type="secondary" className={styles.realName}>
-                    {`真实姓名：${profile?.adminname || '-'}`}
-                  </Typography.Text>
-                  <Space size={8} wrap className={styles.tagGroup}>
-                    <Tag color="processing">{profile?.role || '-'}</Tag>
-                    <Tag color={profile?.status ? 'success' : 'default'}>
-                      {profile?.status ? '正常' : '禁用'}
-                    </Tag>
-                  </Space>
-                </div>
+                </Upload>
               </div>
-
-              <Divider className={styles.sectionDivider} />
-
-              <div className={styles.cardHeader}>
-                <span className={styles.cardTitle}>
-                  <SafetyCertificateOutlined />
-                  安全设置
-                </span>
-              </div>
-
-              <div className={styles.securityList}>
-                <div className={styles.securityItem}>
-                  <div className={styles.securityMain}>
-                    <LockOutlined className={styles.securityIcon} />
-                    <div>
-                      <div className={styles.securityTitle}>登录密码</div>
-                      <Typography.Paragraph className={styles.securityDesc}>
-                        为了您的账号安全，建议定期修改密码。
-                      </Typography.Paragraph>
-                    </div>
-                  </div>
+              <div className={styles.profileMeta}>
+                <div className={styles.nameRow}>
+                  <Typography.Title level={4} className={styles.name}>
+                    {profile?.username || '-'}
+                  </Typography.Title>
                   <Button
                     type="link"
+                    icon={<EditOutlined />}
                     className={styles.linkButton}
                     onClick={() => {
-                      setPasswordOpen(true);
+                      setProfileOpen(true);
                     }}
-                  >
-                    修改密码
-                  </Button>
+                  />
                 </div>
+                <Typography.Text type="secondary" className={styles.realName}>
+                  {`真实姓名：${profile?.adminname || '-'}`}
+                </Typography.Text>
+                <Space size={8} wrap className={styles.tagGroup}>
+                  <Tag color="processing">{profile?.role || '-'}</Tag>
+                  <Tag color={profile?.status ? 'success' : 'default'}>
+                    {profile?.status ? '正常' : '禁用'}
+                  </Tag>
+                </Space>
+              </div>
+            </div>
 
-                <div className={styles.securityItem}>
-                  <div className={styles.securityMain}>
-                    <BellOutlined className={styles.securityIcon} />
-                    <div>
-                      <div className={styles.securityTitle}>登录提醒</div>
-                      <Typography.Paragraph className={styles.securityDesc}>
-                        当前已开启异常登录提醒，发现异常消息请及时处理。
-                      </Typography.Paragraph>
-                    </div>
+            <Divider className={styles.sectionDivider} />
+
+            <div className={styles.cardHeader}>
+              <span className={styles.cardTitle}>
+                <SafetyCertificateOutlined />
+                安全设置
+              </span>
+            </div>
+
+            <div className={styles.securityList}>
+              <div className={styles.securityItem}>
+                <div className={styles.securityMain}>
+                  <LockOutlined className={styles.securityIcon} />
+                  <div>
+                    <div className={styles.securityTitle}>登录密码</div>
+                    <Typography.Paragraph className={styles.securityDesc}>
+                      为了您的账号安全，建议定期修改密码。
+                    </Typography.Paragraph>
                   </div>
-                  <Tag color="processing">已开启</Tag>
                 </div>
-              </div>
-            </Card>
-          </div>
-
-          <div className={styles.rightColumn}>
-            <Card className={styles.card} variant="borderless">
-              <div className={styles.cardHeader}>
-                <span className={styles.cardTitle}>
-                  <Badge count={unreadCount} size="small">
-                    <BellOutlined className={styles.noticeBell} />
-                  </Badge>
-                  消息通知
-                </span>
-
-                <div className={styles.notifyActions}>
-                  <Button
-                    type="link"
-                    className={styles.linkButton}
-                    onClick={() => {
-                      void readAll();
-                    }}
-                    loading={readAllLoading}
-                    disabled={
-                      noticeLoading ||
-                      clearLoading ||
-                      notifications.length === 0
-                    }
-                  >
-                    全部已读
-                  </Button>
-                  <Button
-                    danger
-                    type="link"
-                    className={styles.linkButton}
-                    onClick={() => {
-                      confirmClear();
-                    }}
-                    loading={clearLoading}
-                    disabled={
-                      noticeLoading ||
-                      readAllLoading ||
-                      notifications.length === 0
-                    }
-                  >
-                    清空所有消息
-                  </Button>
-                </div>
+                <Button
+                  type="link"
+                  className={styles.linkButton}
+                  onClick={() => {
+                    setPasswordOpen(true);
+                  }}
+                >
+                  修改密码
+                </Button>
               </div>
 
-              <Spin spinning={noticeLoading}>
-                {notifications.length ? (
-                  <div className={styles.notifyList}>
-                    {visibleNotifications.map((item) => (
-                      <div key={item.id} className={styles.notifyItem}>
-                        <span className={styles.notifyIcon}>
-                          {noticeMap[item.type].icon}
-                        </span>
-                        <div className={styles.notifyBody}>
-                          <div className={styles.notifyTop}>
-                            <span className={styles.notifyTitle}>
-                              {noticeMap[item.type].title}
-                              {item.is_read === 0 ? (
-                                <span className={styles.unreadDot} />
-                              ) : null}
-                            </span>
-                            <span className={styles.notifyTime}>
-                              {formatNoticeTime(item.created_at)}
-                            </span>
-                          </div>
-                          <Typography.Paragraph className={styles.notifyDesc}>
-                            {item.content}
-                          </Typography.Paragraph>
-                          <div className={styles.notifyItemActions}>
+              <div className={styles.securityItem}>
+                <div className={styles.securityMain}>
+                  <BellOutlined className={styles.securityIcon} />
+                  <div>
+                    <div className={styles.securityTitle}>登录提醒</div>
+                    <Typography.Paragraph className={styles.securityDesc}>
+                      当前已开启异常登录提醒，发现异常消息请及时处理。
+                    </Typography.Paragraph>
+                  </div>
+                </div>
+                <Tag color="processing">已开启</Tag>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        <div className={styles.rightColumn}>
+          <Card className={styles.card} variant="borderless">
+            <div className={styles.cardHeader}>
+              <span className={styles.cardTitle}>
+                <Badge count={unreadCount} size="small">
+                  <BellOutlined className={styles.noticeBell} />
+                </Badge>
+                消息通知
+              </span>
+
+              <div className={styles.notifyActions}>
+                <Button
+                  type="link"
+                  className={styles.linkButton}
+                  onClick={() => {
+                    void readAll();
+                  }}
+                  loading={readAllLoading}
+                  disabled={
+                    noticeLoading || clearLoading || notifications.length === 0
+                  }
+                >
+                  全部已读
+                </Button>
+                <Button
+                  danger
+                  type="link"
+                  className={styles.linkButton}
+                  onClick={() => {
+                    confirmClear();
+                  }}
+                  loading={clearLoading}
+                  disabled={
+                    noticeLoading ||
+                    readAllLoading ||
+                    notifications.length === 0
+                  }
+                >
+                  清空所有消息
+                </Button>
+              </div>
+            </div>
+
+            <Spin spinning={noticeLoading}>
+              {notifications.length ? (
+                <div className={styles.notifyList}>
+                  {visibleNotifications.map((item) => (
+                    <div key={item.id} className={styles.notifyItem}>
+                      <span className={styles.notifyIcon}>
+                        {noticeMap[item.type].icon}
+                      </span>
+                      <div className={styles.notifyBody}>
+                        <div className={styles.notifyTop}>
+                          <span className={styles.notifyTitle}>
+                            {noticeMap[item.type].title}
                             {item.is_read === 0 ? (
-                              <Button
-                                type="link"
-                                size="small"
-                                icon={<CheckOutlined />}
-                                loading={noticeAct === item.id}
-                                disabled={noticeAct !== undefined}
-                                onClick={() => {
-                                  void readOne(item);
-                                }}
-                              >
-                                标记已读
-                              </Button>
+                              <span className={styles.unreadDot} />
                             ) : null}
+                          </span>
+                          <span className={styles.notifyTime}>
+                            {formatNoticeTime(item.created_at)}
+                          </span>
+                        </div>
+                        <Typography.Paragraph className={styles.notifyDesc}>
+                          {item.content}
+                        </Typography.Paragraph>
+                        <div className={styles.notifyItemActions}>
+                          {item.is_read === 0 ? (
                             <Button
-                              danger
                               type="link"
                               size="small"
-                              icon={<DeleteOutlined />}
+                              icon={<CheckOutlined />}
+                              loading={noticeAct === item.id}
                               disabled={noticeAct !== undefined}
                               onClick={() => {
-                                deleteOne(item);
+                                void readOne(item);
                               }}
                             >
-                              删除
+                              标记已读
                             </Button>
-                          </div>
+                          ) : null}
+                          <Button
+                            danger
+                            type="link"
+                            size="small"
+                            icon={<DeleteOutlined />}
+                            disabled={noticeAct !== undefined}
+                            onClick={() => {
+                              deleteOne(item);
+                            }}
+                          >
+                            删除
+                          </Button>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <Empty
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    description="暂无消息"
-                  />
-                )}
-              </Spin>
-              {notifications.length > NOTICE_PREVIEW && !noticeOpen ? (
-                <div className={styles.noticeMore}>
-                  <Button
-                    type="link"
-                    className={styles.linkButton}
-                    onClick={() => {
-                      setNoticeOpen(true);
-                    }}
-                  >
-                    查看更多
-                  </Button>
+                    </div>
+                  ))}
                 </div>
-              ) : null}
-              {noticeTotal > 0 ? (
-                <div className={styles.notifyPager}>
-                  <Pagination
-                    current={noticePage}
-                    pageSize={NOTICE_SIZE}
-                    total={noticeTotal}
-                    showSizeChanger={false}
-                    showTotal={(total) => `共 ${total} 条`}
-                    onChange={(page) => {
-                      setNoticePage(page);
-                    }}
-                  />
-                </div>
-              ) : null}
-            </Card>
-          </div>
+              ) : (
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description="暂无消息"
+                />
+              )}
+            </Spin>
+            {notifications.length > NOTICE_PREVIEW && !noticeOpen ? (
+              <div className={styles.noticeMore}>
+                <Button
+                  type="link"
+                  className={styles.linkButton}
+                  onClick={() => {
+                    setNoticeOpen(true);
+                  }}
+                >
+                  查看更多
+                </Button>
+              </div>
+            ) : null}
+            {noticeTotal > 0 ? (
+              <div className={styles.notifyPager}>
+                <Pagination
+                  current={noticePage}
+                  pageSize={NOTICE_SIZE}
+                  total={noticeTotal}
+                  showSizeChanger={false}
+                  showTotal={(total) => `共 ${total} 条`}
+                  onChange={(page) => {
+                    setNoticePage(page);
+                  }}
+                />
+              </div>
+            ) : null}
+          </Card>
         </div>
-        <EditProfileModal
-          open={profileOpen}
-          saving={usernameSaving}
-          values={{
-            username: profile?.username || '',
-          }}
-          onCancel={() => {
-            setProfileOpen(false);
-          }}
-          onSubmit={(values) => {
-            void submitName(values);
-          }}
-        />
+      </div>
+      <EditProfileModal
+        open={profileOpen}
+        saving={usernameSaving}
+        values={{
+          username: profile?.username || '',
+        }}
+        onCancel={() => {
+          setProfileOpen(false);
+        }}
+        onSubmit={(values) => {
+          void submitName(values);
+        }}
+      />
 
-        <ChangePasswordModal
-          open={passwordOpen}
-          saving={passwordSaving}
-          onCancel={() => {
-            setPasswordOpen(false);
-          }}
-          onSubmit={(values) => {
-            void submitPwd(values);
-          }}
-        />
-      </Spin>
+      <ChangePasswordModal
+        open={passwordOpen}
+        saving={passwordSaving}
+        onCancel={() => {
+          setPasswordOpen(false);
+        }}
+        onSubmit={(values) => {
+          void submitPwd(values);
+        }}
+      />
     </PageContainer>
   );
 };

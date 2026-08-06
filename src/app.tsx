@@ -1,11 +1,12 @@
 // 运行时配置
 import { formatNoticeTime } from '@/constants/common-const';
-import { getMe } from '@/services/auth';
+import { getMe, type CurrentInfo } from '@/services/auth';
 import {
   queryNotice,
   queryNoticeUnread,
   type NoticeItem,
 } from '@/services/center';
+import { adminLogout } from '@/services/login';
 import { store } from '@/store';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setUnreadCount } from '@/store/slices/noticeSlice';
@@ -46,14 +47,7 @@ import './global.less';
 const APP_LOGO =
   'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png';
 
-export type InitialState = {
-  id: string | number;
-  username: string;
-  role: string;
-  avatar: string;
-  adminname?: string;
-  status?: boolean;
-};
+export type InitialState = CurrentInfo;
 
 type AppRoute = {
   path?: string;
@@ -72,7 +66,7 @@ const headerNoticeMap = {
   2: '设备登录提醒',
 } as const;
 
-function redirectToLogin() {
+function redirectToLogin(redirect = true) {
   clearToken();
   store.dispatch(setUnreadCount(0));
 
@@ -80,11 +74,25 @@ function redirectToLogin() {
     return;
   }
 
-  const { pathname, search } = window.location;
-  const params = new URLSearchParams({
-    redirect: `${pathname}${search}`,
-  });
-  window.location.href = `/login?${params.toString()}`;
+  if (redirect) {
+    const { pathname, search } = window.location;
+    const params = new URLSearchParams({
+      redirect: `${pathname}${search}`,
+    });
+    window.location.href = `/login?${params.toString()}`;
+    return;
+  }
+
+  window.location.href = '/login';
+}
+
+async function logout() {
+  try {
+    await adminLogout({ skipErrorHandler: true });
+  } catch {
+  } finally {
+    redirectToLogin(false);
+  }
 }
 
 function normalizePath(path: string) {
@@ -198,7 +206,7 @@ function LayoutHeader() {
 
   const handleUserMenuClick: MenuProps['onClick'] = ({ key }) => {
     if (key === 'logout') {
-      redirectToLogin();
+      void logout();
       return;
     }
 
@@ -346,41 +354,6 @@ function LayoutHeader() {
   );
 }
 
-function InitialStateSync() {
-  const { initialState, setInitialState } = useModel('@@initialState');
-
-  useEffect(() => {
-    if (!getToken() || initialState?.id) {
-      return;
-    }
-
-    let cancelled = false;
-
-    const syncInitialState = async () => {
-      try {
-        const response = await getMe();
-
-        if (!response.data || cancelled) {
-          return;
-        }
-
-        setUser(response.data);
-        setInitialState(response.data);
-      } catch {
-        // 全局错误处理已兜底，这里只避免未处理的 Promise 拒绝。
-      }
-    };
-
-    void syncInitialState();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [initialState?.id, setInitialState]);
-
-  return null;
-}
-
 function AppMessageBridge(props: { children: ReactNode }) {
   const app = App.useApp();
 
@@ -416,14 +389,6 @@ export async function getInitialState(): Promise<InitialState | undefined> {
   }
 
   const cachedUser = getUser<InitialState>();
-  if (cachedUser?.id) {
-    if (
-      typeof cachedUser.adminname === 'string' &&
-      typeof cachedUser.status === 'boolean'
-    ) {
-      return cachedUser;
-    }
-  }
 
   try {
     const response = await getMe();
@@ -492,12 +457,11 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => ({
   },
   childrenRender: (children) => (
     <div className="app-layout">
-      <InitialStateSync />
       <LayoutHeader />
       <div className="layout-body">{children}</div>
     </div>
   ),
   logout: () => {
-    redirectToLogin();
+    void logout();
   },
 });

@@ -59,6 +59,14 @@ export async function adminLogin(
   });
 }
 
+export async function adminLogout(options?: { [key: string]: any }) {
+  return apiRequest({
+    url: '/admin/logout',
+    method: 'POST',
+    ...(options || {}),
+  });
+}
+
 export async function getCaptcha(options?: {
   [key: string]: any;
 }): Promise<ApiResponse<CaptchaData>> {

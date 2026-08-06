@@ -181,6 +181,68 @@
               "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"id\": 1,\n    \"username\": \"admin\",\n    \"role\": \"超级管理员\",\n    \"avatar\": \"\"\n  }\n}"
             }
           ]
+        },
+        {
+          "name": "退出登录",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "logout"],
+              "variable": [],
+              "query": []
+            },
+            "description": "注销当前管理员登录令牌。",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/logout",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "logout"],
+                  "variable": [],
+                  "query": []
+                },
+                "description": "注销当前管理员登录令牌。",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"退出成功\",\n  \"data\": null\n}"
+            }
+          ]
         }
       ]
     },

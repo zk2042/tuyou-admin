@@ -556,6 +556,13 @@ export default {
       perm_tree: permTree,
     });
   },
+  'POST /api/v1/admin/logout': (req: any, res: any) => {
+    if (!validateToken(req, res)) {
+      return;
+    }
+
+    sendBiz(res, 0, '退出成功', null);
+  },
   'GET /api/v1/admin/auth/me': getMeHandler,
   'PUT /api/v1/admin/auth/password': updatePasswordHandler,
   'PUT /api/v1/admin/center/profile': updateUsernameHandler,
