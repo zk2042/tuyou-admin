@@ -95,7 +95,9 @@ const noteRequest: ProTableProps<NoteItem, NoteQuery>['request'] = async (
 
 const toReq = (vals: EditVals): EditReq => {
   return {
+    category: vals.category,
     is_slide: vals.is_slide ? '是' : '否',
+    status: vals.status ? '正常' : '下架',
   };
 };
 
@@ -245,6 +247,8 @@ const NotePage: React.FC = () => {
       message.success(
         response.message || `已删除 ${selectedKeys.length} 篇笔记`,
       );
+    } catch {
+      return;
     } finally {
       setBatchDel(false);
     }
@@ -322,7 +326,9 @@ const NotePage: React.FC = () => {
           title: editData?.title || '',
         }}
         values={{
+          category: editData?.category || '',
           is_slide: editData?.is_slide === '是',
+          status: editData?.status === '正常',
         }}
         onCancel={closeEdit}
         onSubmit={(vals) => {

@@ -409,7 +409,7 @@
           ]
         },
         {
-          "name": "编辑活动展示状态",
+          "name": "编辑活动",
           "request": {
             "method": "PUT",
             "header": [
@@ -431,7 +431,7 @@
               ],
               "query": []
             },
-            "description": "编辑活动展示状态",
+            "description": "编辑活动",
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -444,7 +444,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"is_slide\": true\n}",
+              "raw": "{\n  \"category\": \"徒步\",\n  \"is_slide\": \"是\",\n  \"status\": \"正常\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -476,7 +476,7 @@
                   ],
                   "query": []
                 },
-                "description": "编辑活动展示状态",
+                "description": "编辑活动",
                 "auth": {
                   "type": "bearer",
                   "bearer": [
@@ -489,7 +489,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"is_slide\": true\n}",
+                  "raw": "{\n  \"category\": \"徒步\",\n  \"is_slide\": \"是\",\n  \"status\": \"正常\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"

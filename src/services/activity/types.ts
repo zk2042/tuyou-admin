@@ -27,7 +27,9 @@ export interface CreateReq {
 }
 
 export interface EditReq {
-  is_slide: boolean;
+  category: string;
+  is_slide: string;
+  status: string;
 }
 
 export interface BatchReq {
@@ -53,6 +55,7 @@ export interface ActivityItem {
   max_people: number;
   difficulty: string;
   is_slide: string;
+  status: string;
   activity_status: string;
   is_del: string;
   delete_time?: string | null;

@@ -335,7 +335,7 @@ export default {
     }
 
     if (body.status) {
-      current.status = body.status;
+      current.status = body.status === '下架' ? '已下架' : body.status;
     }
 
     if (body.is_slide !== undefined) {
