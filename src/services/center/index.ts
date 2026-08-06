@@ -1,6 +1,5 @@
 import type { ApiResponse } from '@/constants';
 import { apiRequest } from '@/lib/apiRequest';
-import type { CurrentInfo } from '@/services/auth';
 
 import type {
   AvatarBody,
@@ -24,8 +23,8 @@ export async function updateName(
   options?: {
     [key: string]: any;
   },
-): Promise<ApiResponse<CurrentInfo>> {
-  return apiRequest<CurrentInfo>({
+) {
+  return apiRequest({
     url: '/admin/center/profile',
     method: 'PUT',
     data,
@@ -38,8 +37,8 @@ export async function updateAvatar(
   options?: {
     [key: string]: any;
   },
-): Promise<ApiResponse<CurrentInfo>> {
-  return apiRequest<CurrentInfo>({
+) {
+  return apiRequest({
     url: '/admin/center/avatar',
     method: 'PUT',
     data,
@@ -76,8 +75,8 @@ export async function readNotice(
   options?: {
     [key: string]: any;
   },
-): Promise<ApiResponse<null>> {
-  return apiRequest<null>({
+) {
+  return apiRequest({
     url: `/admin/center/notifications/${id}/read`,
     method: 'PUT',
     ...(options || {}),
@@ -89,8 +88,8 @@ export async function deleteNotice(
   options?: {
     [key: string]: any;
   },
-): Promise<ApiResponse<null>> {
-  return apiRequest<null>({
+) {
+  return apiRequest({
     url: `/admin/center/notifications/${id}`,
     method: 'DELETE',
     ...(options || {}),

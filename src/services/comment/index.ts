@@ -35,8 +35,8 @@ export async function getComment(
 export async function deleteComment(
   id: string,
   options?: { [key: string]: any },
-): Promise<ApiResponse<null>> {
-  return apiRequest<null>({
+) {
+  return apiRequest({
     url: `/admin/comments/${id}`,
     method: 'DELETE',
     ...(options || {}),
@@ -46,8 +46,8 @@ export async function deleteComment(
 export async function batchDeleteComment(
   data: BatchReq,
   options?: { [key: string]: any },
-): Promise<ApiResponse<null>> {
-  return apiRequest<null>({
+) {
+  return apiRequest({
     url: '/admin/comments/batch-delete',
     method: 'POST',
     data,

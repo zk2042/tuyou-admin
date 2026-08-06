@@ -39,11 +39,8 @@ export async function editLeader(
   });
 }
 
-export async function delLeader(
-  id: string,
-  options?: { [key: string]: any },
-): Promise<ApiResponse<null>> {
-  return apiRequest<null>({
+export async function delLeader(id: string, options?: { [key: string]: any }) {
+  return apiRequest({
     url: `/admin/leaders/${id}`,
     method: 'DELETE',
     ...(options || {}),
@@ -53,8 +50,8 @@ export async function delLeader(
 export async function batchDelLeader(
   ids: string[],
   options?: { [key: string]: any },
-): Promise<ApiResponse<null>> {
-  return apiRequest<null>({
+) {
+  return apiRequest({
     url: '/admin/leaders/batch-delete',
     method: 'POST',
     data: { ids },
@@ -66,8 +63,8 @@ export async function batchStatusLeader(
   ids: string[],
   status: boolean,
   options?: { [key: string]: any },
-): Promise<ApiResponse<null>> {
-  return apiRequest<null>({
+) {
+  return apiRequest({
     url: '/admin/leaders/batch-status',
     method: 'PUT',
     data: { ids, status },

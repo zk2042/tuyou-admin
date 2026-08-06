@@ -20,8 +20,8 @@ export async function updatePassword(
   options?: {
     [key: string]: any;
   },
-): Promise<ApiResponse<null>> {
-  return apiRequest<null>({
+) {
+  return apiRequest({
     url: '/admin/auth/password',
     method: 'PUT',
     data,

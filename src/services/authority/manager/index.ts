@@ -50,8 +50,8 @@ export async function editManager(
 export async function deleteManager(
   id: string,
   options?: { [key: string]: any },
-): Promise<ApiResponse<null>> {
-  return apiRequest<null>({
+) {
+  return apiRequest({
     url: `/admin/admins/${id}`,
     method: 'DELETE',
     ...(options || {}),
@@ -62,8 +62,8 @@ export async function resetManagerPassword(
   id: string,
   data: ManagerResetPassword,
   options?: { [key: string]: any },
-): Promise<ApiResponse<null>> {
-  return apiRequest<null>({
+) {
+  return apiRequest({
     url: `/admin/admins/${id}/reset-password`,
     method: 'PUT',
     data,

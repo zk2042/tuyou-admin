@@ -40,11 +40,8 @@ export async function editMenu(
   });
 }
 
-export async function deleteMenu(
-  id: string,
-  options?: { [key: string]: any },
-): Promise<ApiResponse<null>> {
-  return apiRequest<null>({
+export async function deleteMenu(id: string, options?: { [key: string]: any }) {
+  return apiRequest({
     url: `/admin/menus/${id}`,
     method: 'DELETE',
     ...(options || {}),

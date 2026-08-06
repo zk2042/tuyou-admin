@@ -40,11 +40,8 @@ export async function editPerm(
   });
 }
 
-export async function deletePerm(
-  id: string,
-  options?: { [key: string]: any },
-): Promise<ApiResponse<null>> {
-  return apiRequest<null>({
+export async function deletePerm(id: string, options?: { [key: string]: any }) {
+  return apiRequest({
     url: `/admin/api-permissions/${id}`,
     method: 'DELETE',
     ...(options || {}),

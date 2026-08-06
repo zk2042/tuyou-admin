@@ -39,11 +39,8 @@ export async function editMember(
   });
 }
 
-export async function delMember(
-  id: string,
-  options?: { [key: string]: any },
-): Promise<ApiResponse<null>> {
-  return apiRequest<null>({
+export async function delMember(id: string, options?: { [key: string]: any }) {
+  return apiRequest({
     url: `/admin/members/${id}`,
     method: 'DELETE',
     ...(options || {}),
@@ -53,8 +50,8 @@ export async function delMember(
 export async function batchDelMember(
   ids: string[],
   options?: { [key: string]: any },
-): Promise<ApiResponse<null>> {
-  return apiRequest<null>({
+) {
+  return apiRequest({
     url: '/admin/members/batch-delete',
     method: 'POST',
     data: { ids },
@@ -66,8 +63,8 @@ export async function batchStatusMember(
   ids: string[],
   status: boolean,
   options?: { [key: string]: any },
-): Promise<ApiResponse<null>> {
-  return apiRequest<null>({
+) {
+  return apiRequest({
     url: '/admin/members/batch-status',
     method: 'PUT',
     data: { ids, status },

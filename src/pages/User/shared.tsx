@@ -109,12 +109,12 @@ export type EditSave = (
   data: EditData,
 ) => Promise<ApiResponse<DetailRecord>>;
 
-export type DelRun = (id: string) => Promise<ApiResponse<null>>;
-export type BatchDel = (ids: string[]) => Promise<ApiResponse<null>>;
+export type DelRun = (id: string) => Promise<ApiResponse>;
+export type BatchDel = (ids: string[]) => Promise<ApiResponse>;
 export type BatchStatus = (
   ids: string[],
   status: boolean,
-) => Promise<ApiResponse<null>>;
+) => Promise<ApiResponse>;
 
 const formatDateValue = (value: DateValue) => {
   if (typeof value === 'string') {

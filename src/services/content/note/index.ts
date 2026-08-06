@@ -46,11 +46,8 @@ export async function editNote(
   });
 }
 
-export async function deleteNote(
-  id: string,
-  options?: { [key: string]: any },
-): Promise<ApiResponse<null>> {
-  return apiRequest<null>({
+export async function deleteNote(id: string, options?: { [key: string]: any }) {
+  return apiRequest({
     url: `/admin/notes/${id}`,
     method: 'DELETE',
     ...(options || {}),
@@ -60,8 +57,8 @@ export async function deleteNote(
 export async function batchDeleteNote(
   data: BatchReq,
   options?: { [key: string]: any },
-): Promise<ApiResponse<null>> {
-  return apiRequest<null>({
+) {
+  return apiRequest({
     url: '/admin/notes/batch-delete',
     method: 'POST',
     data,
