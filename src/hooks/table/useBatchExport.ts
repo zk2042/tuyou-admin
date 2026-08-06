@@ -49,6 +49,8 @@ export const useBatchExport = ({
       setOpen(false);
       await onSuccess?.();
       message.success(`已导出 ${selectedCount} 个${entityLabel}`);
+    } catch {
+      return;
     } finally {
       setExporting(false);
     }
