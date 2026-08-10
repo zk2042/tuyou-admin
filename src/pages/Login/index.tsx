@@ -1,11 +1,12 @@
 import logoImg from '@/assets/images/logo.png';
+import { getMe } from '@/services/auth';
 import {
   adminLogin,
   getCaptcha,
   type CaptchaData,
   type LoginForm,
 } from '@/services/login';
-import { setToken, setUser } from '@/utils/auth';
+import { clearAuth, setToken, setUser } from '@/utils/auth';
 import {
   LockOutlined,
   SafetyCertificateOutlined,
@@ -84,16 +85,17 @@ const LoginPage: React.FC = () => {
         return;
       }
 
-      const admin = {
-        id: loginData.id,
-        username: loginData.username,
-        role: loginData.role,
-        avatar: loginData.avatar,
-      };
-
       setToken(loginData);
-      setUser(admin);
-      setInitialState(admin);
+      const meResponse = await getMe();
+
+      if (!meResponse.data) {
+        clearAuth();
+        message.error('用户信息获取失败，请重新登录');
+        return;
+      }
+
+      setUser(meResponse.data);
+      setInitialState(meResponse.data);
 
       message.success(response.message || '登录成功');
 
@@ -101,6 +103,7 @@ const LoginPage: React.FC = () => {
         new URLSearchParams(window.location.search).get('redirect') || '/';
       history.replace(redirect);
     } catch {
+      clearAuth();
       await loadCode();
     } finally {
       setSubmitting(false);

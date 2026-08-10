@@ -46,11 +46,8 @@ export async function editRole(
   });
 }
 
-export async function deleteRole(
-  id: string,
-  options?: { [key: string]: any },
-): Promise<ApiResponse<null>> {
-  return apiRequest<null>({
+export async function deleteRole(id: string, options?: { [key: string]: any }) {
+  return apiRequest({
     url: `/admin/roles/${id}`,
     method: 'DELETE',
     ...(options || {}),

@@ -21,7 +21,9 @@ interface CreateBody {
 }
 
 interface EditBody {
+  category?: string;
   is_slide?: boolean | string;
+  status?: string;
 }
 
 interface BatchBody {
@@ -323,7 +325,10 @@ const activityList: ActivityMockItem[] = [
     delete_time: '2026-07-21 09:20:00',
     create_time: '2026-07-02',
   },
-];
+].map((item) => ({
+  ...item,
+  status: item.is_del === '已删除' ? '已下架' : '正常',
+}));
 
 const includesText = (source: string, keyword?: string) => {
   if (!keyword) {
@@ -489,6 +494,7 @@ export default {
       max_people: body.max_people || 0,
       difficulty: body.difficulty || '',
       is_slide: '否',
+      status: '正常',
       activity_status: '报名中',
       is_del: '正常',
       activity_content: body.activity_content || '',
@@ -523,6 +529,12 @@ export default {
       body.is_slide === '是';
 
     current.is_slide = nextSlide ? '是' : '否';
+    if (body.category) {
+      current.activity_type = body.category;
+    }
+    if (body.status) {
+      current.status = body.status === '下架' ? '已下架' : body.status;
+    }
 
     res.json({
       code: 0,

@@ -172,7 +172,6 @@ const NoteActions = ({
         type="link"
         icon={<EditOutlined />}
         style={{ paddingInline: 4 }}
-        disabled={record.status === '已下架'}
         onClick={() => onEdit(record)}
       >
         编辑

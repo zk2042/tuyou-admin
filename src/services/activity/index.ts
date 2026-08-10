@@ -38,8 +38,8 @@ export async function getActivity(
 export async function createActivity(
   data: CreateReq,
   options?: { [key: string]: any },
-): Promise<ApiResponse<null>> {
-  return apiRequest<null>({
+) {
+  return apiRequest({
     url: '/admin/activities',
     method: 'POST',
     data,
@@ -73,8 +73,8 @@ export async function editActivity(
 export async function deleteActivity(
   id: string,
   options?: { [key: string]: any },
-): Promise<ApiResponse<null>> {
-  return apiRequest<null>({
+) {
+  return apiRequest({
     url: `/admin/activities/${id}`,
     method: 'DELETE',
     ...(options || {}),
@@ -84,8 +84,8 @@ export async function deleteActivity(
 export async function batchDeleteActivity(
   data: BatchReq,
   options?: { [key: string]: any },
-): Promise<ApiResponse<null>> {
-  return apiRequest<null>({
+) {
+  return apiRequest({
     url: '/admin/activities/batch-delete',
     method: 'POST',
     data,

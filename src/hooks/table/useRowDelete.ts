@@ -48,6 +48,8 @@ export const useRowDelete = <T>({
             await request?.(record);
             await onSuccess?.(record);
             message.success(`已删除${entityLabel} ${itemName}`);
+          } catch {
+            return;
           } finally {
             setDeleting(false);
           }

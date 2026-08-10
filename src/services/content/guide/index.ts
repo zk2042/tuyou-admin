@@ -49,8 +49,8 @@ export async function editGuide(
 export async function deleteGuide(
   id: string,
   options?: { [key: string]: any },
-): Promise<ApiResponse<null>> {
-  return apiRequest<null>({
+) {
+  return apiRequest({
     url: `/admin/guides/${id}`,
     method: 'DELETE',
     ...(options || {}),
@@ -60,8 +60,8 @@ export async function deleteGuide(
 export async function batchDeleteGuide(
   data: BatchReq,
   options?: { [key: string]: any },
-): Promise<ApiResponse<null>> {
-  return apiRequest<null>({
+) {
+  return apiRequest({
     url: '/admin/guides/batch-delete',
     method: 'POST',
     data,

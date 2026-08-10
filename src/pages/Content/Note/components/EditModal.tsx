@@ -3,6 +3,7 @@ import {
   Divider,
   Form,
   Modal,
+  Select,
   Spin,
   Switch,
   Typography,
@@ -10,7 +11,9 @@ import {
 import { useEffect } from 'react';
 
 export interface EditVals {
+  category: string;
   is_slide: boolean;
+  status: boolean;
 }
 
 interface EditProps {
@@ -56,7 +59,9 @@ const EditModal = ({
 }: EditProps) => {
   const [form] = Form.useForm<EditVals>();
   const slide = Form.useWatch('is_slide', form);
+  const status = Form.useWatch('status', form);
   const nextSlide = slide ?? values.is_slide ? '是' : '否';
+  const nextStatus = status ?? values.status ? '正常' : '下架';
 
   useEffect(() => {
     if (!open) {
@@ -90,6 +95,25 @@ const EditModal = ({
             <Form.Item label="笔记标题">
               <Typography.Text>{record.title}</Typography.Text>
             </Form.Item>
+            <Form.Item<EditVals>
+              label="分类"
+              name="category"
+              rules={[{ required: true, message: '请选择分类' }]}
+            >
+              <Select
+                placeholder="请选择分类"
+                disabled={loading}
+                options={[
+                  '徒步',
+                  '露营',
+                  '骑行',
+                  '登山',
+                  '跑步',
+                  '攀岩',
+                  '溯溪',
+                ].map((value) => ({ label: value, value }))}
+              />
+            </Form.Item>
             <Form.Item label="幻灯片设置">
               <div style={cardStyle}>
                 <Form.Item<EditVals>
@@ -110,6 +134,27 @@ const EditModal = ({
                   {`当前开关${
                     nextSlide === '是' ? '已开启' : '已关闭'
                   }，保存后将设为${nextSlide}。`}
+                </Typography.Paragraph>
+              </div>
+            </Form.Item>
+            <Form.Item label="状态设置">
+              <div style={cardStyle}>
+                <Form.Item<EditVals>
+                  name="status"
+                  valuePropName="checked"
+                  noStyle
+                >
+                  <Switch
+                    checkedChildren="正常"
+                    unCheckedChildren="下架"
+                    disabled={loading}
+                  />
+                </Form.Item>
+                <Typography.Paragraph
+                  type="secondary"
+                  style={{ marginTop: 16, marginBottom: 0 }}
+                >
+                  {`保存后状态将设为${nextStatus}。`}
                 </Typography.Paragraph>
               </div>
             </Form.Item>

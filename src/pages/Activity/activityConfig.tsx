@@ -54,7 +54,7 @@ const tagColor = (text: string) => {
       return 'success';
     case '进行中':
       return 'processing';
-    case '已删除':
+    case '已下架':
       return 'error';
     default:
       return 'default';
@@ -174,7 +174,6 @@ const ActActions = ({
         type="link"
         icon={<EditOutlined />}
         style={{ paddingInline: 4 }}
-        disabled={record.is_del === '已删除'}
         onClick={() => onEdit(record)}
       >
         编辑
@@ -317,11 +316,11 @@ export const activityColumns = ({
     },
     {
       title: '状态',
-      dataIndex: 'is_del',
+      dataIndex: 'status',
       width: 80,
       hideInSearch: true,
       render: (_, record) => (
-        <Tag color={tagColor(record.is_del)}>{record.is_del}</Tag>
+        <Tag color={tagColor(record.status)}>{record.status}</Tag>
       ),
     },
     {

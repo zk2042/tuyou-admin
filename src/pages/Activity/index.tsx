@@ -257,7 +257,9 @@ const ActivityPage: React.FC = () => {
 
       try {
         const response = await editActivity(editData.id, {
-          is_slide: vals.is_slide,
+          category: vals.category,
+          is_slide: vals.is_slide ? '是' : '否',
+          status: vals.status ? '正常' : '下架',
         });
 
         if (!response.data) {
@@ -391,7 +393,9 @@ const ActivityPage: React.FC = () => {
           title: editData?.title || '',
         }}
         values={{
+          category: editData?.activity_type || '',
           is_slide: editData?.is_slide === '是',
+          status: editData?.status === '正常',
         }}
         onCancel={closeEdit}
         onSubmit={(vals) => {

@@ -83,6 +83,160 @@ let notificationList: NoticeItem[] = [
 
 const capMap = new Map<string, string>();
 
+const menuTree = [
+  {
+    id: '1',
+    menu_name: '用户管理',
+    parent_id: '0',
+    menu_type: 1,
+    route_path: '/user',
+    sort: 1,
+    children: [
+      {
+        id: '2',
+        menu_name: '会员列表',
+        parent_id: '1',
+        menu_type: 2,
+        route_path: '/user/member',
+        sort: 1,
+        children: null,
+      },
+      {
+        id: '3',
+        menu_name: '领队管理',
+        parent_id: '1',
+        menu_type: 2,
+        route_path: '/user/leader',
+        sort: 2,
+        children: null,
+      },
+    ],
+  },
+  {
+    id: '4',
+    menu_name: '内容管理',
+    parent_id: '0',
+    menu_type: 1,
+    route_path: '/content',
+    sort: 2,
+    children: [
+      {
+        id: '5',
+        menu_name: '笔记列表',
+        parent_id: '4',
+        menu_type: 2,
+        route_path: '/content/note',
+        sort: 1,
+        children: null,
+      },
+      {
+        id: '6',
+        menu_name: '攻略管理',
+        parent_id: '4',
+        menu_type: 2,
+        route_path: '/content/strategy',
+        sort: 2,
+        children: null,
+      },
+      {
+        id: '7',
+        menu_name: '活动管理',
+        parent_id: '4',
+        menu_type: 2,
+        route_path: '/content/activity',
+        sort: 3,
+        children: null,
+      },
+    ],
+  },
+];
+
+const permTree = [
+  {
+    module: 'activity',
+    children: [
+      {
+        id: '8',
+        perm_name: '查询活动',
+        perm_key: 'activity:list',
+        request_method: 'GET',
+        api_path: '/api/v1/admin/activities',
+      },
+      {
+        id: '9',
+        perm_name: '编辑活动',
+        perm_key: 'activity:edit',
+        request_method: 'PUT',
+        api_path: '/api/v1/admin/activities/:id',
+      },
+    ],
+  },
+  {
+    module: 'member',
+    children: [
+      {
+        id: '1',
+        perm_name: '查询会员',
+        perm_key: 'member:list',
+        request_method: 'GET',
+        api_path: '/api/v1/admin/members',
+      },
+      {
+        id: '2',
+        perm_name: '编辑会员',
+        perm_key: 'member:edit',
+        request_method: 'PUT',
+        api_path: '/api/v1/admin/members/:id',
+      },
+      {
+        id: '3',
+        perm_name: '删除会员',
+        perm_key: 'member:delete',
+        request_method: 'DELETE',
+        api_path: '/api/v1/admin/members/:id',
+      },
+    ],
+  },
+  {
+    module: 'note',
+    children: [
+      {
+        id: '4',
+        perm_name: '查询笔记',
+        perm_key: 'note:list',
+        request_method: 'GET',
+        api_path: '/api/v1/admin/notes',
+      },
+      {
+        id: '5',
+        perm_name: '编辑笔记',
+        perm_key: 'note:edit',
+        request_method: 'PUT',
+        api_path: '/api/v1/admin/notes/:id',
+      },
+      {
+        id: '6',
+        perm_name: '删除笔记',
+        perm_key: 'note:delete',
+        request_method: 'DELETE',
+        api_path: '/api/v1/admin/notes/:id',
+      },
+    ],
+  },
+  {
+    module: 'strategy',
+    children: [
+      {
+        id: '7',
+        perm_name: '查询攻略',
+        perm_key: 'strategy:list',
+        request_method: 'GET',
+        api_path: '/api/v1/admin/strategies',
+      },
+    ],
+  },
+];
+
 function makeCode() {
   return Array.from({ length: 4 }, () => {
     return Math.floor(Math.random() * 10).toString();
@@ -398,9 +552,16 @@ export default {
       username: currentAdmin.username,
       role: currentAdmin.role,
       avatar: currentAdmin.avatar,
-      menuTree: [],
-      permTree: [],
+      menu_tree: menuTree,
+      perm_tree: permTree,
     });
+  },
+  'POST /api/v1/admin/logout': (req: any, res: any) => {
+    if (!validateToken(req, res)) {
+      return;
+    }
+
+    sendBiz(res, 0, '退出成功', null);
   },
   'GET /api/v1/admin/auth/me': getMeHandler,
   'PUT /api/v1/admin/auth/password': updatePasswordHandler,

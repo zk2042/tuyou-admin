@@ -11,7 +11,9 @@ export interface NoteQuery {
 }
 
 export interface EditReq {
+  category: string;
   is_slide: string;
+  status: string;
 }
 
 export interface BatchReq {

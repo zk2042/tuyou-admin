@@ -12,7 +12,9 @@ export interface GuideQuery {
 }
 
 export interface GuideEditReq {
+  category: string;
   is_slide: string;
+  status: string;
 }
 
 export interface BatchReq {

@@ -282,7 +282,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"category\": \"徒步\",\n  \"difficulty\": \"高等\",\n  \"is_slide\": \"是\",\n  \"status\": \"正常\"\n}",
+              "raw": "{\n  \"category\": \"徒步\",\n  \"is_slide\": \"是\",\n  \"status\": \"正常\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -327,7 +327,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"category\": \"徒步\",\n  \"difficulty\": \"高等\",\n  \"is_slide\": \"是\",\n  \"status\": \"正常\"\n}",
+                  "raw": "{\n  \"category\": \"徒步\",\n  \"is_slide\": \"是\",\n  \"status\": \"正常\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"

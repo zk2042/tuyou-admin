@@ -10,20 +10,20 @@ export type LoginForm = {
 
 export type MenuItem = {
   id: string;
-  menuName: string;
-  parentId: number;
-  menuType: number;
-  routePath: string;
+  menu_name: string;
+  parent_id: string;
+  menu_type: number;
+  route_path: string;
   sort: number;
-  children: MenuItem[];
+  children: MenuItem[] | null;
 };
 
 export type PermItem = {
   id: string;
-  permName: string;
-  permKey: string;
-  requestMethod: string;
-  apiPath: string;
+  perm_name: string;
+  perm_key: string;
+  request_method: string;
+  api_path: string;
 };
 
 export type PermGroup = {
@@ -37,8 +37,8 @@ export type LoginData = {
   username: string;
   role: string;
   avatar: string;
-  menuTree: MenuItem[];
-  permTree: PermGroup[];
+  menu_tree: MenuItem[];
+  perm_tree: PermGroup[];
 };
 
 export type CaptchaData = {
@@ -55,6 +55,14 @@ export async function adminLogin(
     method: 'POST',
     skipAuthToken: true,
     data,
+    ...(options || {}),
+  });
+}
+
+export async function adminLogout(options?: { [key: string]: any }) {
+  return apiRequest({
+    url: '/admin/logout',
+    method: 'POST',
     ...(options || {}),
   });
 }
