@@ -3,7 +3,6 @@ import {
   adminLogin,
   getCaptcha,
   type CaptchaData,
-  type LoginData,
   type LoginForm,
 } from '@/services/login';
 import { setToken, setUser } from '@/utils/auth';
@@ -73,11 +72,28 @@ const LoginPage: React.FC = () => {
         captcha: values.captcha,
         captcha_id: codeData.captcha_id,
       });
-      const loginData = response.data as LoginData;
+      const loginData = response.data;
+
+      if (!loginData) {
+        message.error('登录失败，请稍后重试');
+        return;
+      }
+
+      if (!loginData.token || !loginData.id || !loginData.username) {
+        message.error('登录响应数据不完整，请联系系统管理员');
+        return;
+      }
+
+      const admin = {
+        id: loginData.id,
+        username: loginData.username,
+        role: loginData.role,
+        avatar: loginData.avatar,
+      };
 
       setToken(loginData);
-      setUser(loginData.admin);
-      setInitialState(loginData.admin);
+      setUser(admin);
+      setInitialState(admin);
 
       message.success(response.message || '登录成功');
 

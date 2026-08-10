@@ -1,5 +1,5 @@
 import type { ApiResponse } from '@/constants';
-import { apiRequest, postDownload } from '@/lib/apiRequest';
+import { apiRequest, getDownload } from '@/lib/apiRequest';
 
 import type { LeaderEdit, LeaderItem, LeaderQuery, PageData } from './types';
 
@@ -69,11 +69,11 @@ export async function batchStatusLeader(
 ): Promise<ApiResponse<null>> {
   return apiRequest<null>({
     url: '/admin/leaders/batch-status',
-    method: 'POST',
+    method: 'PUT',
     data: { ids, status },
     ...(options || {}),
   });
 }
 
 export const exportLeader = (data?: Partial<LeaderQuery>) =>
-  postDownload('/admin/leaders/export', data || {});
+  getDownload('/admin/leaders/export', data || {});

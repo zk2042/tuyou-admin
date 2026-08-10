@@ -10,7 +10,7 @@
   background: #141414 !important;
 }
 
-.app-layout-content {
+.app-layout {
   min-height: 100%;
 }
 
@@ -18,7 +18,7 @@
   display: none !important;
 }
 
-.app-page-header {
+.app-header {
   position: sticky;
   top: 0;
   z-index: 100;
@@ -31,30 +31,30 @@
   border-bottom: 1px solid #f0f0f0;
 }
 
-.app-page-header-left {
+.header-left {
   min-width: 0;
   overflow: hidden;
 }
 
-.app-layout-body {
+.layout-body {
   padding-top: 16px;
 }
 
-.app-page-breadcrumb-link {
+.crumb-link {
   color: rgba(0, 0, 0, 65%);
   cursor: pointer;
   transition: color 0.2s ease;
 }
 
-.app-page-breadcrumb-link:hover {
+.crumb-link:hover {
   color: #2e7d32;
 }
 
-.app-page-header-actions {
+.header-actions {
   flex-shrink: 0;
 }
 
-.app-header-action {
+.header-action {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -62,41 +62,103 @@
   height: 36px;
   color: rgba(0, 0, 0, 65%);
   font-size: 18px;
-  border-radius: 50%;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.app-header-badge {
+.header-action:hover {
+  background: #f5f5f5;
+}
+
+.header-badge {
   display: inline-flex;
   line-height: 1;
   font-size: inherit;
   color: inherit;
 }
 
-.app-header-badge .anticon {
+.header-badge .anticon {
   font-size: inherit;
   color: inherit;
 }
 
-.app-header-badge .ant-badge-dot {
+.header-badge .ant-badge-dot {
   top: 2px;
   inset-inline-end: 1px;
 }
 
-.app-header-action:hover,
-.app-user-trigger:hover {
-  background: #f5f5f5;
-}
-
-.app-user-trigger {
+.user-trigger {
   padding: 6px 10px;
-  border-radius: 999px;
+  border-radius: 10px;
   cursor: pointer;
   transition: background 0.2s ease;
 }
 
-.app-user-name {
+.user-trigger:hover {
+  background: #f5f5f5;
+}
+
+.user-name {
   max-width: 120px;
   color: rgba(0, 0, 0, 88%);
+}
+
+.notice-pop {
+  width: 360px;
+}
+
+.notice-list {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.notice-item {
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.notice-item:first-child {
+  padding-top: 0;
+}
+
+.notice-item:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.notice-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.notice-title {
+  min-width: 0;
+  color: rgba(0, 0, 0, 88%);
+  font-weight: 600;
+}
+
+.notice-time {
+  flex-shrink: 0;
+  color: #bfbfbf;
+  font-size: 12px;
+}
+
+.notice-text {
+  overflow: hidden;
+  color: rgba(0, 0, 0, 65%);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.notice-more {
+  margin-top: 12px;
+  padding-top: 12px;
+  color: #2e7d32;
+  text-align: center;
+  border-top: 1px solid #f0f0f0;
+  cursor: pointer;
 }

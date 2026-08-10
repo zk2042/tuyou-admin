@@ -11,6 +11,12 @@ export default [
     redirect: '/user/member',
   },
   {
+    name: '个人中心',
+    path: '/center',
+    hideInMenu: true,
+    component: './Center',
+  },
+  {
     name: '用户管理',
     path: '/user',
     icon: 'team',
@@ -92,6 +98,20 @@ export default [
         icon: 'userSwitch',
         disabledTooltip: true,
         component: './Authority/Manager',
+      },
+      {
+        name: '角色管理',
+        path: '/authority/role',
+        icon: 'solution',
+        disabledTooltip: true,
+        component: './Authority/Role',
+      },
+      {
+        name: '菜单管理',
+        path: '/authority/menu',
+        icon: 'menu',
+        disabledTooltip: true,
+        component: './Authority/Menu',
       },
     ],
   },

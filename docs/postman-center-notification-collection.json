@@ -1,0 +1,326 @@
+{
+  "info": {
+    "name": "途友管理后台 API - 消息通知",
+    "description": "个人中心消息通知接口集合，包含分页查询、未读统计、全部已读、单条已读、单条删除和清空消息，可直接导入 Postman 或 Apifox。",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "个人中心-消息通知",
+      "item": [
+        {
+          "name": "分页获取消息通知",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/center/notifications?page=1&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "center", "notifications"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "当前页，从 1 开始"
+                },
+                {
+                  "key": "size",
+                  "value": "10",
+                  "description": "每页数量，范围 1-100"
+                }
+              ]
+            },
+            "description": "分页获取当前登录管理员的消息通知。type：0 系统通知，1 安全设置提醒，2 设备登录提醒；is_read：0 未读，1 已读。"
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/center/notifications?page=1&size=10",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "center", "notifications"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "size", "value": "10" }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"获取成功\",\n  \"data\": {\n    \"list\": [\n      {\n        \"id\": 75,\n        \"type\": 2,\n        \"content\": \"您的账号于2026-07-29 20:30:39在Windows - Edge上登录，如非本人操作，请尽快修改密码\",\n        \"is_read\": 0,\n        \"created_at\": \"2026-07-29T20:30:39.326+08:00\"\n      }\n    ],\n    \"total\": 5,\n    \"page\": 1,\n    \"size\": 10,\n    \"total_page\": 1\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "获取未读消息数量",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/center/notifications/unread",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "center", "notifications", "unread"],
+              "query": []
+            },
+            "description": "获取当前登录管理员的未读消息总数。"
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/center/notifications/unread",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "center", "notifications", "unread"],
+                  "query": []
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"获取成功\",\n  \"data\": {\n    \"unread_count\": 3\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "全部标记为已读",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/center/notifications/read-all",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "center", "notifications", "read-all"],
+              "query": []
+            },
+            "description": "将当前登录管理员的全部消息标记为已读，无请求体。"
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/center/notifications/read-all",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "center", "notifications", "read-all"],
+                  "query": []
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"已全部标记为已读\",\n  \"data\": {\n    \"list\": [],\n    \"total\": 5,\n    \"page\": 1,\n    \"size\": 10,\n    \"total_page\": 1\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "单条消息标记为已读",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/center/notifications/{{noticeId}}/read",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "admin",
+                "center",
+                "notifications",
+                "{{noticeId}}",
+                "read"
+              ],
+              "query": []
+            },
+            "description": "根据消息 ID 将单条消息标记为已读，无请求体。"
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/center/notifications/{{noticeId}}/read",
+                  "host": ["{{baseUrl}}"],
+                  "path": [
+                    "admin",
+                    "center",
+                    "notifications",
+                    "{{noticeId}}",
+                    "read"
+                  ],
+                  "query": []
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"已标记为已读\",\n  \"data\": null\n}"
+            },
+            {
+              "name": "消息不存在",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/center/notifications/{{noticeId}}/read",
+                  "host": ["{{baseUrl}}"],
+                  "path": [
+                    "admin",
+                    "center",
+                    "notifications",
+                    "{{noticeId}}",
+                    "read"
+                  ],
+                  "query": []
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"code\": 2004,\n  \"message\": \"消息不存在\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "删除单条消息",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/center/notifications/{{noticeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "center", "notifications", "{{noticeId}}"],
+              "query": []
+            },
+            "description": "根据消息 ID 永久删除单条消息。"
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/center/notifications/{{noticeId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "center", "notifications", "{{noticeId}}"],
+                  "query": []
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"消息删除成功\",\n  \"data\": null\n}"
+            },
+            {
+              "name": "消息不存在",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/center/notifications/{{noticeId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "center", "notifications", "{{noticeId}}"],
+                  "query": []
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"code\": 2004,\n  \"message\": \"消息不存在\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "清空所有消息",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/center/notifications",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "center", "notifications"],
+              "query": []
+            },
+            "description": "永久清空当前登录管理员的全部消息。此操作不可恢复。"
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/center/notifications",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "center", "notifications"],
+                  "query": []
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"code\": 0,\n  \"message\": \"已清空所有消息\",\n  \"data\": {\n    \"list\": [],\n    \"total\": 0,\n    \"page\": 1,\n    \"size\": 10,\n    \"total_page\": 1\n  }\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000/api/v1"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "noticeId",
+      "value": "75"
+    }
+  ]
+}

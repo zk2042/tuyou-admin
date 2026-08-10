@@ -1,6 +1,14 @@
 // 运行时配置
-import { getMe, type AdminInfo } from '@/services/login';
+import { formatNoticeTime } from '@/constants/common-const';
+import { getMe } from '@/services/auth';
+import {
+  queryNotice,
+  queryNoticeUnread,
+  type NoticeItem,
+} from '@/services/center';
 import { store } from '@/store';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { setUnreadCount } from '@/store/slices/noticeSlice';
 import {
   clearAuth as clearToken,
   getToken,
@@ -22,7 +30,10 @@ import {
   Badge,
   Breadcrumb,
   Dropdown,
+  Empty,
+  Popover,
   Space,
+  Spin,
   Typography,
 } from 'antd';
 import type { ReactNode } from 'react';
@@ -35,7 +46,14 @@ import './global.less';
 const APP_LOGO =
   'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png';
 
-export type InitialState = AdminInfo;
+export type InitialState = {
+  id: string | number;
+  username: string;
+  role: string;
+  avatar: string;
+  adminname?: string;
+  status?: boolean;
+};
 
 type AppRoute = {
   path?: string;
@@ -48,8 +66,15 @@ type BreadcrumbRoute = {
   title: string;
 };
 
+const headerNoticeMap = {
+  0: '系统通知',
+  1: '安全设置提醒',
+  2: '设备登录提醒',
+} as const;
+
 function redirectToLogin() {
   clearToken();
+  store.dispatch(setUnreadCount(0));
 
   if (window.location.pathname === '/login') {
     return;
@@ -142,8 +167,12 @@ function useSider() {
 function LayoutHeader() {
   const location = useLocation();
   const { initialState } = useModel('@@initialState');
-  const { message } = App.useApp();
   const { collapsed, toggleMenu } = useSider();
+  const dispatch = useAppDispatch();
+  const unreadCount = useAppSelector((state) => state.notice.unreadCount);
+  const [noticeOpen, setNoticeOpen] = useState(false);
+  const [noticeLoading, setNoticeLoading] = useState(false);
+  const [noticeList, setNoticeList] = useState<NoticeItem[]>([]);
 
   const crumbs = useMemo(
     () => buildBreadcrumbs(location.pathname),
@@ -157,13 +186,6 @@ function LayoutHeader() {
       {
         key: 'profile',
         label: '个人中心',
-      },
-      {
-        key: 'password',
-        label: '修改密码',
-      },
-      {
-        type: 'divider',
       },
       {
         key: 'logout',
@@ -181,19 +203,88 @@ function LayoutHeader() {
     }
 
     if (key === 'profile') {
-      message.info('个人中心功能正在接入中');
+      history.push('/center');
       return;
-    }
-
-    if (key === 'password') {
-      message.info('修改密码功能正在接入中');
     }
   };
 
+  const loadUnread = async () => {
+    try {
+      const response = await queryNoticeUnread();
+      dispatch(setUnreadCount(response.data?.unread_count ?? 0));
+    } catch {
+      return;
+    }
+  };
+
+  const loadTopNotice = async () => {
+    setNoticeLoading(true);
+
+    try {
+      const response = await queryNotice({
+        page: 1,
+        size: 5,
+      });
+
+      setNoticeList(response.data?.list ?? []);
+    } catch {
+      setNoticeList([]);
+    } finally {
+      setNoticeLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!getToken() || !initialState?.id) {
+      dispatch(setUnreadCount(0));
+      return;
+    }
+
+    void loadUnread();
+  }, [dispatch, initialState?.id, location.pathname]);
+
+  const noticeContent = (
+    <div className="notice-pop">
+      <div className="notice-list">
+        <Spin spinning={noticeLoading}>
+          {noticeList.length ? (
+            noticeList.map((item) => (
+              <div key={item.id} className="notice-item">
+                <div className="notice-top">
+                  <span className="notice-title">
+                    {headerNoticeMap[item.type]}
+                  </span>
+                  <span className="notice-time">
+                    {formatNoticeTime(item.created_at)}
+                  </span>
+                </div>
+                <div className="notice-text">{item.content}</div>
+              </div>
+            ))
+          ) : (
+            <Empty
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              description="暂无消息"
+            />
+          )}
+        </Spin>
+      </div>
+      <div
+        className="notice-more"
+        onClick={() => {
+          setNoticeOpen(false);
+          history.push('/center');
+        }}
+      >
+        查看全部
+      </div>
+    </div>
+  );
+
   return (
-    <div className="app-page-header">
-      <Space size={16} className="app-page-header-left">
-        <span className="app-header-action" onClick={toggleMenu}>
+    <div className="app-header">
+      <Space size={16} className="header-left">
+        <span className="header-action" onClick={toggleMenu}>
           {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
         </span>
         <Breadcrumb
@@ -203,7 +294,7 @@ function LayoutHeader() {
                 item.title
               ) : (
                 <span
-                  className="app-page-breadcrumb-link"
+                  className="crumb-link"
                   onClick={() => history.push(item.path)}
                 >
                   {item.title}
@@ -213,15 +304,26 @@ function LayoutHeader() {
         />
       </Space>
 
-      <Space size={20} className="app-page-header-actions">
-        <span
-          className="app-header-action"
-          onClick={() => message.info('暂无新消息')}
+      <Space size={20} className="header-actions">
+        <Popover
+          trigger="click"
+          open={noticeOpen}
+          placement="bottomRight"
+          content={noticeContent}
+          onOpenChange={(open) => {
+            setNoticeOpen(open);
+
+            if (open) {
+              void loadTopNotice();
+            }
+          }}
         >
-          <Badge dot className="app-header-badge">
-            <BellOutlined />
-          </Badge>
-        </span>
+          <span className="header-action">
+            <Badge dot={unreadCount > 0} className="header-badge">
+              <BellOutlined />
+            </Badge>
+          </span>
+        </Popover>
 
         <Dropdown
           trigger={['hover']}
@@ -230,11 +332,11 @@ function LayoutHeader() {
             onClick: handleUserMenuClick,
           }}
         >
-          <Space size={10} className="app-user-trigger">
+          <Space size={10} className="user-trigger">
             <Avatar src={initialState?.avatar || undefined} alt={displayName}>
               {displayName.slice(0, 1).toUpperCase()}
             </Avatar>
-            <Typography.Text ellipsis className="app-user-name">
+            <Typography.Text ellipsis className="user-name">
               {displayName}
             </Typography.Text>
           </Space>
@@ -248,7 +350,7 @@ function InitialStateSync() {
   const { initialState, setInitialState } = useModel('@@initialState');
 
   useEffect(() => {
-    if (!getToken() || !initialState?.id) {
+    if (!getToken() || initialState?.id) {
       return;
     }
 
@@ -313,23 +415,27 @@ export async function getInitialState(): Promise<InitialState | undefined> {
     return undefined;
   }
 
-  const cachedUser = getUser<AdminInfo>();
+  const cachedUser = getUser<InitialState>();
   if (cachedUser?.id) {
-    return cachedUser;
+    if (
+      typeof cachedUser.adminname === 'string' &&
+      typeof cachedUser.status === 'boolean'
+    ) {
+      return cachedUser;
+    }
   }
 
   try {
     const response = await getMe();
     if (!response.data) {
-      clearToken();
-      return undefined;
+      return cachedUser;
     }
 
     setUser(response.data);
 
     return response.data;
   } catch {
-    return undefined;
+    return cachedUser;
   }
 }
 
@@ -368,7 +474,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => ({
   },
   onPageChange: () => {
     const { pathname, search } = history.location;
-    const cachedUser = getUser<AdminInfo>();
+    const cachedUser = getUser<InitialState>();
     const hasLogin = Boolean(
       getToken() && (initialState?.id || cachedUser?.id),
     );
@@ -385,10 +491,10 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => ({
     }
   },
   childrenRender: (children) => (
-    <div className="app-layout-content">
+    <div className="app-layout">
       <InitialStateSync />
       <LayoutHeader />
-      <div className="app-layout-body">{children}</div>
+      <div className="layout-body">{children}</div>
     </div>
   ),
   logout: () => {
