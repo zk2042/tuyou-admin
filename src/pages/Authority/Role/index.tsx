@@ -13,6 +13,7 @@ import type { ActionType } from '@ant-design/pro-components';
 import { Button } from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
 
+import AssignModal from './components/AssignModal';
 import CreateModal from './components/CreateModal';
 import EditModal from './components/EditModal';
 import {
@@ -54,6 +55,8 @@ const RolePage: React.FC = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editRecord, setEditRecord] = useState<RoleRecord>();
+  const [assignOpen, setAssignOpen] = useState(false);
+  const [assignRecord, setAssignRecord] = useState<RoleRecord>();
   const { confirmDelete } = useRowDelete<RoleRecord>({
     entityLabel: '角色',
     getName: (record) => record.role_name,
@@ -79,8 +82,9 @@ const RolePage: React.FC = () => {
           setEditRecord(record);
           setEditOpen(true);
         },
-        onAssign: () => {
-          message.info('分配权限接口待接入');
+        onAssign: (record) => {
+          setAssignRecord(record);
+          setAssignOpen(true);
         },
         onDelete: (record) => {
           confirmDelete(record);
@@ -179,6 +183,19 @@ const RolePage: React.FC = () => {
         onCancel={closeEdit}
         onSubmit={(values) => {
           void submitEdit(values);
+        }}
+      />
+      <AssignModal
+        open={assignOpen}
+        roleId={assignRecord?.id}
+        roleName={assignRecord?.role_name}
+        onCancel={() => {
+          setAssignOpen(false);
+          setAssignRecord(undefined);
+        }}
+        onSaved={() => {
+          setAssignOpen(false);
+          setAssignRecord(undefined);
         }}
       />
     </>

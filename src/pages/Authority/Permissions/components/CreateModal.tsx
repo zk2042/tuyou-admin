@@ -21,7 +21,7 @@ const CreateModal = ({
 
   useEffect(() => {
     if (open) {
-      form.setFieldsValue({ status: true, request_method: 'GET' });
+      form.setFieldsValue({ status: '启用', request_method: 'GET' });
     }
   }, [form, open]);
 

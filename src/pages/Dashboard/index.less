@@ -1,0 +1,171 @@
+.welcome {
+  min-height: 44px;
+  padding-bottom: 22px;
+}
+
+.welcomeText {
+  min-height: 22px;
+  line-height: 22px;
+  font-size: 16px;
+}
+
+.cursor {
+  display: inline-block;
+  width: 2px;
+  height: 16px;
+  margin-left: 3px;
+  vertical-align: -2px;
+  background: #2e7d32;
+  animation: blink 0.8s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.stats {
+  margin-bottom: 24px;
+}
+
+.statCard,
+.panel {
+  border: 1px solid #edf0ed;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(25, 60, 30, 4%);
+}
+
+.statCard :global(.ant-card-body) {
+  padding: 20px 22px;
+}
+
+.statIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  margin-right: 8px;
+  border-radius: 50%;
+  font-size: 20px;
+}
+
+.statCard :global(.ant-statistic-content) {
+  display: flex;
+  align-items: center;
+  font-size: 28px;
+}
+
+.statCard :global(.ant-statistic-content-prefix) {
+  order: 2;
+  margin-left: auto;
+}
+
+.grid {
+  margin-bottom: 8px;
+}
+
+.shortcut {
+  position: relative;
+  height: 100%;
+  border-radius: 8px;
+}
+
+.shortcut :global(.ant-card-body) {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 88px;
+  padding: 18px;
+}
+
+.shortcutIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: #2e7d32;
+  background: #edf7ee;
+  border-radius: 8px;
+  font-size: 20px;
+}
+
+.shortcut p {
+  max-width: 150px;
+  margin: 5px 0 0;
+}
+
+.arrow {
+  margin-left: auto;
+  color: rgba(0, 0, 0, 30%);
+}
+
+.panel {
+  height: calc(100% - 12px);
+}
+
+.panel :global(.ant-card-head) {
+  min-height: 56px;
+}
+
+.activityPanel :global(.ant-card-body) {
+  padding-top: 12px;
+}
+
+.activityItem {
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.activityItem:hover {
+  background: #f7fbf7;
+}
+
+.itemMain {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  gap: 5px;
+  margin-left: 12px;
+}
+
+.itemMain :global(.ant-typography) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timeline {
+  padding-top: 8px;
+}
+
+.notice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 10px;
+}
+
+.noticeText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.noticeTime {
+  font-size: 12px;
+}
+
+@media (max-width: 767px) {
+  .notice {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .noticeTime {
+    grid-column: 2;
+  }
+}

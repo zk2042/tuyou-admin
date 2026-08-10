@@ -8,7 +8,14 @@ export default [
 
   {
     path: '/',
-    redirect: '/user/member',
+    redirect: '/dashboard',
+  },
+  {
+    name: '工作台',
+    path: '/dashboard',
+    icon: 'dashboard',
+    disabledTooltip: true,
+    component: './Dashboard',
   },
   {
     name: '个人中心',

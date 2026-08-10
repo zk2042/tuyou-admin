@@ -3,7 +3,7 @@ interface ManagerItem {
   username: string;
   adminname: string;
   role: string;
-  status: boolean;
+  status: string;
   create_time: string;
   last_login: string;
 }
@@ -13,7 +13,7 @@ interface ManagerQuery {
   size?: string | number;
   username?: string;
   role?: string;
-  status?: string | boolean;
+  status?: string;
 }
 
 interface ManagerCreateBody {
@@ -27,7 +27,7 @@ interface ManagerEditBody {
   username?: string;
   adminname?: string;
   role?: string;
-  status?: boolean;
+  status?: string;
 }
 
 interface ManagerResetPasswordBody {
@@ -40,7 +40,7 @@ const managerList: ManagerItem[] = [
     username: 'content',
     adminname: '张三',
     role: '内容管理员',
-    status: true,
+    status: '启用',
     create_time: '2025-02-15 10:00:00',
     last_login: '2026-07-19 14:20:00',
   },
@@ -49,7 +49,7 @@ const managerList: ManagerItem[] = [
     username: 'operate',
     adminname: '李敏',
     role: '运营专员',
-    status: true,
+    status: '启用',
     create_time: '2025-02-18 09:30:00',
     last_login: '2026-07-28 09:12:00',
   },
@@ -58,7 +58,7 @@ const managerList: ManagerItem[] = [
     username: 'user_admin',
     adminname: '王琪',
     role: '用户管理员',
-    status: false,
+    status: '禁用',
     create_time: '2025-03-02 15:40:00',
     last_login: '2026-07-10 16:35:00',
   },
@@ -67,7 +67,7 @@ const managerList: ManagerItem[] = [
     username: 'audit',
     adminname: '陈璐',
     role: '内容管理员',
-    status: true,
+    status: '启用',
     create_time: '2025-03-16 11:25:00',
     last_login: '2026-07-30 18:42:00',
   },
@@ -76,7 +76,7 @@ const managerList: ManagerItem[] = [
     username: 'activity_ops',
     adminname: '周航',
     role: '活动管理员',
-    status: false,
+    status: '禁用',
     create_time: '2025-03-20 13:00:00',
     last_login: '2026-07-01 09:50:00',
   },
@@ -85,7 +85,7 @@ const managerList: ManagerItem[] = [
     username: 'service',
     adminname: '吴迪',
     role: '用户管理员',
-    status: true,
+    status: '启用',
     create_time: '2025-04-01 09:15:00',
     last_login: '2026-07-31 12:18:00',
   },
@@ -97,22 +97,6 @@ const includesText = (source: string, keyword?: string) => {
   }
 
   return source.toLowerCase().includes(keyword.trim().toLowerCase());
-};
-
-const normalizeBoolean = (value?: string | boolean) => {
-  if (typeof value === 'boolean') {
-    return value;
-  }
-
-  if (value === 'true') {
-    return true;
-  }
-
-  if (value === 'false') {
-    return false;
-  }
-
-  return undefined;
 };
 
 const normalizeBody = <T extends object>(body?: T | string) => {
@@ -134,12 +118,11 @@ const normalizeBody = <T extends object>(body?: T | string) => {
 const pageResult = (query: ManagerQuery) => {
   const page = Number(query.page || 1);
   const size = Number(query.size || 10);
-  const status = normalizeBoolean(query.status);
   const filtered = managerList.filter((item) => {
     return (
       includesText(item.username, query.username) &&
       (!query.role || item.role === query.role) &&
-      (typeof status !== 'boolean' || item.status === status)
+      (!query.status || item.status === query.status)
     );
   });
   const start = (page - 1) * size;
@@ -160,6 +143,18 @@ const pageResult = (query: ManagerQuery) => {
 
 const listHandler = (req: any, res: any) => {
   res.json(pageResult(req.query || {}));
+};
+
+const roleHandler = (_req: any, res: any) => {
+  res.json({
+    code: 0,
+    message: '成功',
+    data: [
+      { id: 1, role_name: '超级管理员' },
+      { id: 2, role_name: '内容管理员' },
+      { id: 3, role_name: '普通管理员' },
+    ],
+  });
 };
 
 const createHandler = (req: any, res: any) => {
@@ -193,7 +188,7 @@ const createHandler = (req: any, res: any) => {
     username: body.username,
     adminname: body.adminname,
     role: body.role,
-    status: true,
+    status: '启用',
     create_time: '2026-08-03 10:00:00',
     last_login: '-',
   };
@@ -210,6 +205,7 @@ const createHandler = (req: any, res: any) => {
 const editHandler = (req: any, res: any) => {
   const body = normalizeBody<ManagerEditBody>(req.body);
   const current = managerList.find((item) => item.id === String(req.params.id));
+  const status = body.status;
 
   if (!current) {
     res.json({
@@ -224,7 +220,7 @@ const editHandler = (req: any, res: any) => {
     !body.username ||
     !body.adminname ||
     !body.role ||
-    typeof body.status !== 'boolean'
+    (status !== '启用' && status !== '禁用')
   ) {
     res.json({
       code: 400,
@@ -250,7 +246,7 @@ const editHandler = (req: any, res: any) => {
   current.username = body.username;
   current.adminname = body.adminname;
   current.role = body.role;
-  current.status = body.status;
+  current.status = status;
 
   res.json({
     code: 0,
@@ -312,6 +308,8 @@ const resetPasswordHandler = (req: any, res: any) => {
 };
 
 export default {
+  'GET /api/v1/admin/admins/role': roleHandler,
+  'GET /admin/admins/role': roleHandler,
   'GET /api/v1/admin/admins': listHandler,
   'GET /admin/admins': listHandler,
   'POST /api/v1/admin/admins': createHandler,

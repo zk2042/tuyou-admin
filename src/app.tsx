@@ -1,4 +1,5 @@
 // 运行时配置
+import Footer from '@/components/Footer';
 import { formatNoticeTime } from '@/constants/common-const';
 import { getMe, type CurrentInfo } from '@/services/auth';
 import {
@@ -415,10 +416,14 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => ({
   navTheme: 'light',
   headerRender: false,
   rightContentRender: false,
+  footerRender: () => <Footer />,
   actionsRender: false,
   avatarProps: false,
   menuFooterRender: false,
   token: {
+    pageContainer: {
+      paddingBlockPageContainerContent: 8,
+    },
     sider: {
       colorMenuBackground: '#141414',
       colorTextMenu: 'rgba(255,255,255,0.75)',

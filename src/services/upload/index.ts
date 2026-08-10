@@ -2,18 +2,18 @@ import type { ApiResponse } from '@/constants';
 import { apiRequest } from '@/lib/apiRequest';
 
 interface ImgRes {
-  url: string;
+  urls: string[];
 }
 
-export async function uploadImage(
-  file: File,
+export async function uploadImages(
+  files: File[],
   options?: { [key: string]: any },
 ): Promise<ApiResponse<ImgRes>> {
   const data = new FormData();
-  data.append('file', file);
+  files.forEach((file) => data.append('files', file));
 
   return apiRequest<ImgRes>({
-    url: '/admin/upload/image',
+    url: '/upload/images',
     method: 'POST',
     data,
     ...(options || {}),

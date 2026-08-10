@@ -6,6 +6,8 @@ import type {
   RoleCreate,
   RoleEdit,
   RoleItem,
+  RolePermBody,
+  RolePermData,
   RoleQuery,
 } from './types';
 
@@ -50,6 +52,41 @@ export async function deleteRole(id: string, options?: { [key: string]: any }) {
   return apiRequest({
     url: `/admin/roles/${id}`,
     method: 'DELETE',
+    ...(options || {}),
+  });
+}
+
+export async function queryRoleMenus(
+  id: string,
+  options?: { [key: string]: any },
+): Promise<ApiResponse<{ menu_tree: RolePermData['menu_tree'] }>> {
+  return apiRequest<{ menu_tree: RolePermData['menu_tree'] }>({
+    url: `/admin/roles/${id}/menus`,
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
+export async function queryRolePermissions(
+  id: string,
+  options?: { [key: string]: any },
+): Promise<ApiResponse<{ permission_tree: RolePermData['permission_tree'] }>> {
+  return apiRequest<{ permission_tree: RolePermData['permission_tree'] }>({
+    url: `/admin/roles/${id}/permissions`,
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
+export async function saveRolePermissions(
+  id: string,
+  data: RolePermBody,
+  options?: { [key: string]: any },
+) {
+  return apiRequest({
+    url: `/admin/roles/${id}/permissions`,
+    method: 'PUT',
+    data,
     ...(options || {}),
   });
 }

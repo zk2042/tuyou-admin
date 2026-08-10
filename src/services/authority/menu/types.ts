@@ -2,7 +2,7 @@ export interface MenuQuery {
   page: number;
   size: number;
   menu_name?: string;
-  status?: boolean;
+  status?: string;
 }
 
 export type MenuType = '目录' | '菜单';
@@ -14,7 +14,7 @@ export interface MenuItem {
   menu_type: MenuType;
   route_path: string;
   sort: number;
-  status: boolean;
+  status: string;
   create_time: string;
   update_time: string;
 }
@@ -25,7 +25,7 @@ export interface MenuBody {
   menu_type: MenuType;
   route_path: string;
   sort: number;
-  status: boolean;
+  status: string;
 }
 
 export interface PageData<T> {

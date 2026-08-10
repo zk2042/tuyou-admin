@@ -3,7 +3,7 @@ interface PermItem {
   perm_name: string;
   module: string;
   perm_key: string;
-  status: boolean;
+  status: string;
   request_method: string;
   api_path: string;
 }
@@ -13,7 +13,7 @@ interface PermQuery {
   size?: string | number;
   perm_name?: string;
   module?: string;
-  status?: string | boolean;
+  status?: string;
 }
 
 type PermBody = Partial<Omit<PermItem, 'id'>>;
@@ -458,7 +458,7 @@ const permList: PermItem[] = seeds.map(
     perm_name,
     module,
     perm_key,
-    status: true,
+    status: '启用',
     request_method,
     api_path,
   }),
@@ -470,22 +470,6 @@ const includesText = (source: string, keyword?: string) => {
   }
 
   return source.toLowerCase().includes(keyword.trim().toLowerCase());
-};
-
-const normalizeBoolean = (value?: string | boolean) => {
-  if (typeof value === 'boolean') {
-    return value;
-  }
-
-  if (value === 'true') {
-    return true;
-  }
-
-  if (value === 'false') {
-    return false;
-  }
-
-  return undefined;
 };
 
 const normalizeBody = <T extends object>(body?: T | string) => {
@@ -511,19 +495,18 @@ const isValidBody = (body: PermBody): body is Omit<PermItem, 'id'> => {
       body.perm_key &&
       body.request_method &&
       body.api_path &&
-      typeof body.status === 'boolean',
+      ['启用', '禁用'].includes(body.status || ''),
   );
 };
 
 const pageResult = (query: PermQuery) => {
   const page = Math.max(Number(query.page || 1), 1);
   const size = Math.max(Number(query.size || 10), 1);
-  const status = normalizeBoolean(query.status);
   const filtered = permList.filter((item) => {
     return (
       includesText(item.perm_name, query.perm_name) &&
       includesText(item.module, query.module) &&
-      (typeof status !== 'boolean' || item.status === status)
+      (!query.status || item.status === query.status)
     );
   });
   const start = (page - 1) * size;

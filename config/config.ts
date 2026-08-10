@@ -56,7 +56,9 @@ export default defineConfig({
   },
   access: {}, // RBAC 权限插件
   model: {}, // 数据流插件（useModel）
-  initialState: {}, // 全局初始状态（getInitialState）
+  initialState: {
+    loading: '@/components/Loading',
+  }, // 全局初始状态（getInitialState）
   request: {}, // 内置请求库（umi-request）
   layout: {
     title: '途友管理后台',

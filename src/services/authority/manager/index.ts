@@ -8,6 +8,7 @@ import type {
   ManagerQuery,
   ManagerResetPassword,
   PageData,
+  RoleName,
 } from './types';
 
 export async function queryManager(
@@ -30,6 +31,16 @@ export async function createManager(
     url: '/admin/admins',
     method: 'POST',
     data,
+    ...(options || {}),
+  });
+}
+
+export async function getRoleNames(options?: {
+  [key: string]: any;
+}): Promise<ApiResponse<RoleName[]>> {
+  return apiRequest<RoleName[]>({
+    url: '/admin/admins/role',
+    method: 'GET',
     ...(options || {}),
   });
 }

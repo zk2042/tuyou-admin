@@ -24,7 +24,7 @@ import type {
   CreateReq,
   LeaderItem,
 } from '@/services/activity/types';
-import { uploadImage } from '@/services/upload';
+import { uploadImages } from '@/services/upload';
 import { activityColumns, type ActQuery } from './activityConfig';
 import CreateModal, { type CreateVals } from './components/CreateModal';
 import DetailModal from './components/DetailModal';
@@ -62,12 +62,13 @@ const activityRequest = async (params: ActQuery) => {
 };
 
 const uploadCover = async (file: File) => {
-  const response = await uploadImage(file);
-  if (!response.data?.url) {
+  const response = await uploadImages([file]);
+  const url = response.data?.urls[0];
+  if (!url) {
     throw new Error('上传图片失败');
   }
 
-  return response.data.url;
+  return url;
 };
 
 const toReq = (vals: CreateVals): CreateReq => {

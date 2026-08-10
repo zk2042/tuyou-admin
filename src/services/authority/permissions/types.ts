@@ -3,7 +3,7 @@ export interface PermQuery {
   size: number;
   perm_name?: string;
   module?: string;
-  status?: boolean;
+  status?: string;
 }
 
 export interface PermItem {
@@ -11,7 +11,7 @@ export interface PermItem {
   perm_name: string;
   module: string;
   perm_key: string;
-  status: boolean;
+  status: string;
   request_method: string;
   api_path: string;
 }
@@ -20,7 +20,7 @@ export interface PermBody {
   perm_name: string;
   module: string;
   perm_key: string;
-  status: boolean;
+  status: string;
   request_method: string;
   api_path: string;
 }

@@ -30,7 +30,7 @@ const CreateModal = ({
             parent_name: null,
             menu_type: '菜单',
             sort: 1,
-            status: true,
+            status: '启用',
           });
         } else {
           form.resetFields();

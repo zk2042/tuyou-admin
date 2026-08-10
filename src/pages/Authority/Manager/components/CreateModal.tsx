@@ -1,10 +1,9 @@
 import { Form, Input, Modal, Select } from 'antd';
 import { useEffect } from 'react';
 
-import type { CreateValues } from '../managerConfig';
-import { ROLE_OPTIONS } from '../managerConfig';
+import type { CreateValues, RoleProps } from '../managerConfig';
 
-interface CreateModalProps {
+interface CreateModalProps extends RoleProps {
   open: boolean;
   saving: boolean;
   onCancel: () => void;
@@ -21,6 +20,9 @@ const DEFAULT_VALUES: CreateValues = {
 const CreateModal = ({
   open,
   saving,
+  roleOptions,
+  roleLoading,
+  onRoleOpen,
   onCancel,
   onSubmit,
 }: CreateModalProps) => {
@@ -79,7 +81,15 @@ const CreateModal = ({
           name="role"
           rules={[{ required: true, message: '请选择所属角色' }]}
         >
-          <Select options={ROLE_OPTIONS} placeholder="请选择所属角色" />
+          <Select
+            showSearch
+            loading={roleLoading}
+            options={roleOptions}
+            placeholder="请选择所属角色"
+            optionFilterProp="label"
+            notFoundContent={roleLoading ? '加载中' : '暂无角色'}
+            onOpenChange={onRoleOpen}
+          />
         </Form.Item>
       </Form>
     </Modal>

@@ -436,26 +436,44 @@ const pageResult = (source: ActivityMockItem[], query: PageQuery) => {
 };
 
 export default {
-  'POST /api/v1/admin/upload/image': (_req: any, res: any) => {
+  'POST /__mock/api/v1/upload/images': (req: any, res: any) => {
+    const files = req.files?.files;
+    const list = Array.isArray(files) ? files : files ? [files] : [{}];
+
+    if (list.length < 1 || list.length > 5) {
+      res.json({ code: 400, message: '图片数量必须为 1~5 个', data: null });
+      return;
+    }
+
+    if (list.some((file: any) => file.size > 5 * 1024 * 1024)) {
+      res.json({ code: 400, message: '单张图片不能超过 5MB', data: null });
+      return;
+    }
+
     res.json({
       code: 0,
       message: '成功',
       data: {
-        url: `https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&w=1200&q=80&t=${Date.now()}`,
+        urls: list.map(
+          (_file: any, index: number) =>
+            `https://tuyou1.oss-cn-beijing.aliyuncs.com/images/2026/08/08/20260808_${Date.now()}_${
+              index + 1
+            }.png`,
+        ),
       },
     });
   },
-  'GET /api/v1/admin/leadernames': (_req: any, res: any) => {
+  'GET /__mock/api/v1/admin/leadernames': (_req: any, res: any) => {
     res.json({
       code: 0,
       message: '成功',
       data: leaderList,
     });
   },
-  'GET /api/v1/admin/activities': (req: any, res: any) => {
+  'GET /__mock/api/v1/admin/activities': (req: any, res: any) => {
     res.json(pageResult(activityList, req.query || {}));
   },
-  'GET /api/v1/admin/activities/:id': (req: any, res: any) => {
+  'GET /__mock/api/v1/admin/activities/:id': (req: any, res: any) => {
     const current = activityList.find((item) => item.id === req.params.id);
 
     if (!current) {
@@ -473,7 +491,7 @@ export default {
       data: current,
     });
   },
-  'POST /api/v1/admin/activities': (req: any, res: any) => {
+  'POST /__mock/api/v1/admin/activities': (req: any, res: any) => {
     const body = (req.body || {}) as CreateBody;
     const leaderId =
       leaderList.find((item) => item.leader_name === body.leader_name)?.id ||
@@ -510,7 +528,7 @@ export default {
       data: null,
     });
   },
-  'PUT /api/v1/admin/activities/:id': (req: any, res: any) => {
+  'PUT /__mock/api/v1/admin/activities/:id': (req: any, res: any) => {
     const current = activityList.find((item) => item.id === req.params.id);
 
     if (!current) {
@@ -542,7 +560,7 @@ export default {
       data: current,
     });
   },
-  'POST /api/v1/admin/activities/batch-delete': (req: any, res: any) => {
+  'POST /__mock/api/v1/admin/activities/batch-delete': (req: any, res: any) => {
     const body = parseBatch(req.body);
     const ids = Array.isArray(body.ids) ? body.ids : [];
 
@@ -563,7 +581,7 @@ export default {
       data: null,
     });
   },
-  'POST /api/v1/admin/activities/export': (req: any, res: any) => {
+  'POST /__mock/api/v1/admin/activities/export': (req: any, res: any) => {
     const body = parseBatch(req.body);
     const ids = new Set((body.ids || []).map((id) => String(id)));
     const rows = activityList.filter((item) => ids.has(item.id));
@@ -601,7 +619,7 @@ export default {
     );
     res.send(`\uFEFF${content}`);
   },
-  'DELETE /api/v1/admin/activities/:id': (req: any, res: any) => {
+  'DELETE /__mock/api/v1/admin/activities/:id': (req: any, res: any) => {
     const current = activityList.find((item) => item.id === req.params.id);
 
     if (!current) {

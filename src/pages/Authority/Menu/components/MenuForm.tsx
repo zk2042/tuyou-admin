@@ -78,7 +78,12 @@ const MenuForm = ({ form }: MenuFormProps) => {
       >
         <InputNumber min={0} precision={0} style={{ width: '100%' }} />
       </Form.Item>
-      <Form.Item label="状态" name="status" valuePropName="checked">
+      <Form.Item
+        label="状态"
+        name="status"
+        getValueProps={(value) => ({ checked: value === '启用' })}
+        getValueFromEvent={(checked) => (checked ? '启用' : '禁用')}
+      >
         <Switch checkedChildren="启用" unCheckedChildren="禁用" />
       </Form.Item>
     </Form>
