@@ -10,7 +10,7 @@ import { Button, Space, Tag } from 'antd';
 export interface ManagerQueryParams {
   username?: string;
   role?: string;
-  status?: boolean;
+  status?: string;
   current?: number;
   pageSize?: number;
 }
@@ -18,25 +18,21 @@ export interface ManagerQueryParams {
 export type ManagerRecord = ManagerItem;
 export type CreateValues = ManagerCreate;
 export type EditValues = ManagerEdit;
-export const ROLE_OPTIONS = [
-  { label: '内容管理员', value: '内容管理员' },
-  { label: '运营专员', value: '运营专员' },
-  { label: '用户管理员', value: '用户管理员' },
-  { label: '活动管理员', value: '活动管理员' },
-];
-
+export interface RoleProps {
+  roleOptions: { label: string; value: string }[];
+  roleLoading: boolean;
+  onRoleOpen: (open: boolean) => void;
+}
 export const STATUS_OPTIONS = [
-  { label: '启用', value: true },
-  { label: '禁用', value: false },
+  { label: '启用', value: '启用' },
+  { label: '禁用', value: '禁用' },
 ];
 
-const renderStatus = (status: boolean) => {
-  return (
-    <Tag color={status ? 'success' : 'error'}>{status ? '启用' : '禁用'}</Tag>
-  );
+const renderStatus = (status: string) => {
+  return <Tag color={status === '启用' ? 'success' : 'error'}>{status}</Tag>;
 };
 
-interface ColumnOptions {
+interface ColumnOptions extends RoleProps {
   onEdit: (record: ManagerRecord) => void;
   onResetPassword: (record: ManagerRecord) => void;
   onDelete: (record: ManagerRecord) => void;
@@ -110,7 +106,12 @@ export const managerColumns = (
     valueType: 'select',
     fieldProps: {
       placeholder: '请选择所属角色',
-      options: ROLE_OPTIONS,
+      options: options.roleOptions,
+      loading: options.roleLoading,
+      showSearch: true,
+      optionFilterProp: 'label',
+      notFoundContent: options.roleLoading ? '加载中' : '暂无角色',
+      onOpenChange: options.onRoleOpen,
     },
   },
   {

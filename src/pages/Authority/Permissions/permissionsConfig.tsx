@@ -9,7 +9,7 @@ import { Button, Space, Tag } from 'antd';
 export interface PermQueryParams {
   perm_name?: string;
   module?: string;
-  status?: boolean;
+  status?: string;
   current?: number;
   pageSize?: number;
 }
@@ -18,8 +18,8 @@ export type PermRecord = PermItem;
 export type PermValues = PermBody;
 
 export const STATUS_OPTIONS = [
-  { label: '启用', value: true },
-  { label: '禁用', value: false },
+  { label: '启用', value: '启用' },
+  { label: '禁用', value: '禁用' },
 ];
 
 export const MODULE_OPTIONS = [
@@ -112,8 +112,8 @@ export const permissionsColumns = (
       options: STATUS_OPTIONS,
     },
     render: (_, record) => (
-      <Tag color={record.status ? 'success' : 'error'}>
-        {record.status ? '启用' : '禁用'}
+      <Tag color={record.status === '启用' ? 'success' : 'error'}>
+        {record.status}
       </Tag>
     ),
   },

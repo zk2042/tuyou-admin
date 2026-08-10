@@ -78,7 +78,8 @@ const EditModal = ({
         <Form.Item
           label="状态"
           name="status"
-          valuePropName="checked"
+          getValueProps={(value) => ({ checked: value === '启用' })}
+          getValueFromEvent={(checked) => (checked ? '启用' : '禁用')}
           rules={[{ required: true }]}
         >
           <Switch checkedChildren="启用" unCheckedChildren="禁用" />

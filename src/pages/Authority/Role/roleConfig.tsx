@@ -13,7 +13,7 @@ import { Button, Space, Tag } from 'antd';
 
 export interface RoleQueryParams {
   role_name?: string;
-  status?: boolean;
+  status?: string;
   current?: number;
   pageSize?: number;
 }
@@ -23,8 +23,8 @@ export type CreateValues = RoleCreate;
 export type EditValues = RoleEdit;
 
 export const STATUS_OPTIONS = [
-  { label: '启用', value: true },
-  { label: '禁用', value: false },
+  { label: '启用', value: '启用' },
+  { label: '禁用', value: '禁用' },
 ];
 
 interface ColumnOptions {
@@ -33,10 +33,8 @@ interface ColumnOptions {
   onDelete: (record: RoleRecord) => void;
 }
 
-const renderStatus = (status: boolean) => {
-  return (
-    <Tag color={status ? 'success' : 'error'}>{status ? '启用' : '禁用'}</Tag>
-  );
+const renderStatus = (status: string) => {
+  return <Tag color={status === '启用' ? 'success' : 'error'}>{status}</Tag>;
 };
 
 const renderActions = (record: RoleRecord, options: ColumnOptions) => {

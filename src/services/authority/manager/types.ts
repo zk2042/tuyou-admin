@@ -3,7 +3,7 @@ export interface ManagerQuery {
   size: number;
   username?: string;
   role?: string;
-  status?: boolean;
+  status?: string;
 }
 
 export interface ManagerItem {
@@ -11,7 +11,7 @@ export interface ManagerItem {
   username: string;
   adminname: string;
   role: string;
-  status: boolean;
+  status: string;
   create_time: string;
   last_login: string;
 }
@@ -27,11 +27,16 @@ export interface ManagerEdit {
   username: string;
   adminname: string;
   role: string;
-  status: boolean;
+  status: string;
 }
 
 export interface ManagerResetPassword {
   new_password: string;
+}
+
+export interface RoleName {
+  id: number;
+  role_name: string;
 }
 
 export interface PageData<T> {

@@ -9,10 +9,9 @@ import {
 } from 'antd';
 import { useEffect } from 'react';
 
-import type { EditValues } from '../managerConfig';
-import { ROLE_OPTIONS } from '../managerConfig';
+import type { EditValues, RoleProps } from '../managerConfig';
 
-interface EditModalProps {
+interface EditModalProps extends RoleProps {
   open: boolean;
   saving: boolean;
   record?: {
@@ -47,6 +46,9 @@ const switchTheme = {
 const EditModal = ({
   open,
   saving,
+  roleOptions,
+  roleLoading,
+  onRoleOpen,
   record,
   values,
   onCancel,
@@ -55,7 +57,6 @@ const EditModal = ({
   const [form] = Form.useForm<EditValues>();
   const status = Form.useWatch('status', form);
   const statusFlag = status ?? values.status;
-  const nextStatus = statusFlag ? '启用' : '禁用';
 
   useEffect(() => {
     if (!open) {
@@ -99,13 +100,22 @@ const EditModal = ({
             name="role"
             rules={[{ required: true, message: '请选择所属角色' }]}
           >
-            <Select options={ROLE_OPTIONS} placeholder="请选择所属角色" />
+            <Select
+              showSearch
+              loading={roleLoading}
+              options={roleOptions}
+              placeholder="请选择所属角色"
+              optionFilterProp="label"
+              notFoundContent={roleLoading ? '加载中' : '暂无角色'}
+              onOpenChange={onRoleOpen}
+            />
           </Form.Item>
           <Form.Item label="账号状态">
             <div style={cardStyle}>
               <Form.Item<EditValues>
                 name="status"
-                valuePropName="checked"
+                getValueProps={(value) => ({ checked: value === '启用' })}
+                getValueFromEvent={(checked) => (checked ? '启用' : '禁用')}
                 noStyle
               >
                 <Switch checkedChildren="启用" unCheckedChildren="禁用" />
@@ -115,8 +125,8 @@ const EditModal = ({
                 style={{ marginTop: 16, marginBottom: 0 }}
               >
                 {`当前开关${
-                  statusFlag ? '已开启' : '已关闭'
-                }，保存后账号状态为${nextStatus}。`}
+                  statusFlag === '启用' ? '已开启' : '已关闭'
+                }，保存后账号状态为${statusFlag}。`}
               </Typography.Paragraph>
             </div>
           </Form.Item>

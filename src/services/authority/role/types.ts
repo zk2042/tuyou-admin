@@ -2,7 +2,7 @@ export interface RoleQuery {
   page: number;
   size: number;
   role_name?: string;
-  status?: boolean;
+  status?: string;
 }
 
 export interface RoleItem {
@@ -10,7 +10,7 @@ export interface RoleItem {
   role_name: string;
   role_code: string;
   description: string;
-  status: boolean;
+  status: string;
   create_time: string;
   update_time: string;
 }
@@ -22,7 +22,7 @@ export interface RoleCreate {
 }
 
 export interface RoleEdit extends RoleCreate {
-  status: boolean;
+  status: string;
 }
 
 export interface PageData<T> {

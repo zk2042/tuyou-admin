@@ -5,10 +5,14 @@ import {
   createManager,
   deleteManager,
   editManager,
+  getRoleNames,
   queryManager,
   resetManagerPassword,
 } from '@/services/authority/manager';
-import type { ManagerResetPassword } from '@/services/authority/manager/types';
+import type {
+  ManagerResetPassword,
+  RoleName,
+} from '@/services/authority/manager/types';
 import { message } from '@/utils/message';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType } from '@ant-design/pro-components';
@@ -61,6 +65,10 @@ const ManagerPage: React.FC = () => {
   const [resetOpen, setResetOpen] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [resetRecord, setResetRecord] = useState<ManagerRecord>();
+  const [roles, setRoles] = useState<RoleName[]>([]);
+  const [roleLoading, setRoleLoading] = useState(false);
+  const roleLoaded = useRef(false);
+  const roleFetching = useRef(false);
   const { confirmDelete } = useRowDelete<ManagerRecord>({
     entityLabel: '管理员',
     getName: (record) => record.username,
@@ -85,9 +93,49 @@ const ManagerPage: React.FC = () => {
     },
   });
 
+  const loadRoles = React.useCallback(async () => {
+    if (roleFetching.current || roleLoaded.current) {
+      return;
+    }
+
+    roleFetching.current = true;
+    setRoleLoading(true);
+    try {
+      const response = await getRoleNames();
+      setRoles(response.data ?? []);
+      roleLoaded.current = true;
+    } catch {
+      message.error('获取角色名称失败');
+    } finally {
+      roleFetching.current = false;
+      setRoleLoading(false);
+    }
+  }, []);
+
+  const roleOptions = useMemo(
+    () =>
+      roles.map((item) => ({
+        label: item.role_name,
+        value: item.role_name,
+      })),
+    [roles],
+  );
+
+  const onRoleOpen = React.useCallback(
+    (open: boolean) => {
+      if (open) {
+        void loadRoles();
+      }
+    },
+    [loadRoles],
+  );
+
   const columns = useMemo(
     () =>
       managerColumns({
+        roleOptions,
+        roleLoading,
+        onRoleOpen,
         onEdit: (record) => {
           setEditRecord(record);
           setEditOpen(true);
@@ -100,7 +148,7 @@ const ManagerPage: React.FC = () => {
           confirmDelete(record);
         },
       }),
-    [confirmDelete],
+    [confirmDelete, onRoleOpen, roleLoading, roleOptions],
   );
 
   const closeCreate = React.useCallback(() => {
@@ -209,6 +257,9 @@ const ManagerPage: React.FC = () => {
       <CreateModal
         open={createOpen}
         saving={creating}
+        roleOptions={roleOptions}
+        roleLoading={roleLoading}
+        onRoleOpen={onRoleOpen}
         onCancel={closeCreate}
         onSubmit={(values) => {
           void submitCreate(values);
@@ -217,12 +268,15 @@ const ManagerPage: React.FC = () => {
       <EditModal
         open={editOpen}
         saving={editing}
+        roleOptions={roleOptions}
+        roleLoading={roleLoading}
+        onRoleOpen={onRoleOpen}
         record={editRecord}
         values={{
           username: editRecord?.username || '',
           adminname: editRecord?.adminname || '',
           role: editRecord?.role || '',
-          status: editRecord?.status ?? true,
+          status: editRecord?.status ?? '启用',
         }}
         onCancel={closeEdit}
         onSubmit={(values) => {

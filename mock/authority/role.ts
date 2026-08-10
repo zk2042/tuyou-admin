@@ -3,7 +3,7 @@ interface RoleItem {
   role_name: string;
   role_code: string;
   description: string;
-  status: boolean;
+  status: string;
   create_time: string;
   update_time: string;
 }
@@ -12,7 +12,7 @@ interface RoleQuery {
   page?: string | number;
   size?: string | number;
   role_name?: string;
-  status?: string | boolean;
+  status?: string;
 }
 
 interface RoleCreateBody {
@@ -22,7 +22,7 @@ interface RoleCreateBody {
 }
 
 interface RoleEditBody extends RoleCreateBody {
-  status?: boolean;
+  status?: string;
 }
 
 const roleList: RoleItem[] = [
@@ -31,7 +31,7 @@ const roleList: RoleItem[] = [
     role_name: '内容管理员',
     role_code: 'content_admin',
     description: '管理笔记、攻略、评论等内容相关模块',
-    status: true,
+    status: '启用',
     create_time: '2025-02-15 10:00:00',
     update_time: '2026-08-01 15:41:33',
   },
@@ -40,7 +40,7 @@ const roleList: RoleItem[] = [
     role_name: '运营专员',
     role_code: 'operation_specialist',
     description: '负责平台日常运营及活动配置',
-    status: true,
+    status: '启用',
     create_time: '2025-02-18 09:30:00',
     update_time: '2026-07-30 11:20:15',
   },
@@ -49,7 +49,7 @@ const roleList: RoleItem[] = [
     role_name: '用户管理员',
     role_code: 'user_admin',
     description: '管理会员、领队及用户状态',
-    status: true,
+    status: '启用',
     create_time: '2025-03-02 15:40:00',
     update_time: '2026-07-28 16:35:20',
   },
@@ -58,7 +58,7 @@ const roleList: RoleItem[] = [
     role_name: '活动管理员',
     role_code: 'activity_admin',
     description: '负责活动审核、发布及报名管理',
-    status: true,
+    status: '启用',
     create_time: '2025-03-20 13:00:00',
     update_time: '2026-07-25 09:50:42',
   },
@@ -67,7 +67,7 @@ const roleList: RoleItem[] = [
     role_name: '评论审核员',
     role_code: 'comment_reviewer',
     description: '审核用户评论并处理违规内容',
-    status: false,
+    status: '禁用',
     create_time: '2025-04-08 10:25:00',
     update_time: '2026-06-18 14:12:36',
   },
@@ -76,7 +76,7 @@ const roleList: RoleItem[] = [
     role_name: '数据观察员',
     role_code: 'data_viewer',
     description: '查看平台运营数据和统计报表',
-    status: false,
+    status: '禁用',
     create_time: '2025-05-12 11:10:00',
     update_time: '2026-06-02 17:22:08',
   },
@@ -85,7 +85,7 @@ const roleList: RoleItem[] = [
     role_name: '客服专员',
     role_code: 'customer_service',
     description: '处理用户咨询、反馈和投诉',
-    status: true,
+    status: '启用',
     create_time: '2025-06-01 09:00:00',
     update_time: '2026-07-21 10:18:45',
   },
@@ -97,22 +97,6 @@ const includesText = (source: string, keyword?: string) => {
   }
 
   return source.toLowerCase().includes(keyword.trim().toLowerCase());
-};
-
-const normalizeBoolean = (value?: string | boolean) => {
-  if (typeof value === 'boolean') {
-    return value;
-  }
-
-  if (value === 'true') {
-    return true;
-  }
-
-  if (value === 'false') {
-    return false;
-  }
-
-  return undefined;
 };
 
 const normalizeBody = <T extends object>(body?: T | string) => {
@@ -134,11 +118,10 @@ const normalizeBody = <T extends object>(body?: T | string) => {
 const pageResult = (query: RoleQuery) => {
   const page = Number(query.page || 1);
   const size = Number(query.size || 10);
-  const status = normalizeBoolean(query.status);
   const filtered = roleList.filter((item) => {
     return (
       includesText(item.role_name, query.role_name) &&
-      (typeof status !== 'boolean' || item.status === status)
+      (!query.status || item.status === query.status)
     );
   });
   const start = (page - 1) * size;
@@ -194,7 +177,7 @@ const createHandler = (req: any, res: any) => {
     role_name: body.role_name,
     role_code: body.role_code,
     description: body.description,
-    status: true,
+    status: '启用',
     create_time: '2026-08-04 14:00:00',
     update_time: '2026-08-04 14:00:00',
   };
@@ -211,6 +194,7 @@ const createHandler = (req: any, res: any) => {
 const editHandler = (req: any, res: any) => {
   const body = normalizeBody<RoleEditBody>(req.body);
   const current = roleList.find((item) => item.id === String(req.params.id));
+  const status = body.status;
 
   if (!current) {
     res.json({
@@ -225,7 +209,7 @@ const editHandler = (req: any, res: any) => {
     !body.role_name ||
     !body.role_code ||
     !body.description ||
-    typeof body.status !== 'boolean'
+    (status !== '启用' && status !== '禁用')
   ) {
     res.json({
       code: 400,
@@ -253,7 +237,7 @@ const editHandler = (req: any, res: any) => {
   current.role_name = body.role_name;
   current.role_code = body.role_code;
   current.description = body.description;
-  current.status = body.status;
+  current.status = status;
   current.update_time = '2026-08-04 14:00:00';
 
   res.json({
