@@ -1,13 +1,18 @@
 import { DefaultFooter } from '@ant-design/pro-components';
 import React from 'react';
 
+import styles from './index.less';
+
 const Footer: React.FC = () => {
   return (
     <DefaultFooter
+      className={styles.footer}
       style={{
         background: 'none',
       }}
-      copyright={`${new Date().getFullYear()} 途友管理后台`}
+      copyright={`2026${
+        new Date().getFullYear() > 2026 ? `-${new Date().getFullYear()}` : ''
+      } 途友管理后台`}
       links={
         [
           // {
