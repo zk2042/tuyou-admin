@@ -17,6 +17,7 @@ import {
   type NameBody,
   type NoticeItem,
 } from '@/services/center';
+import { uploadImages } from '@/services/upload';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setUnreadCount } from '@/store/slices/noticeSlice';
 import { setUser } from '@/utils/auth';
@@ -204,29 +205,15 @@ const CenterPage: React.FC = () => {
     async (options) => {
       const file = options.file as File;
 
-      const toDataUrl = () =>
-        new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-
-          reader.onload = () => {
-            if (typeof reader.result === 'string') {
-              resolve(reader.result);
-              return;
-            }
-
-            reject(new Error('图片读取失败'));
-          };
-
-          reader.onerror = () => {
-            reject(new Error('图片读取失败'));
-          };
-
-          reader.readAsDataURL(file);
-        });
-
       try {
         setAvatarSaving(true);
-        const avatar = await toDataUrl();
+        const uploadResponse = await uploadImages([file]);
+        const avatar = uploadResponse.data?.urls[0];
+
+        if (!avatar) {
+          throw new Error('上传头像失败');
+        }
+
         const response = await updateAvatar({ avatar });
 
         message.success(response.message || '头像更新成功');
