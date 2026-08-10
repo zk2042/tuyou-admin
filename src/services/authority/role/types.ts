@@ -25,6 +25,34 @@ export interface RoleEdit extends RoleCreate {
   status: string;
 }
 
+export interface MenuNode {
+  id: string;
+  name: string;
+  checked?: boolean;
+  children?: MenuNode[];
+}
+
+export interface PermNode {
+  id: string;
+  name: string;
+  checked: boolean;
+}
+
+export interface PermModule {
+  module: string;
+  children?: PermNode[];
+}
+
+export interface RolePermData {
+  menu_tree: MenuNode[];
+  permission_tree: PermModule[];
+}
+
+export interface RolePermBody {
+  menu_ids: string[];
+  perm_ids: string[];
+}
+
 export interface PageData<T> {
   list: T[];
   total: number;
