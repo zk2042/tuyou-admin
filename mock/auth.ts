@@ -4,7 +4,22 @@ type CurrentAdminInfo = {
   adminname: string;
   role: string;
   avatar: string;
-  status: boolean;
+  status: string;
+  menu_tree: AuthMenu[];
+  perm_keys: string[];
+};
+
+type AuthMenu = {
+  id: string;
+  menu_name: string;
+  parent_id: string;
+  menu_type: number;
+  route_path: string;
+  component?: string;
+  icon: string;
+  hide_in_menu: boolean;
+  sort: number;
+  children: AuthMenu[] | null;
 };
 
 type UpdateUsernameBody = Pick<CurrentAdminInfo, 'username'>;
@@ -35,7 +50,9 @@ const currentAdmin: CurrentAdminInfo = {
   adminname: '张三',
   role: '超级管理员',
   avatar: '',
-  status: true,
+  status: '启用',
+  menu_tree: [],
+  perm_keys: [],
 };
 
 let adminPassword = '123456';
@@ -83,13 +100,15 @@ let notificationList: NoticeItem[] = [
 
 const capMap = new Map<string, string>();
 
-const menuTree = [
+const menuTree: AuthMenu[] = [
   {
     id: '1',
     menu_name: '用户管理',
     parent_id: '0',
     menu_type: 1,
     route_path: '/user',
+    icon: 'team',
+    hide_in_menu: false,
     sort: 1,
     children: [
       {
@@ -98,6 +117,9 @@ const menuTree = [
         parent_id: '1',
         menu_type: 2,
         route_path: '/user/member',
+        component: './User/Member',
+        icon: 'user',
+        hide_in_menu: false,
         sort: 1,
         children: null,
       },
@@ -107,6 +129,9 @@ const menuTree = [
         parent_id: '1',
         menu_type: 2,
         route_path: '/user/leader',
+        component: './User/Leader',
+        icon: 'crown',
+        hide_in_menu: false,
         sort: 2,
         children: null,
       },
@@ -118,6 +143,8 @@ const menuTree = [
     parent_id: '0',
     menu_type: 1,
     route_path: '/content',
+    icon: 'read',
+    hide_in_menu: false,
     sort: 2,
     children: [
       {
@@ -126,6 +153,9 @@ const menuTree = [
         parent_id: '4',
         menu_type: 2,
         route_path: '/content/note',
+        component: './Content/Note',
+        icon: 'fileText',
+        hide_in_menu: false,
         sort: 1,
         children: null,
       },
@@ -135,6 +165,9 @@ const menuTree = [
         parent_id: '4',
         menu_type: 2,
         route_path: '/content/strategy',
+        component: './Content/Guide',
+        icon: 'book',
+        hide_in_menu: false,
         sort: 2,
         children: null,
       },
@@ -144,98 +177,42 @@ const menuTree = [
         parent_id: '4',
         menu_type: 2,
         route_path: '/content/activity',
+        component: './Activity',
+        icon: 'calendar',
+        hide_in_menu: false,
         sort: 3,
         children: null,
       },
     ],
   },
+  {
+    id: '10',
+    menu_name: '个人中心',
+    parent_id: '0',
+    menu_type: 2,
+    route_path: '/center',
+    component: './Center',
+    icon: 'user',
+    hide_in_menu: true,
+    sort: 99,
+    children: null,
+  },
 ];
 
-const permTree = [
-  {
-    module: 'activity',
-    children: [
-      {
-        id: '8',
-        perm_name: '查询活动',
-        perm_key: 'activity:list',
-        request_method: 'GET',
-        api_path: '/api/v1/admin/activities',
-      },
-      {
-        id: '9',
-        perm_name: '编辑活动',
-        perm_key: 'activity:edit',
-        request_method: 'PUT',
-        api_path: '/api/v1/admin/activities/:id',
-      },
-    ],
-  },
-  {
-    module: 'member',
-    children: [
-      {
-        id: '1',
-        perm_name: '查询会员',
-        perm_key: 'member:list',
-        request_method: 'GET',
-        api_path: '/api/v1/admin/members',
-      },
-      {
-        id: '2',
-        perm_name: '编辑会员',
-        perm_key: 'member:edit',
-        request_method: 'PUT',
-        api_path: '/api/v1/admin/members/:id',
-      },
-      {
-        id: '3',
-        perm_name: '删除会员',
-        perm_key: 'member:delete',
-        request_method: 'DELETE',
-        api_path: '/api/v1/admin/members/:id',
-      },
-    ],
-  },
-  {
-    module: 'note',
-    children: [
-      {
-        id: '4',
-        perm_name: '查询笔记',
-        perm_key: 'note:list',
-        request_method: 'GET',
-        api_path: '/api/v1/admin/notes',
-      },
-      {
-        id: '5',
-        perm_name: '编辑笔记',
-        perm_key: 'note:edit',
-        request_method: 'PUT',
-        api_path: '/api/v1/admin/notes/:id',
-      },
-      {
-        id: '6',
-        perm_name: '删除笔记',
-        perm_key: 'note:delete',
-        request_method: 'DELETE',
-        api_path: '/api/v1/admin/notes/:id',
-      },
-    ],
-  },
-  {
-    module: 'strategy',
-    children: [
-      {
-        id: '7',
-        perm_name: '查询攻略',
-        perm_key: 'strategy:list',
-        request_method: 'GET',
-        api_path: '/api/v1/admin/strategies',
-      },
-    ],
-  },
+const permKeys = [
+  'activity:list',
+  'activity:edit',
+  'member:list',
+  'member:edit',
+  'member:delete',
+  'note:list',
+  'note:edit',
+  'note:delete',
+  'strategy:list',
 ];
+
+currentAdmin.menu_tree = menuTree;
+currentAdmin.perm_keys = permKeys;
 
 function makeCode() {
   return Array.from({ length: 4 }, () => {
@@ -287,10 +264,6 @@ function formatIso8(date = new Date()) {
   return `${year}-${month}-${day}T${hour}:${minute}:${second}.${ms}+08:00`;
 }
 
-function isTokenValid(token: string, prefix: string) {
-  return Boolean(token) && token.startsWith(`${prefix}_`);
-}
-
 function getBearer(req: any) {
   const auth = req.headers.authorization || '';
   return auth.replace(/^Bearer\s+/i, '');
@@ -323,7 +296,7 @@ function normalizeBody<T extends object>(body?: T | string) {
 function validateToken(req: any, res: any) {
   const token = getBearer(req);
 
-  if (!isTokenValid(token, 'mock_access')) {
+  if (!token) {
     sendBiz(res, 1006, '令牌已过期');
     return false;
   }
@@ -509,7 +482,7 @@ function clearNotificationsHandler(req: any, res: any) {
 }
 
 export default {
-  'GET /api/v1/admin/captcha': (_req: any, res: any) => {
+  'GET /__mock/api/v1/admin/captcha': (_req: any, res: any) => {
     const code = makeCode();
     const key = `mock_${Date.now().toString(36)}`;
 
@@ -523,7 +496,7 @@ export default {
       },
     });
   },
-  'POST /api/v1/admin/login': (req: any, res: any) => {
+  'POST /__mock/api/v1/admin/login': (req: any, res: any) => {
     const { username, password, captcha_id, captcha } = req.body || {};
     const code = capMap.get(captcha_id);
 
@@ -553,26 +526,27 @@ export default {
       role: currentAdmin.role,
       avatar: currentAdmin.avatar,
       menu_tree: menuTree,
-      perm_tree: permTree,
+      perm_keys: permKeys,
     });
   },
-  'POST /api/v1/admin/logout': (req: any, res: any) => {
+  'POST /__mock/api/v1/admin/logout': (req: any, res: any) => {
     if (!validateToken(req, res)) {
       return;
     }
 
     sendBiz(res, 0, '退出成功', null);
   },
-  'GET /api/v1/admin/auth/me': getMeHandler,
-  'PUT /api/v1/admin/auth/password': updatePasswordHandler,
-  'PUT /api/v1/admin/center/profile': updateUsernameHandler,
-  'PUT /api/v1/admin/center/avatar': updateAvatarHandler,
-  'GET /api/v1/admin/center/notifications': queryNotificationsHandler,
-  'GET /api/v1/admin/center/notifications/unread': queryUnreadHandler,
-  'PUT /api/v1/admin/center/notifications/read-all':
+  'GET /__mock/api/v1/admin/auth/me': getMeHandler,
+  'PUT /__mock/api/v1/admin/auth/password': updatePasswordHandler,
+  'PUT /__mock/api/v1/admin/center/profile': updateUsernameHandler,
+  'PUT /__mock/api/v1/admin/center/avatar': updateAvatarHandler,
+  'GET /__mock/api/v1/admin/center/notifications': queryNotificationsHandler,
+  'GET /__mock/api/v1/admin/center/notifications/unread': queryUnreadHandler,
+  'PUT /__mock/api/v1/admin/center/notifications/read-all':
     markAllNotificationsReadHandler,
-  'PUT /api/v1/admin/center/notifications/:id/read':
+  'PUT /__mock/api/v1/admin/center/notifications/:id/read':
     markNotificationReadHandler,
-  'DELETE /api/v1/admin/center/notifications/:id': deleteNotificationHandler,
-  'DELETE /api/v1/admin/center/notifications': clearNotificationsHandler,
+  'DELETE /__mock/api/v1/admin/center/notifications/:id':
+    deleteNotificationHandler,
+  'DELETE /__mock/api/v1/admin/center/notifications': clearNotificationsHandler,
 };

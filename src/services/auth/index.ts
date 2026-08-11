@@ -3,7 +3,7 @@ import { apiRequest } from '@/lib/apiRequest';
 
 import type { CurrentInfo, PwdBody } from './types';
 
-export type { CurrentInfo, PwdBody } from './types';
+export type { AuthMenu, CurrentInfo, PwdBody } from './types';
 
 export async function getMe(options?: {
   [key: string]: any;

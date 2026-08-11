@@ -12,7 +12,7 @@ import {
   SafetyCertificateOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { history, useModel } from '@umijs/max';
+import { useModel } from '@umijs/max';
 import { App, Button, Checkbox, Form, Input } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { carouselImages } from './carouselConfig';
@@ -101,7 +101,7 @@ const LoginPage: React.FC = () => {
 
       const redirect =
         new URLSearchParams(window.location.search).get('redirect') || '/';
-      history.replace(redirect);
+      window.location.replace(redirect);
     } catch {
       clearAuth();
       await loadCode();

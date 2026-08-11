@@ -1,5 +1,6 @@
 import type { ApiResponse } from '@/constants';
 import { apiRequest } from '@/lib/apiRequest';
+import type { AuthMenu } from '@/services/auth';
 
 export type LoginForm = {
   username: string;
@@ -8,37 +9,14 @@ export type LoginForm = {
   captcha: string;
 };
 
-export type MenuItem = {
-  id: string;
-  menu_name: string;
-  parent_id: string;
-  menu_type: number;
-  route_path: string;
-  sort: number;
-  children: MenuItem[] | null;
-};
-
-export type PermItem = {
-  id: string;
-  perm_name: string;
-  perm_key: string;
-  request_method: string;
-  api_path: string;
-};
-
-export type PermGroup = {
-  module: string;
-  children: PermItem[];
-};
-
 export type LoginData = {
   token: string;
   id: string;
   username: string;
   role: string;
   avatar: string;
-  menu_tree: MenuItem[];
-  perm_tree: PermGroup[];
+  menu_tree: AuthMenu[];
+  perm_keys: string[];
 };
 
 export type CaptchaData = {

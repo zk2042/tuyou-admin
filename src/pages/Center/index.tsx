@@ -66,13 +66,17 @@ type UserState = {
   role: string;
   avatar: string;
   adminname?: string;
-  status?: boolean;
+  status?: string;
+  menu_tree?: CurrentInfo['menu_tree'];
+  perm_keys?: string[];
 };
 
 function toCurrentInfo(profile?: UserState): CurrentInfo | undefined {
   return Boolean(profile?.id) &&
     typeof profile?.adminname === 'string' &&
-    typeof profile?.status === 'boolean'
+    typeof profile?.status === 'string' &&
+    Array.isArray(profile.menu_tree) &&
+    Array.isArray(profile.perm_keys)
     ? {
         id: profile.id,
         username: profile.username,
@@ -80,6 +84,8 @@ function toCurrentInfo(profile?: UserState): CurrentInfo | undefined {
         role: profile.role,
         avatar: profile.avatar,
         status: profile.status,
+        menu_tree: profile.menu_tree,
+        perm_keys: profile.perm_keys,
       }
     : undefined;
 }
@@ -457,8 +463,10 @@ const CenterPage: React.FC = () => {
                 </Typography.Text>
                 <Space size={8} wrap className={styles.tagGroup}>
                   <Tag color="processing">{profile?.role || '-'}</Tag>
-                  <Tag color={profile?.status ? 'success' : 'default'}>
-                    {profile?.status ? '正常' : '禁用'}
+                  <Tag
+                    color={profile?.status === '启用' ? 'success' : 'default'}
+                  >
+                    {profile?.status || '-'}
                   </Tag>
                 </Space>
               </div>
