@@ -10,6 +10,9 @@ interface EditModalProps {
   record?: MenuRecord;
   onCancel: () => void;
   onSubmit: (values: MenuValues) => void;
+  parentOptions: { label: string; value: string }[];
+  parentLoading: boolean;
+  onParentOpen: () => void;
 }
 
 const EditModal = ({
@@ -18,6 +21,9 @@ const EditModal = ({
   record,
   onCancel,
   onSubmit,
+  parentOptions,
+  parentLoading,
+  onParentOpen,
 }: EditModalProps) => {
   const [form] = Form.useForm<MenuValues>();
 
@@ -28,9 +34,12 @@ const EditModal = ({
 
     form.setFieldsValue({
       menu_name: record.menu_name,
-      parent_name: record.parent_name,
-      menu_type: record.menu_type,
+      parent_name: record.parent_name || null,
+      menu_type: record.menu_type_name,
       route_path: record.route_path,
+      component: record.component,
+      icon: record.icon,
+      hide_in_menu: record.hide_in_menu === 1,
       sort: record.sort,
       status: record.status,
     });
@@ -51,15 +60,21 @@ const EditModal = ({
         void form.validateFields().then((values) => {
           onSubmit({
             ...values,
-            parent_name:
-              values.menu_type === '目录'
-                ? null
-                : values.parent_name?.trim() || null,
+            menu_name: values.menu_name.trim(),
+            parent_name: values.parent_name?.trim() || null,
+            route_path: values.route_path.trim(),
+            component: values.component.trim(),
+            icon: values.icon.trim(),
           });
         });
       }}
     >
-      <MenuForm form={form} />
+      <MenuForm
+        form={form}
+        parentOptions={parentOptions}
+        parentLoading={parentLoading}
+        onParentOpen={onParentOpen}
+      />
     </Modal>
   );
 };

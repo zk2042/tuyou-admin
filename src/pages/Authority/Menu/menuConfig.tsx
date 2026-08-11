@@ -6,8 +6,6 @@ import { Button, Space, Tag } from 'antd';
 export interface MenuQueryParams {
   menu_name?: string;
   status?: string;
-  current?: number;
-  pageSize?: number;
 }
 
 export type MenuRecord = MenuItem;
@@ -59,12 +57,6 @@ export const menuColumns = (
   options: ColumnOptions,
 ): ProColumns<MenuRecord>[] => [
   {
-    title: 'ID',
-    dataIndex: 'id',
-    width: 100,
-    hideInSearch: true,
-  },
-  {
     title: '菜单名称',
     dataIndex: 'menu_name',
     width: 140,
@@ -81,7 +73,7 @@ export const menuColumns = (
   },
   {
     title: '类型',
-    dataIndex: 'menu_type',
+    dataIndex: 'menu_type_name',
     width: 100,
     hideInSearch: true,
   },
@@ -90,6 +82,31 @@ export const menuColumns = (
     dataIndex: 'route_path',
     width: 180,
     hideInSearch: true,
+  },
+  {
+    title: '组件路径',
+    dataIndex: 'component',
+    width: 180,
+    hideInSearch: true,
+    render: (_, record) => record.component || '-',
+  },
+  {
+    title: '图标',
+    dataIndex: 'icon',
+    width: 140,
+    hideInSearch: true,
+    render: (_, record) => record.icon || '-',
+  },
+  {
+    title: '菜单隐藏',
+    dataIndex: 'hide_in_menu',
+    width: 100,
+    hideInSearch: true,
+    render: (_, record) => (
+      <Tag color={record.hide_in_menu === 1 ? 'warning' : 'default'}>
+        {record.hide_in_menu === 1 ? '是' : '否'}
+      </Tag>
+    ),
   },
   {
     title: '排序',
@@ -111,12 +128,6 @@ export const menuColumns = (
   {
     title: '创建时间',
     dataIndex: 'create_time',
-    width: 180,
-    hideInSearch: true,
-  },
-  {
-    title: '最近更新时间',
-    dataIndex: 'update_time',
     width: 180,
     hideInSearch: true,
   },

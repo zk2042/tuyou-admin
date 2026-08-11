@@ -1,5 +1,5 @@
 import type { FormInstance } from 'antd';
-import { Form, Input, InputNumber, Select, Switch } from 'antd';
+import { Form, Input, InputNumber, Select, Spin, Switch } from 'antd';
 
 import type { MenuValues } from '../menuConfig';
 
@@ -10,9 +10,17 @@ const TYPE_OPTIONS = [
 
 interface MenuFormProps {
   form: FormInstance<MenuValues>;
+  parentOptions: { label: string; value: string }[];
+  parentLoading: boolean;
+  onParentOpen: () => void;
 }
 
-const MenuForm = ({ form }: MenuFormProps) => {
+const MenuForm = ({
+  form,
+  parentOptions,
+  parentLoading,
+  onParentOpen,
+}: MenuFormProps) => {
   const menuType = Form.useWatch('menu_type', form);
 
   return (
@@ -24,29 +32,18 @@ const MenuForm = ({ form }: MenuFormProps) => {
       >
         <Input maxLength={30} placeholder="请输入菜单名称" />
       </Form.Item>
-      <Form.Item
-        label="父级菜单"
-        name="parent_name"
-        dependencies={['menu_type']}
-        rules={[
-          ({ getFieldValue }) => ({
-            validator(_, value) {
-              if (getFieldValue('menu_type') !== '菜单' || value?.trim()) {
-                return Promise.resolve();
-              }
-
-              return Promise.reject(new Error('请输入父级菜单'));
-            },
-          }),
-        ]}
-      >
-        <Input
-          maxLength={30}
+      <Form.Item label="父级菜单" name="parent_name">
+        <Select
           allowClear
-          disabled={menuType === '目录'}
-          placeholder={
-            menuType === '目录' ? '一级目录无父级菜单' : '请输入父级菜单'
-          }
+          showSearch
+          loading={parentLoading}
+          options={parentOptions}
+          optionFilterProp="label"
+          placeholder="请选择父级菜单"
+          notFoundContent={parentLoading ? <Spin size="small" /> : undefined}
+          onOpenChange={(open) => {
+            if (open) onParentOpen();
+          }}
         />
       </Form.Item>
       <Form.Item
@@ -58,9 +55,7 @@ const MenuForm = ({ form }: MenuFormProps) => {
           options={TYPE_OPTIONS}
           placeholder="请选择菜单类型"
           onChange={(value) => {
-            if (value === '目录') {
-              form.setFieldValue('parent_name', null);
-            }
+            if (value === '目录') form.setFieldValue('component', '');
           }}
         />
       </Form.Item>
@@ -70,6 +65,31 @@ const MenuForm = ({ form }: MenuFormProps) => {
         rules={[{ required: true, message: '请输入路由路径' }]}
       >
         <Input maxLength={100} placeholder="请输入路由路径" />
+      </Form.Item>
+      <Form.Item
+        label="组件路径"
+        name="component"
+        dependencies={['menu_type']}
+        rules={[
+          ({ getFieldValue }) => ({
+            required: getFieldValue('menu_type') === '菜单',
+            message: '请输入组件路径',
+          }),
+        ]}
+      >
+        <Input
+          maxLength={100}
+          disabled={menuType === '目录'}
+          placeholder={
+            menuType === '目录' ? '目录无需配置组件' : '例如 ./Dashboard'
+          }
+        />
+      </Form.Item>
+      <Form.Item label="图标" name="icon">
+        <Input maxLength={50} placeholder="例如 dashboard" />
+      </Form.Item>
+      <Form.Item label="菜单隐藏" name="hide_in_menu" valuePropName="checked">
+        <Switch checkedChildren="隐藏" unCheckedChildren="显示" />
       </Form.Item>
       <Form.Item
         label="排序"
