@@ -1,4 +1,4 @@
-interface PermItem {
+export interface PermItem {
   id: string;
   perm_name: string;
   module: string;
@@ -452,7 +452,7 @@ const seeds: PermSeed[] = [
   ],
 ];
 
-const permList: PermItem[] = seeds.map(
+export const permList: PermItem[] = seeds.map(
   ([perm_name, module, perm_key, request_method, api_path], index) => ({
     id: String(index + 1),
     perm_name,
@@ -595,12 +595,12 @@ const deleteHandler = (req: any, res: any) => {
 };
 
 export default {
-  'GET /api/v1/admin/api-permissions': listHandler,
+  'GET /__mock/api/v1/admin/api-permissions': listHandler,
   'GET /admin/api-permissions': listHandler,
-  'POST /api/v1/admin/api-permissions': createHandler,
+  'POST /__mock/api/v1/admin/api-permissions': createHandler,
   'POST /admin/api-permissions': createHandler,
-  'PUT /api/v1/admin/api-permissions/:id': editHandler,
+  'PUT /__mock/api/v1/admin/api-permissions/:id': editHandler,
   'PUT /admin/api-permissions/:id': editHandler,
-  'DELETE /api/v1/admin/api-permissions/:id': deleteHandler,
+  'DELETE /__mock/api/v1/admin/api-permissions/:id': deleteHandler,
   'DELETE /admin/api-permissions/:id': deleteHandler,
 };

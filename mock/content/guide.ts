@@ -330,10 +330,10 @@ const pageResult = (source: GuideMockItem[], query: PageQuery) => {
 };
 
 export default {
-  'GET /api/v1/admin/guides': (req: any, res: any) => {
+  'GET /__mock/api/v1/admin/guides': (req: any, res: any) => {
     res.json(pageResult(guideList, req.query || {}));
   },
-  'GET /api/v1/admin/guides/:id': (req: any, res: any) => {
+  'GET /__mock/api/v1/admin/guides/:id': (req: any, res: any) => {
     const current = guideList.find((item) => item.id === req.params.id);
 
     if (!current) {
@@ -351,7 +351,7 @@ export default {
       data: current,
     });
   },
-  'PUT /api/v1/admin/guides/:id': (req: any, res: any) => {
+  'PUT /__mock/api/v1/admin/guides/:id': (req: any, res: any) => {
     const current = guideList.find((item) => item.id === req.params.id);
 
     if (!current) {
@@ -392,7 +392,7 @@ export default {
       data: current,
     });
   },
-  'DELETE /api/v1/admin/guides/:id': (req: any, res: any) => {
+  'DELETE /__mock/api/v1/admin/guides/:id': (req: any, res: any) => {
     const index = guideList.findIndex((item) => item.id === req.params.id);
 
     if (index < 0) {
@@ -412,7 +412,7 @@ export default {
       data: null,
     });
   },
-  'POST /api/v1/admin/guides/batch-delete': (req: any, res: any) => {
+  'POST /__mock/api/v1/admin/guides/batch-delete': (req: any, res: any) => {
     const body = normalizeBatch(req.body);
     const ids = new Set((body.ids || []).map((id) => String(id)));
 
@@ -428,7 +428,7 @@ export default {
       data: null,
     });
   },
-  'POST /api/v1/admin/guides/export': (req: any, res: any) => {
+  'POST /__mock/api/v1/admin/guides/export': (req: any, res: any) => {
     const body = normalizeBatch(req.body);
     const ids = new Set((body.ids || []).map((id) => String(id)));
     const rows = guideList.filter((item) => ids.has(item.id));

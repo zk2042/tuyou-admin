@@ -308,16 +308,16 @@ const resetPasswordHandler = (req: any, res: any) => {
 };
 
 export default {
-  'GET /api/v1/admin/admins/role': roleHandler,
+  'GET /__mock/api/v1/admin/admins/role': roleHandler,
   'GET /admin/admins/role': roleHandler,
-  'GET /api/v1/admin/admins': listHandler,
+  'GET /__mock/api/v1/admin/admins': listHandler,
   'GET /admin/admins': listHandler,
-  'POST /api/v1/admin/admins': createHandler,
+  'POST /__mock/api/v1/admin/admins': createHandler,
   'POST /admin/admins': createHandler,
-  'PUT /api/v1/admin/admins/:id': editHandler,
+  'PUT /__mock/api/v1/admin/admins/:id': editHandler,
   'PUT /admin/admins/:id': editHandler,
-  'DELETE /api/v1/admin/admins/:id': deleteHandler,
+  'DELETE /__mock/api/v1/admin/admins/:id': deleteHandler,
   'DELETE /admin/admins/:id': deleteHandler,
-  'PUT /api/v1/admin/admins/:id/reset-password': resetPasswordHandler,
+  'PUT /__mock/api/v1/admin/admins/:id/reset-password': resetPasswordHandler,
   'PUT /admin/admins/:id/reset-password': resetPasswordHandler,
 };

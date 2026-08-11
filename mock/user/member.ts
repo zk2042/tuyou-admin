@@ -209,25 +209,25 @@ const memberList: UserItem[] = [
 ];
 
 export default {
-  'GET /api/v1/admin/members': (req: any, res: any) => {
+  'GET /__mock/api/v1/admin/members': (req: any, res: any) => {
     res.json(pageResult(memberList, req.query || {}));
   },
-  'GET /api/v1/admin/members/:id': (req: any, res: any) => {
+  'GET /__mock/api/v1/admin/members/:id': (req: any, res: any) => {
     res.json(detailResult(findItem(memberList, req.params.id) || null));
   },
-  'PUT /api/v1/admin/members/:id': (req: any, res: any) => {
+  'PUT /__mock/api/v1/admin/members/:id': (req: any, res: any) => {
     res.json(updateItem(memberList, req.params.id, req.body));
   },
-  'DELETE /api/v1/admin/members/:id': (req: any, res: any) => {
+  'DELETE /__mock/api/v1/admin/members/:id': (req: any, res: any) => {
     res.json(removeItem(memberList, req.params.id));
   },
-  'POST /api/v1/admin/members/batch-delete': (req: any, res: any) => {
+  'POST /__mock/api/v1/admin/members/batch-delete': (req: any, res: any) => {
     res.json(removeItems(memberList, req.body));
   },
-  'PUT /api/v1/admin/members/batch-status': (req: any, res: any) => {
+  'PUT /__mock/api/v1/admin/members/batch-status': (req: any, res: any) => {
     res.json(updateStatusItems(memberList, req.body));
   },
-  'GET /api/v1/admin/members/export': (_req: any, res: any) => {
+  'GET /__mock/api/v1/admin/members/export': (_req: any, res: any) => {
     const content = exportText(
       [
         'ID',

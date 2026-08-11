@@ -32,6 +32,33 @@ interface RequestExecutorOptions extends RequestOptions {
   skipAuthToken?: boolean;
 }
 
+const MOCK_BASE_URL = '/__mock/api/v1';
+
+// 开发环境下仅对可恢复的接口异常启用 Mock 兜底
+function canFallbackToMock(error: any, method: RequestMethod) {
+  if (error?.name === 'BizError') {
+    return false;
+  }
+
+  const status = error?.response?.status;
+
+  if (status === 404 || status === 501) {
+    return true;
+  }
+
+  if (method.toUpperCase() !== 'GET') {
+    return false;
+  }
+
+  return (
+    error?.code === 'ECONNABORTED' ||
+    error?.message === 'Network Error' ||
+    error?.message?.toLowerCase?.().includes('timeout') ||
+    [502, 503, 504].includes(status)
+  );
+}
+
+// 将非成功业务状态转换为统一的 BizError
 function throwBizError<T>(response: ApiResponse<T>) {
   if (
     typeof response?.code === 'number' &&
@@ -50,6 +77,7 @@ function throwBizError<T>(response: ApiResponse<T>) {
   return response;
 }
 
+// 执行请求并将异常交给统一错误处理器
 async function requestWithAuth<T>(
   url: string,
   options: Omit<RequestExecutorOptions, 'url'>,
@@ -87,12 +115,31 @@ export async function apiRequest<T = unknown>(
       ...restOptions,
     },
     async (path, requestOptions) => {
-      const response = await request<ApiResponse<T>>(path, {
-        ...requestOptions,
-        skipErrorHandler: true,
-      });
+      try {
+        const response = await request<ApiResponse<T>>(path, {
+          ...requestOptions,
+          skipErrorHandler: true,
+        });
 
-      return throwBizError(response);
+        return throwBizError(response);
+      } catch (error) {
+        if (
+          process.env.NODE_ENV !== 'development' ||
+          !canFallbackToMock(error, method)
+        ) {
+          throw error;
+        }
+
+        // 开发环境接口不可用时，请求对应的本地 Mock 地址
+        const response = await request<ApiResponse<T>>(path, {
+          ...requestOptions,
+          baseURL: MOCK_BASE_URL,
+          skipErrorHandler: true,
+        });
+
+        console.warn(`[Mock Fallback] ${method.toUpperCase()} /api/v1${path}`);
+        return throwBizError(response);
+      }
     },
   );
 }

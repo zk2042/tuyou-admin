@@ -262,10 +262,10 @@ const pageResult = (source: CommentMockItem[], query: PageQuery) => {
 };
 
 export default {
-  'GET /api/v1/admin/comments': (req: any, res: any) => {
+  'GET /__mock/api/v1/admin/comments': (req: any, res: any) => {
     res.json(pageResult(commentList, req.query || {}));
   },
-  'GET /api/v1/admin/comments/:id': (req: any, res: any) => {
+  'GET /__mock/api/v1/admin/comments/:id': (req: any, res: any) => {
     const current = commentList.find((item) => item.id === req.params.id);
 
     if (!current) {
@@ -283,7 +283,7 @@ export default {
       data: current,
     });
   },
-  'DELETE /api/v1/admin/comments/:id': (req: any, res: any) => {
+  'DELETE /__mock/api/v1/admin/comments/:id': (req: any, res: any) => {
     const index = commentList.findIndex((item) => item.id === req.params.id);
 
     if (index < 0) {
@@ -303,7 +303,7 @@ export default {
       data: null,
     });
   },
-  'POST /api/v1/admin/comments/batch-delete': (req: any, res: any) => {
+  'POST /__mock/api/v1/admin/comments/batch-delete': (req: any, res: any) => {
     const body = normalizeBatch(req.body);
     const ids = new Set((body.ids || []).map((id) => String(id)));
 

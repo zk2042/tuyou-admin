@@ -123,25 +123,25 @@ const leaderList: LeaderItem[] = [
 ];
 
 export default {
-  'GET /api/v1/admin/leaders': (req: any, res: any) => {
+  'GET /__mock/api/v1/admin/leaders': (req: any, res: any) => {
     res.json(pageResult(leaderList, req.query || {}));
   },
-  'GET /api/v1/admin/leaders/:id': (req: any, res: any) => {
+  'GET /__mock/api/v1/admin/leaders/:id': (req: any, res: any) => {
     res.json(detailResult(findItem(leaderList, req.params.id) || null));
   },
-  'PUT /api/v1/admin/leaders/:id': (req: any, res: any) => {
+  'PUT /__mock/api/v1/admin/leaders/:id': (req: any, res: any) => {
     res.json(updateItem(leaderList, req.params.id, req.body));
   },
-  'DELETE /api/v1/admin/leaders/:id': (req: any, res: any) => {
+  'DELETE /__mock/api/v1/admin/leaders/:id': (req: any, res: any) => {
     res.json(removeItem(leaderList, req.params.id));
   },
-  'POST /api/v1/admin/leaders/batch-delete': (req: any, res: any) => {
+  'POST /__mock/api/v1/admin/leaders/batch-delete': (req: any, res: any) => {
     res.json(removeItems(leaderList, req.body));
   },
-  'PUT /api/v1/admin/leaders/batch-status': (req: any, res: any) => {
+  'PUT /__mock/api/v1/admin/leaders/batch-status': (req: any, res: any) => {
     res.json(updateStatusItems(leaderList, req.body));
   },
-  'GET /api/v1/admin/leaders/export': (_req: any, res: any) => {
+  'GET /__mock/api/v1/admin/leaders/export': (_req: any, res: any) => {
     const content = exportText(
       [
         'ID',

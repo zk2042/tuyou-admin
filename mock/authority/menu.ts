@@ -1,6 +1,6 @@
 type MenuType = '目录' | '菜单';
 
-interface MenuItem {
+export interface MenuItem {
   id: string;
   menu_name: string;
   parent_name: string | null;
@@ -28,7 +28,7 @@ interface MenuBody {
   status?: string;
 }
 
-const menuList: MenuItem[] = [
+export const menuList: MenuItem[] = [
   {
     id: '1',
     menu_name: '工作台',
@@ -366,12 +366,12 @@ const deleteHandler = (req: any, res: any) => {
 };
 
 export default {
-  'GET /api/v1/admin/menus': listHandler,
+  'GET /__mock/api/v1/admin/menus': listHandler,
   'GET /admin/menus': listHandler,
-  'POST /api/v1/admin/menus': createHandler,
+  'POST /__mock/api/v1/admin/menus': createHandler,
   'POST /admin/menus': createHandler,
-  'PUT /api/v1/admin/menus/:id': editHandler,
+  'PUT /__mock/api/v1/admin/menus/:id': editHandler,
   'PUT /admin/menus/:id': editHandler,
-  'DELETE /api/v1/admin/menus/:id': deleteHandler,
+  'DELETE /__mock/api/v1/admin/menus/:id': deleteHandler,
   'DELETE /admin/menus/:id': deleteHandler,
 };
