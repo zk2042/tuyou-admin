@@ -5,7 +5,7 @@ import type {
 } from '@/services/authority/manager/types';
 import { DeleteOutlined, EditOutlined, KeyOutlined } from '@ant-design/icons';
 import type { ProColumns } from '@ant-design/pro-components';
-import { Button, Space, Tag } from 'antd';
+import { Button, Space, Spin, Tag } from 'antd';
 
 export interface ManagerQueryParams {
   username?: string;
@@ -110,7 +110,7 @@ export const managerColumns = (
       loading: options.roleLoading,
       showSearch: true,
       optionFilterProp: 'label',
-      notFoundContent: options.roleLoading ? '加载中' : '暂无角色',
+      notFoundContent: options.roleLoading ? <Spin size="small" /> : '暂无角色',
       onOpenChange: options.onRoleOpen,
     },
   },

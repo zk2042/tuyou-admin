@@ -4,6 +4,7 @@ import {
   Input,
   Modal,
   Select,
+  Spin,
   Switch,
   Typography,
 } from 'antd';
@@ -106,7 +107,7 @@ const EditModal = ({
               options={roleOptions}
               placeholder="请选择所属角色"
               optionFilterProp="label"
-              notFoundContent={roleLoading ? '加载中' : '暂无角色'}
+              notFoundContent={roleLoading ? <Spin size="small" /> : '暂无角色'}
               onOpenChange={onRoleOpen}
             />
           </Form.Item>

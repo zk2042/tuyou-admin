@@ -1,4 +1,4 @@
-import { Form, Input, Modal, Select } from 'antd';
+import { Form, Input, Modal, Select, Spin } from 'antd';
 import { useEffect } from 'react';
 
 import type { CreateValues, RoleProps } from '../managerConfig';
@@ -87,7 +87,7 @@ const CreateModal = ({
             options={roleOptions}
             placeholder="请选择所属角色"
             optionFilterProp="label"
-            notFoundContent={roleLoading ? '加载中' : '暂无角色'}
+            notFoundContent={roleLoading ? <Spin size="small" /> : '暂无角色'}
             onOpenChange={onRoleOpen}
           />
         </Form.Item>
