@@ -22,15 +22,6 @@ export const STATUS_OPTIONS = [
   { label: '禁用', value: '禁用' },
 ];
 
-export const MODULE_OPTIONS = [
-  '个人中心',
-  '用户管理',
-  '活动管理',
-  '内容管理',
-  '评论管理',
-  '权限管理',
-].map((value) => ({ label: value, value }));
-
 interface ColumnOptions {
   onEdit: (record: PermRecord) => void;
   onDelete: (record: PermRecord) => void;

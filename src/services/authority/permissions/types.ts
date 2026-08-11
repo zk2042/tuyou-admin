@@ -6,6 +6,11 @@ export interface PermQuery {
   status?: string;
 }
 
+export interface PermModule {
+  id: string;
+  name: string;
+}
+
 export interface PermItem {
   id: string;
   perm_name: string;

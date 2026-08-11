@@ -594,7 +594,29 @@ const deleteHandler = (req: any, res: any) => {
   res.json({ code: 0, message: '删除 API 权限成功', data: null });
 };
 
+const moduleHandler = (_req: any, res: any) => {
+  const names = [
+    '上传模块',
+    '个人中心',
+    '内容模块',
+    '工作台',
+    '权限模块',
+    '活动模块',
+    '用户模块',
+    '认证模块',
+    '评论模块',
+  ];
+
+  res.json({
+    code: 0,
+    message: '成功',
+    data: names.map((name, index) => ({ id: String(index + 1), name })),
+  });
+};
+
 export default {
+  'GET /__mock/api/v1/admin/api-permissions/module': moduleHandler,
+  'GET /admin/api-permissions/module': moduleHandler,
   'GET /__mock/api/v1/admin/api-permissions': listHandler,
   'GET /admin/api-permissions': listHandler,
   'POST /__mock/api/v1/admin/api-permissions': createHandler,

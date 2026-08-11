@@ -5,8 +5,10 @@ import {
   createPerm,
   deletePerm,
   editPerm,
+  getPermModules,
   queryPerm,
 } from '@/services/authority/permissions';
+import type { PermModule } from '@/services/authority/permissions/types';
 import { message } from '@/utils/message';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType } from '@ant-design/pro-components';
@@ -54,6 +56,27 @@ const PermissionsPage: React.FC = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editRecord, setEditRecord] = useState<PermRecord>();
+  const [modules, setModules] = useState<PermModule[]>([]);
+  const [moduleLoading, setModuleLoading] = useState(false);
+  const loadModules = React.useCallback(async () => {
+    setModuleLoading(true);
+    try {
+      const response = await getPermModules();
+      setModules(response.data ?? []);
+    } catch {
+      setModules([]);
+    } finally {
+      setModuleLoading(false);
+    }
+  }, []);
+  const moduleOptions = useMemo(
+    () =>
+      modules.map((item) => ({
+        label: item.name,
+        value: item.name,
+      })),
+    [modules],
+  );
   const { confirmDelete } = useRowDelete<PermRecord>({
     entityLabel: 'API 权限',
     getName: (record) => record.perm_name,
@@ -164,6 +187,9 @@ const PermissionsPage: React.FC = () => {
       <CreateModal
         open={createOpen}
         saving={creating}
+        moduleOptions={moduleOptions}
+        moduleLoading={moduleLoading}
+        onModuleOpen={loadModules}
         onCancel={closeCreate}
         onSubmit={(values) => {
           void submitCreate(values);
@@ -173,6 +199,9 @@ const PermissionsPage: React.FC = () => {
         open={editOpen}
         saving={editing}
         record={editRecord}
+        moduleOptions={moduleOptions}
+        moduleLoading={moduleLoading}
+        onModuleOpen={loadModules}
         onCancel={closeEdit}
         onSubmit={(values) => {
           void submitEdit(values);
