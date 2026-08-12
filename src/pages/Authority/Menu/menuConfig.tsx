@@ -21,6 +21,8 @@ const renderStatus = (status: string) => {
 };
 
 interface ColumnOptions {
+  canEdit: boolean;
+  canDelete: boolean;
   onEdit: (record: MenuRecord) => void;
   onDelete: (record: MenuRecord) => void;
 }
@@ -28,27 +30,31 @@ interface ColumnOptions {
 const renderActions = (record: MenuRecord, options: ColumnOptions) => {
   return (
     <Space size={0}>
-      <Button
-        type="link"
-        icon={<EditOutlined />}
-        style={{ paddingInline: 4 }}
-        onClick={() => {
-          options.onEdit(record);
-        }}
-      >
-        编辑
-      </Button>
-      <Button
-        danger
-        type="link"
-        icon={<DeleteOutlined />}
-        style={{ paddingInline: 4 }}
-        onClick={() => {
-          options.onDelete(record);
-        }}
-      >
-        删除
-      </Button>
+      {options.canEdit && (
+        <Button
+          type="link"
+          icon={<EditOutlined />}
+          style={{ paddingInline: 4 }}
+          onClick={() => {
+            options.onEdit(record);
+          }}
+        >
+          编辑
+        </Button>
+      )}
+      {options.canDelete && (
+        <Button
+          danger
+          type="link"
+          icon={<DeleteOutlined />}
+          style={{ paddingInline: 4 }}
+          onClick={() => {
+            options.onDelete(record);
+          }}
+        >
+          删除
+        </Button>
+      )}
     </Space>
   );
 };

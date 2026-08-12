@@ -16,6 +16,7 @@ import type {
 import { message } from '@/utils/message';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType } from '@ant-design/pro-components';
+import { useAccess } from '@umijs/max';
 import { Button } from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
 
@@ -56,6 +57,8 @@ const managerRequest = async (params: ManagerQueryParams) => {
 };
 
 const ManagerPage: React.FC = () => {
+  const access = useAccess();
+  const canList = access.hasPerm('manager:list');
   const actionRef = useRef<ActionType>();
   const [createOpen, setCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -94,7 +97,11 @@ const ManagerPage: React.FC = () => {
   });
 
   const loadRoles = React.useCallback(async () => {
-    if (roleFetching.current || roleLoaded.current) {
+    if (
+      !access.hasPerm('manager:role:list') ||
+      roleFetching.current ||
+      roleLoaded.current
+    ) {
       return;
     }
 
@@ -110,7 +117,7 @@ const ManagerPage: React.FC = () => {
       roleFetching.current = false;
       setRoleLoading(false);
     }
-  }, []);
+  }, [access]);
 
   const roleOptions = useMemo(
     () =>
@@ -133,6 +140,9 @@ const ManagerPage: React.FC = () => {
   const columns = useMemo(
     () =>
       managerColumns({
+        canEdit: access.hasPerm('manager:edit'),
+        canResetPassword: access.hasPerm('manager:reset-password'),
+        canDelete: access.hasPerm('manager:delete'),
         roleOptions,
         roleLoading,
         onRoleOpen,
@@ -148,7 +158,7 @@ const ManagerPage: React.FC = () => {
           confirmDelete(record);
         },
       }),
-    [confirmDelete, onRoleOpen, roleLoading, roleOptions],
+    [access, confirmDelete, onRoleOpen, roleLoading, roleOptions],
   );
 
   const closeCreate = React.useCallback(() => {
@@ -231,6 +241,7 @@ const ManagerPage: React.FC = () => {
   return (
     <>
       <ListPage<ManagerRecord, ManagerQueryParams>
+        accessible={canList}
         actionRef={actionRef}
         rowKey="id"
         headerTitle="管理员列表"
@@ -241,18 +252,22 @@ const ManagerPage: React.FC = () => {
           defaultCollapsed: true,
           span: 8,
         }}
-        toolbarActions={[
-          <Button
-            key="create"
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => {
-              setCreateOpen(true);
-            }}
-          >
-            新增管理员
-          </Button>,
-        ]}
+        toolbarActions={
+          access.hasPerm('manager:create')
+            ? [
+                <Button
+                  key="create"
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  onClick={() => {
+                    setCreateOpen(true);
+                  }}
+                >
+                  新增管理员
+                </Button>,
+              ]
+            : []
+        }
       />
       <CreateModal
         open={createOpen}

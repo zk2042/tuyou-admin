@@ -1,6 +1,7 @@
 import ListPage from '@/components/ListPage';
 import { API_RESPONSE_SUCCESS_CODE, PAGE_SIZE } from '@/constants';
 import { useRowDelete } from '@/hooks/table/useRowDelete';
+import { getMe } from '@/services/auth';
 import {
   createPerm,
   deletePerm,
@@ -9,9 +10,11 @@ import {
   queryPerm,
 } from '@/services/authority/permissions';
 import type { PermModule } from '@/services/authority/permissions/types';
+import { setUser } from '@/utils/auth';
 import { message } from '@/utils/message';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType } from '@ant-design/pro-components';
+import { useAccess, useModel } from '@umijs/max';
 import { Button } from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
 
@@ -24,32 +27,10 @@ import {
   type PermValues,
 } from './permissionsConfig';
 
-const permissionsRequest = async (params: PermQueryParams) => {
-  try {
-    const response = await queryPerm({
-      page: params.current ?? 1,
-      size: params.pageSize ?? PAGE_SIZE,
-      perm_name: params.perm_name,
-      module: params.module,
-      status: params.status,
-    });
-    const pageData = response.data;
-
-    return {
-      data: pageData?.list ?? [],
-      success: response.code === API_RESPONSE_SUCCESS_CODE,
-      total: pageData?.total ?? 0,
-    };
-  } catch {
-    return {
-      data: [],
-      success: false,
-      total: 0,
-    };
-  }
-};
-
 const PermissionsPage: React.FC = () => {
+  const access = useAccess();
+  const { setInitialState } = useModel('@@initialState');
+  const canList = access.hasPerm('permission:list');
   const actionRef = useRef<ActionType>();
   const [createOpen, setCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -58,6 +39,41 @@ const PermissionsPage: React.FC = () => {
   const [editRecord, setEditRecord] = useState<PermRecord>();
   const [modules, setModules] = useState<PermModule[]>([]);
   const [moduleLoading, setModuleLoading] = useState(false);
+  const permissionsRequest = React.useCallback(
+    async (params: PermQueryParams) => {
+      try {
+        const [response, meResponse] = await Promise.all([
+          queryPerm({
+            page: params.current ?? 1,
+            size: params.pageSize ?? PAGE_SIZE,
+            perm_name: params.perm_name,
+            module: params.module,
+            status: params.status,
+          }),
+          getMe(),
+        ]);
+        const pageData = response.data;
+
+        if (meResponse.data) {
+          setUser(meResponse.data);
+          await setInitialState(meResponse.data);
+        }
+
+        return {
+          data: pageData?.list ?? [],
+          success: response.code === API_RESPONSE_SUCCESS_CODE,
+          total: pageData?.total ?? 0,
+        };
+      } catch {
+        return {
+          data: [],
+          success: false,
+          total: 0,
+        };
+      }
+    },
+    [setInitialState],
+  );
   const loadModules = React.useCallback(async () => {
     setModuleLoading(true);
     try {
@@ -98,6 +114,8 @@ const PermissionsPage: React.FC = () => {
   const columns = useMemo(
     () =>
       permissionsColumns({
+        canEdit: access.hasPerm('permission:edit'),
+        canDelete: access.hasPerm('permission:delete'),
         onEdit: (record) => {
           setEditRecord(record);
           setEditOpen(true);
@@ -106,7 +124,7 @@ const PermissionsPage: React.FC = () => {
           confirmDelete(record);
         },
       }),
-    [confirmDelete],
+    [access, confirmDelete],
   );
 
   const closeCreate = React.useCallback(() => {
@@ -161,6 +179,7 @@ const PermissionsPage: React.FC = () => {
   return (
     <>
       <ListPage<PermRecord, PermQueryParams>
+        accessible={canList}
         actionRef={actionRef}
         rowKey="id"
         headerTitle="API 权限列表"
@@ -171,18 +190,22 @@ const PermissionsPage: React.FC = () => {
           defaultCollapsed: true,
           span: 8,
         }}
-        toolbarActions={[
-          <Button
-            key="create"
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => {
-              setCreateOpen(true);
-            }}
-          >
-            新增权限
-          </Button>,
-        ]}
+        toolbarActions={
+          access.hasPerm('permission:create')
+            ? [
+                <Button
+                  key="create"
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  onClick={() => {
+                    setCreateOpen(true);
+                  }}
+                >
+                  新增权限
+                </Button>,
+              ]
+            : []
+        }
       />
       <CreateModal
         open={createOpen}

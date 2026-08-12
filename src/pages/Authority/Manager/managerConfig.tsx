@@ -33,6 +33,9 @@ const renderStatus = (status: string) => {
 };
 
 interface ColumnOptions extends RoleProps {
+  canEdit: boolean;
+  canResetPassword: boolean;
+  canDelete: boolean;
   onEdit: (record: ManagerRecord) => void;
   onResetPassword: (record: ManagerRecord) => void;
   onDelete: (record: ManagerRecord) => void;
@@ -41,37 +44,43 @@ interface ColumnOptions extends RoleProps {
 const renderActions = (record: ManagerRecord, options: ColumnOptions) => {
   return (
     <Space size={0}>
-      <Button
-        type="link"
-        icon={<EditOutlined />}
-        style={{ paddingInline: 4 }}
-        onClick={() => {
-          options.onEdit(record);
-        }}
-      >
-        编辑
-      </Button>
-      <Button
-        type="link"
-        icon={<KeyOutlined />}
-        style={{ color: '#faad14', paddingInline: 4 }}
-        onClick={() => {
-          options.onResetPassword(record);
-        }}
-      >
-        重置密码
-      </Button>
-      <Button
-        danger
-        type="link"
-        icon={<DeleteOutlined />}
-        style={{ paddingInline: 4 }}
-        onClick={() => {
-          options.onDelete(record);
-        }}
-      >
-        删除
-      </Button>
+      {options.canEdit && (
+        <Button
+          type="link"
+          icon={<EditOutlined />}
+          style={{ paddingInline: 4 }}
+          onClick={() => {
+            options.onEdit(record);
+          }}
+        >
+          编辑
+        </Button>
+      )}
+      {options.canResetPassword && (
+        <Button
+          type="link"
+          icon={<KeyOutlined />}
+          style={{ color: '#faad14', paddingInline: 4 }}
+          onClick={() => {
+            options.onResetPassword(record);
+          }}
+        >
+          重置密码
+        </Button>
+      )}
+      {options.canDelete && (
+        <Button
+          danger
+          type="link"
+          icon={<DeleteOutlined />}
+          style={{ paddingInline: 4 }}
+          onClick={() => {
+            options.onDelete(record);
+          }}
+        >
+          删除
+        </Button>
+      )}
     </Space>
   );
 };

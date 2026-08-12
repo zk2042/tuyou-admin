@@ -1,15 +1,18 @@
 import ListPage from '@/components/ListPage';
 import { API_RESPONSE_SUCCESS_CODE, PAGE_SIZE } from '@/constants';
 import { useRowDelete } from '@/hooks/table/useRowDelete';
+import { getMe } from '@/services/auth';
 import {
   createRole,
   deleteRole,
   editRole,
   queryRole,
 } from '@/services/authority/role';
+import { setUser } from '@/utils/auth';
 import { message } from '@/utils/message';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType } from '@ant-design/pro-components';
+import { useAccess, useModel } from '@umijs/max';
 import { Button } from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
 
@@ -49,6 +52,12 @@ const roleRequest = async (params: RoleQueryParams) => {
 };
 
 const RolePage: React.FC = () => {
+  const access = useAccess();
+  const { initialState, setInitialState } = useModel('@@initialState');
+  const canList = access.hasPerm('role:list');
+  const canLoadMenus = access.hasPerm('role:menu:list');
+  const canLoadPermissions = access.hasPerm('role:permission:list');
+  const canSavePermissions = access.hasPerm('role:permission:assign');
   const actionRef = useRef<ActionType>();
   const [createOpen, setCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -75,23 +84,47 @@ const RolePage: React.FC = () => {
       actionRef.current?.reload();
     },
   });
-  const columns = useMemo(
-    () =>
-      roleColumns({
-        onEdit: (record) => {
-          setEditRecord(record);
-          setEditOpen(true);
-        },
-        onAssign: (record) => {
-          setAssignRecord(record);
-          setAssignOpen(true);
-        },
-        onDelete: (record) => {
-          confirmDelete(record);
-        },
-      }),
-    [confirmDelete],
-  );
+  const columns = useMemo(() => {
+    return roleColumns({
+      canEdit: access.hasPerm('role:edit'),
+      canAssign: canLoadMenus && canLoadPermissions && canSavePermissions,
+      canDelete: access.hasPerm('role:delete'),
+      onEdit: (record) => {
+        setEditRecord(record);
+        setEditOpen(true);
+      },
+      onAssign: (record) => {
+        setAssignRecord(record);
+        setAssignOpen(true);
+      },
+      onDelete: (record) => {
+        confirmDelete(record);
+      },
+    });
+  }, [
+    access,
+    canLoadMenus,
+    canLoadPermissions,
+    canSavePermissions,
+    confirmDelete,
+  ]);
+
+  const refreshAuth = React.useCallback(async () => {
+    const response = await getMe();
+    if (!response.data) {
+      return;
+    }
+
+    const menuChanged =
+      JSON.stringify(initialState?.menu_tree ?? []) !==
+      JSON.stringify(response.data.menu_tree);
+    setUser(response.data);
+    await setInitialState(response.data);
+
+    if (menuChanged) {
+      window.location.replace('/');
+    }
+  }, [initialState?.menu_tree, setInitialState]);
 
   const closeCreate = React.useCallback(() => {
     setCreateOpen(false);
@@ -145,6 +178,7 @@ const RolePage: React.FC = () => {
   return (
     <>
       <ListPage<RoleRecord, RoleQueryParams>
+        accessible={canList}
         actionRef={actionRef}
         rowKey="id"
         headerTitle="角色列表"
@@ -155,18 +189,22 @@ const RolePage: React.FC = () => {
           defaultCollapsed: true,
           span: 8,
         }}
-        toolbarActions={[
-          <Button
-            key="create"
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => {
-              setCreateOpen(true);
-            }}
-          >
-            新增角色
-          </Button>,
-        ]}
+        toolbarActions={
+          access.hasPerm('role:create')
+            ? [
+                <Button
+                  key="create"
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  onClick={() => {
+                    setCreateOpen(true);
+                  }}
+                >
+                  新增角色
+                </Button>,
+              ]
+            : []
+        }
       />
       <CreateModal
         open={createOpen}
@@ -189,6 +227,9 @@ const RolePage: React.FC = () => {
         open={assignOpen}
         roleId={assignRecord?.id}
         roleName={assignRecord?.role_name}
+        canLoadMenus={canLoadMenus}
+        canLoadPermissions={canLoadPermissions}
+        canSave={canSavePermissions}
         onCancel={() => {
           setAssignOpen(false);
           setAssignRecord(undefined);
@@ -196,6 +237,7 @@ const RolePage: React.FC = () => {
         onSaved={() => {
           setAssignOpen(false);
           setAssignRecord(undefined);
+          void refreshAuth();
         }}
       />
     </>
