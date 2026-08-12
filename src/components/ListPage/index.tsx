@@ -3,6 +3,7 @@ import {
   PAGE_SIZE_OPTIONS,
   showTableTotal,
 } from '@/constants/common-const';
+import Forbidden from '@/pages/Exception/403';
 import {
   PageContainer,
   ProTable,
@@ -33,6 +34,7 @@ export interface ListProps<
     ProTableProps<T, U, ValueType>,
     'pagination' | 'request' | 'toolBarRender'
   > {
+  accessible?: boolean;
   pageTitle?: PageContainerProps['title'];
   pageContainerProps?: Omit<PageContainerProps, 'children' | 'title'>;
   request?: TableRequest<T, U, ValueType>;
@@ -45,6 +47,7 @@ const defaultSearch = {
   labelWidth: 120,
 };
 
+// 合并项目统一分页配置和页面自定义配置
 const buildPagination = (
   pagination?: false | TablePaginationConfig,
 ): false | TablePaginationConfig => {
@@ -68,6 +71,7 @@ const isActionColumn = <T extends Record<string, any>, ValueType = 'text'>(
   return column.valueType === 'option' || column.key === 'option';
 };
 
+// 操作列默认固定在表格右侧
 const buildColumns = <T extends Record<string, any>, ValueType = 'text'>(
   columns?: ProTableProps<T, Record<string, any>, ValueType>['columns'],
 ) => {
@@ -87,6 +91,7 @@ const buildColumns = <T extends Record<string, any>, ValueType = 'text'>(
   });
 };
 
+// 默认开启横向滚动，避免列较多时挤压内容
 const buildScroll = (
   scroll?: ProTableProps<Record<string, any>, Record<string, any>>['scroll'],
 ) => {
@@ -100,11 +105,13 @@ const buildScroll = (
   };
 };
 
+// 统一封装列表页容器、搜索、分页和工具栏配置
 const ListPage = <
   T extends Record<string, any>,
   U extends Record<string, any> = Record<string, any>,
   ValueType = 'text',
 >({
+  accessible = true,
   pageTitle,
   pageContainerProps,
   request,
@@ -119,6 +126,10 @@ const ListPage = <
   const tableColumns = React.useMemo(() => {
     return buildColumns<T, ValueType>(columns);
   }, [columns]);
+
+  if (!accessible) {
+    return <Forbidden />;
+  }
 
   return (
     <PageContainer

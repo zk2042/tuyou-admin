@@ -14,6 +14,7 @@ interface UserDetailProps {
   extra?: ReactNode;
 }
 
+// 统一使用抽屉和单列描述列表展示详情信息
 const Detail = ({
   title,
   open,

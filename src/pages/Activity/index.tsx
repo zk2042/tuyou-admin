@@ -5,6 +5,7 @@ import { useRowDelete } from '@/hooks/table/useRowDelete';
 import { message } from '@/utils/message';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType } from '@ant-design/pro-components';
+import { useAccess } from '@umijs/max';
 import { Button, Divider, Modal, Table, Typography } from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
 
@@ -78,8 +79,8 @@ const toReq = (vals: CreateVals): CreateReq => {
     cover_img: vals.cover_img.trim(),
     activity_type: vals.activity_type,
     address: vals.address.trim(),
-    start_time: vals.start_time.format('YYYY-MM-DD HH:mm:ss'),
-    end_time: vals.end_time.format('YYYY-MM-DD HH:mm:ss'),
+    start_time: vals.start_time.format('YYYY-MM-DD HH:mm'),
+    end_time: vals.end_time.format('YYYY-MM-DD HH:mm'),
     max_people: vals.max_people,
     price: vals.price,
     difficulty: vals.difficulty,
@@ -92,6 +93,16 @@ const toReq = (vals: CreateVals): CreateReq => {
 type BatchRow = Pick<ActItem, 'id' | 'title'>;
 
 const ActivityPage: React.FC = () => {
+  const { hasPerm } = useAccess();
+  const canList = hasPerm('activity:list');
+  const canDetail = hasPerm('activity:detail');
+  const canCreate = hasPerm('activity:create');
+  const canEdit = hasPerm('activity:edit') && canDetail;
+  const canDelete = hasPerm('activity:delete');
+  const canBatchDelete = hasPerm('activity:batch-delete');
+  const canExport = hasPerm('activity:export');
+  const canLoadLeader = hasPerm('activity:leader:list');
+  const canUploadImage = hasPerm('upload:image:batch');
   const actionRef = useRef<ActionType>();
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<BatchRow[]>([]);
@@ -167,7 +178,7 @@ const ActivityPage: React.FC = () => {
   }, []);
 
   React.useEffect(() => {
-    if (!createOpen || leaderList.length) {
+    if (!createOpen || !canLoadLeader || leaderList.length) {
       return;
     }
 
@@ -197,7 +208,7 @@ const ActivityPage: React.FC = () => {
     return () => {
       active = false;
     };
-  }, [createOpen, leaderList.length]);
+  }, [canLoadLeader, createOpen, leaderList.length]);
 
   const closeCreate = React.useCallback(() => {
     setCreateOpen(false);
@@ -308,17 +319,67 @@ const ActivityPage: React.FC = () => {
   const columns = useMemo(
     () =>
       activityColumns({
-        onDetail: openDetail,
-        onEdit: openEdit,
-        onDelete: confirmDelete,
+        onDetail: canDetail ? openDetail : undefined,
+        onEdit: canEdit ? openEdit : undefined,
+        onDelete: canDelete ? confirmDelete : undefined,
         deleting,
       }),
-    [confirmDelete, deleting, openDetail, openEdit],
+    [
+      canDelete,
+      canDetail,
+      canEdit,
+      confirmDelete,
+      deleting,
+      openDetail,
+      openEdit,
+    ],
   );
+
+  const toolbarActions = [
+    canExport && (
+      <Button
+        key="export"
+        disabled={selectedKeys.length === 0}
+        loading={exporting}
+        onClick={openExport}
+      >
+        批量导出
+      </Button>
+    ),
+    canBatchDelete && (
+      <Button
+        key="delete"
+        disabled={selectedKeys.length === 0}
+        danger
+        loading={batchDel}
+        onClick={() => {
+          if (!selectedKeys.length) {
+            message.warning('请先选择要批量删除的活动');
+            return;
+          }
+
+          setBatchOpen(true);
+        }}
+      >
+        批量删除
+      </Button>
+    ),
+    canCreate && (
+      <Button
+        key="create"
+        type="primary"
+        icon={<PlusOutlined />}
+        onClick={openCreate}
+      >
+        创建活动
+      </Button>
+    ),
+  ].filter(Boolean) as React.ReactNode[];
 
   return (
     <>
       <ListPage<ActItem, ActQuery>
+        accessible={canList}
         actionRef={actionRef}
         rowKey="id"
         headerTitle="活动列表"
@@ -329,47 +390,18 @@ const ActivityPage: React.FC = () => {
           defaultCollapsed: true,
           span: 8,
         }}
-        rowSelection={{
-          selectedRowKeys: selectedKeys,
-          onChange: (keys, rows) => {
-            setSelectedKeys(keys);
-            setSelectedRows(rows as BatchRow[]);
-          },
-        }}
-        toolbarActions={[
-          <Button
-            key="export"
-            disabled={selectedKeys.length === 0}
-            loading={exporting}
-            onClick={openExport}
-          >
-            批量导出
-          </Button>,
-          <Button
-            key="delete"
-            disabled={selectedKeys.length === 0}
-            danger
-            loading={batchDel}
-            onClick={() => {
-              if (!selectedKeys.length) {
-                message.warning('请先选择要批量删除的活动');
-                return;
+        rowSelection={
+          canBatchDelete || canExport
+            ? {
+                selectedRowKeys: selectedKeys,
+                onChange: (keys, rows) => {
+                  setSelectedKeys(keys);
+                  setSelectedRows(rows as BatchRow[]);
+                },
               }
-
-              setBatchOpen(true);
-            }}
-          >
-            批量删除
-          </Button>,
-          <Button
-            key="create"
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={openCreate}
-          >
-            创建活动
-          </Button>,
-        ]}
+            : undefined
+        }
+        toolbarActions={toolbarActions}
       />
       <CreateModal
         open={createOpen}
@@ -379,6 +411,7 @@ const ActivityPage: React.FC = () => {
         onCancel={closeCreate}
         onSubmit={submitCreate}
         uploadRequest={uploadCover}
+        uploadDisabled={!canUploadImage}
       />
       <DetailModal
         open={detailOpen}

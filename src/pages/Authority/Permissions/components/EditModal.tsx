@@ -10,6 +10,9 @@ interface EditModalProps {
   record?: PermRecord;
   onCancel: () => void;
   onSubmit: (values: PermValues) => void;
+  moduleOptions: { label: string; value: string }[];
+  moduleLoading: boolean;
+  onModuleOpen: () => void;
 }
 
 const EditModal = ({
@@ -18,6 +21,9 @@ const EditModal = ({
   record,
   onCancel,
   onSubmit,
+  moduleOptions,
+  moduleLoading,
+  onModuleOpen,
 }: EditModalProps) => {
   const [form] = Form.useForm<PermValues>();
 
@@ -51,7 +57,12 @@ const EditModal = ({
         void form.validateFields().then(onSubmit);
       }}
     >
-      <PermForm form={form} />
+      <PermForm
+        form={form}
+        moduleOptions={moduleOptions}
+        moduleLoading={moduleLoading}
+        onModuleOpen={onModuleOpen}
+      />
     </Modal>
   );
 };

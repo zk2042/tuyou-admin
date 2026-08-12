@@ -116,7 +116,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"token\": \"mock_access_mdx4n9_ak31es\",\n    \"admin\": {\n      \"id\": 1,\n      \"username\": \"admin\",\n      \"role\": \"超级管理员\",\n      \"avatar\": \"\"\n    }\n  }\n}"
+              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"token\": \"mock_access_mdx4n9_ak31es\",\n    \"id\": \"1\",\n    \"username\": \"admin11\",\n    \"role\": \"超级管理员\",\n    \"avatar\": \"\",\n    \"menu_tree\": [],\n    \"perm_keys\": []\n  }\n}"
             }
           ]
         },
@@ -178,7 +178,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"code\": 0,\n  \"message\": \"成功\",\n  \"data\": {\n    \"id\": 1,\n    \"username\": \"admin\",\n    \"role\": \"超级管理员\",\n    \"avatar\": \"\"\n  }\n}"
+              "body": "{\n  \"code\": 0,\n  \"message\": \"获取成功\",\n  \"data\": {\n    \"id\": \"1\",\n    \"username\": \"admin11\",\n    \"adminname\": \"张三\",\n    \"role\": \"超级管理员\",\n    \"avatar\": \"\",\n    \"status\": \"启用\",\n    \"menu_tree\": [\n      {\n        \"id\": 1,\n        \"menu_name\": \"用户管理\",\n        \"parent_id\": 0,\n        \"menu_type\": 1,\n        \"route_path\": \"/user\",\n        \"component\": \"\",\n        \"icon\": \"team\",\n        \"hide_in_menu\": false,\n        \"sort\": 1,\n        \"children\": null\n      }\n    ],\n    \"perm_keys\": [\n      \"member:list\",\n      \"center:profile\",\n      \"center:notification:list\",\n      \"auth:password\"\n    ]\n  }\n}"
             }
           ]
         },

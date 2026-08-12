@@ -28,6 +28,9 @@ export const STATUS_OPTIONS = [
 ];
 
 interface ColumnOptions {
+  canEdit: boolean;
+  canAssign: boolean;
+  canDelete: boolean;
   onEdit: (record: RoleRecord) => void;
   onAssign: (record: RoleRecord) => void;
   onDelete: (record: RoleRecord) => void;
@@ -40,37 +43,43 @@ const renderStatus = (status: string) => {
 const renderActions = (record: RoleRecord, options: ColumnOptions) => {
   return (
     <Space size={0}>
-      <Button
-        type="link"
-        icon={<EditOutlined />}
-        style={{ paddingInline: 4 }}
-        onClick={() => {
-          options.onEdit(record);
-        }}
-      >
-        编辑
-      </Button>
-      <Button
-        type="link"
-        icon={<SafetyCertificateOutlined />}
-        style={{ color: '#2e7d32', paddingInline: 4 }}
-        onClick={() => {
-          options.onAssign(record);
-        }}
-      >
-        分配权限
-      </Button>
-      <Button
-        danger
-        type="link"
-        icon={<DeleteOutlined />}
-        style={{ paddingInline: 4 }}
-        onClick={() => {
-          options.onDelete(record);
-        }}
-      >
-        删除
-      </Button>
+      {options.canEdit && (
+        <Button
+          type="link"
+          icon={<EditOutlined />}
+          style={{ paddingInline: 4 }}
+          onClick={() => {
+            options.onEdit(record);
+          }}
+        >
+          编辑
+        </Button>
+      )}
+      {options.canAssign && (
+        <Button
+          type="link"
+          icon={<SafetyCertificateOutlined />}
+          style={{ color: '#2e7d32', paddingInline: 4 }}
+          onClick={() => {
+            options.onAssign(record);
+          }}
+        >
+          分配权限
+        </Button>
+      )}
+      {options.canDelete && (
+        <Button
+          danger
+          type="link"
+          icon={<DeleteOutlined />}
+          style={{ paddingInline: 4 }}
+          onClick={() => {
+            options.onDelete(record);
+          }}
+        >
+          删除
+        </Button>
+      )}
     </Space>
   );
 };

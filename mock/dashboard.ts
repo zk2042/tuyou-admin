@@ -17,7 +17,7 @@ const data: WorkbenchData = {
 };
 
 export default {
-  'GET /api/v1/admin/workbench': {
+  'GET /__mock/api/v1/admin/workbench': {
     code: 0,
     message: '获取工作台数据成功',
     data,

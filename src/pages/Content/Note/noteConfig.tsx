@@ -147,6 +147,9 @@ interface NoteActionsProps {
   onEdit: (record: NoteItem) => void;
   onDelete: (record: NoteItem) => void;
   deleting: boolean;
+  canDetail: boolean;
+  canEdit: boolean;
+  canDelete: boolean;
 }
 
 const NoteActions = ({
@@ -155,37 +158,46 @@ const NoteActions = ({
   onEdit,
   onDelete,
   deleting,
+  canDetail,
+  canEdit,
+  canDelete,
 }: NoteActionsProps) => {
   const { token } = theme.useToken();
 
   return (
     <Space size={0}>
-      <Button
-        type="link"
-        icon={<EyeOutlined />}
-        style={{ color: token.colorInfo, paddingInline: 4 }}
-        onClick={() => onDetail(record)}
-      >
-        详情
-      </Button>
-      <Button
-        type="link"
-        icon={<EditOutlined />}
-        style={{ paddingInline: 4 }}
-        onClick={() => onEdit(record)}
-      >
-        编辑
-      </Button>
-      <Button
-        danger
-        type="link"
-        icon={<DeleteOutlined />}
-        style={{ paddingInline: 4 }}
-        loading={deleting}
-        onClick={() => onDelete(record)}
-      >
-        删除
-      </Button>
+      {canDetail && (
+        <Button
+          type="link"
+          icon={<EyeOutlined />}
+          style={{ color: token.colorInfo, paddingInline: 4 }}
+          onClick={() => onDetail(record)}
+        >
+          详情
+        </Button>
+      )}
+      {canEdit && (
+        <Button
+          type="link"
+          icon={<EditOutlined />}
+          style={{ paddingInline: 4 }}
+          onClick={() => onEdit(record)}
+        >
+          编辑
+        </Button>
+      )}
+      {canDelete && (
+        <Button
+          danger
+          type="link"
+          icon={<DeleteOutlined />}
+          style={{ paddingInline: 4 }}
+          loading={deleting}
+          onClick={() => onDelete(record)}
+        >
+          删除
+        </Button>
+      )}
     </Space>
   );
 };
@@ -195,6 +207,9 @@ interface ColsProps {
   onEdit: (record: NoteItem) => void;
   onDelete: (record: NoteItem) => void;
   deleting: boolean;
+  canDetail: boolean;
+  canEdit: boolean;
+  canDelete: boolean;
 }
 
 export const noteColumns = ({
@@ -202,8 +217,11 @@ export const noteColumns = ({
   onEdit,
   onDelete,
   deleting,
+  canDetail,
+  canEdit,
+  canDelete,
 }: ColsProps): ProColumns<NoteItem>[] => {
-  return [
+  const columns: ProColumns<NoteItem>[] = [
     {
       title: 'ID',
       dataIndex: 'id',
@@ -333,8 +351,15 @@ export const noteColumns = ({
           onEdit={onEdit}
           onDelete={onDelete}
           deleting={deleting}
+          canDetail={canDetail}
+          canEdit={canEdit}
+          canDelete={canDelete}
         />
       ),
     },
   ];
+
+  return canDetail || canEdit || canDelete
+    ? columns
+    : columns.filter((item) => item.key !== 'option');
 };

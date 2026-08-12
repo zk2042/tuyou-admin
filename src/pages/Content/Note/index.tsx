@@ -4,6 +4,7 @@ import { useBatchExport } from '@/hooks/table/useBatchExport';
 import { useRowDelete } from '@/hooks/table/useRowDelete';
 import { message } from '@/utils/message';
 import type { ActionType, ProTableProps } from '@ant-design/pro-components';
+import { useAccess } from '@umijs/max';
 import { Button, Divider, Modal, Table, Typography } from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
 
@@ -104,6 +105,13 @@ const toReq = (vals: EditVals): EditReq => {
 type BatchRow = Pick<NoteItem, 'id' | 'title'>;
 
 const NotePage: React.FC = () => {
+  const { hasPerm } = useAccess();
+  const canList = hasPerm('note:list');
+  const canDetail = hasPerm('note:detail');
+  const canEdit = hasPerm('note:edit') && canDetail;
+  const canDelete = hasPerm('note:delete');
+  const canBatchDelete = hasPerm('note:batch-delete');
+  const canExport = hasPerm('note:export');
   const actionRef = useRef<ActionType>();
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<BatchRow[]>([]);
@@ -261,13 +269,49 @@ const NotePage: React.FC = () => {
         onEdit: openEdit,
         onDelete: confirmDelete,
         deleting,
+        canDetail,
+        canEdit,
+        canDelete,
       }),
-    [confirmDelete, deleting, openDetail, openEdit],
+    [
+      canDelete,
+      canDetail,
+      canEdit,
+      confirmDelete,
+      deleting,
+      openDetail,
+      openEdit,
+    ],
   );
+
+  const toolbarActions = [
+    canExport && (
+      <Button
+        key="export"
+        disabled={!selectedKeys.length}
+        loading={exporting}
+        onClick={openExport}
+      >
+        批量导出
+      </Button>
+    ),
+    canBatchDelete && (
+      <Button
+        key="delete"
+        disabled={!selectedKeys.length}
+        danger
+        loading={batchDel}
+        onClick={() => setBatchOpen(true)}
+      >
+        批量删除
+      </Button>
+    ),
+  ].filter(Boolean) as React.ReactNode[];
 
   return (
     <>
       <ListPage<NoteItem, NoteQuery>
+        accessible={canList}
         actionRef={actionRef}
         rowKey="id"
         headerTitle="笔记列表"
@@ -278,39 +322,18 @@ const NotePage: React.FC = () => {
           defaultCollapsed: true,
           span: 8,
         }}
-        rowSelection={{
-          selectedRowKeys: selectedKeys,
-          onChange: (keys, rows) => {
-            setSelectedKeys(keys);
-            setSelectedRows(rows as BatchRow[]);
-          },
-        }}
-        toolbarActions={[
-          <Button
-            key="export"
-            disabled={selectedKeys.length === 0}
-            loading={exporting}
-            onClick={openExport}
-          >
-            批量导出
-          </Button>,
-          <Button
-            key="delete"
-            disabled={selectedKeys.length === 0}
-            danger
-            loading={batchDel}
-            onClick={() => {
-              if (!selectedKeys.length) {
-                message.warning('请先选择要批量删除的笔记');
-                return;
+        rowSelection={
+          canBatchDelete || canExport
+            ? {
+                selectedRowKeys: selectedKeys,
+                onChange: (keys, rows) => {
+                  setSelectedKeys(keys);
+                  setSelectedRows(rows as BatchRow[]);
+                },
               }
-
-              setBatchOpen(true);
-            }}
-          >
-            批量删除
-          </Button>,
-        ]}
+            : undefined
+        }
+        toolbarActions={toolbarActions}
       />
       <DetailModal
         open={detailOpen}

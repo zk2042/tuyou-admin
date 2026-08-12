@@ -1,7 +1,13 @@
 import type { ApiResponse } from '@/constants';
 import { apiRequest } from '@/lib/apiRequest';
 
-import type { PageData, PermBody, PermItem, PermQuery } from './types';
+import type {
+  PageData,
+  PermBody,
+  PermItem,
+  PermModule,
+  PermQuery,
+} from './types';
 
 export async function queryPerm(
   params: PermQuery,
@@ -11,6 +17,16 @@ export async function queryPerm(
     url: '/admin/api-permissions',
     method: 'GET',
     params,
+    ...(options || {}),
+  });
+}
+
+export async function getPermModules(options?: {
+  [key: string]: any;
+}): Promise<ApiResponse<PermModule[]>> {
+  return apiRequest<PermModule[]>({
+    url: '/admin/api-permissions/module',
+    method: 'GET',
     ...(options || {}),
   });
 }

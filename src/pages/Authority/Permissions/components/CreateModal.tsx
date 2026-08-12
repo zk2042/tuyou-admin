@@ -9,6 +9,9 @@ interface CreateModalProps {
   saving: boolean;
   onCancel: () => void;
   onSubmit: (values: PermValues) => void;
+  moduleOptions: { label: string; value: string }[];
+  moduleLoading: boolean;
+  onModuleOpen: () => void;
 }
 
 const CreateModal = ({
@@ -16,6 +19,9 @@ const CreateModal = ({
   saving,
   onCancel,
   onSubmit,
+  moduleOptions,
+  moduleLoading,
+  onModuleOpen,
 }: CreateModalProps) => {
   const [form] = Form.useForm<PermValues>();
 
@@ -40,7 +46,12 @@ const CreateModal = ({
         void form.validateFields().then(onSubmit);
       }}
     >
-      <PermForm form={form} />
+      <PermForm
+        form={form}
+        moduleOptions={moduleOptions}
+        moduleLoading={moduleLoading}
+        onModuleOpen={onModuleOpen}
+      />
     </Modal>
   );
 };

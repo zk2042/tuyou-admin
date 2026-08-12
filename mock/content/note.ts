@@ -295,10 +295,10 @@ const pageResult = (source: NoteMockItem[], query: PageQuery) => {
 };
 
 export default {
-  'GET /api/v1/admin/notes': (req: any, res: any) => {
+  'GET /__mock/api/v1/admin/notes': (req: any, res: any) => {
     res.json(pageResult(noteList, req.query || {}));
   },
-  'GET /api/v1/admin/notes/:id': (req: any, res: any) => {
+  'GET /__mock/api/v1/admin/notes/:id': (req: any, res: any) => {
     const current = noteList.find((item) => item.id === req.params.id);
 
     if (!current) {
@@ -316,7 +316,7 @@ export default {
       data: current,
     });
   },
-  'PUT /api/v1/admin/notes/:id': (req: any, res: any) => {
+  'PUT /__mock/api/v1/admin/notes/:id': (req: any, res: any) => {
     const current = noteList.find((item) => item.id === req.params.id);
 
     if (!current) {
@@ -353,7 +353,7 @@ export default {
       data: current,
     });
   },
-  'DELETE /api/v1/admin/notes/:id': (req: any, res: any) => {
+  'DELETE /__mock/api/v1/admin/notes/:id': (req: any, res: any) => {
     const index = noteList.findIndex((item) => item.id === req.params.id);
 
     if (index < 0) {
@@ -373,7 +373,7 @@ export default {
       data: null,
     });
   },
-  'POST /api/v1/admin/notes/batch-delete': (req: any, res: any) => {
+  'POST /__mock/api/v1/admin/notes/batch-delete': (req: any, res: any) => {
     const body = normalizeBatch(req.body);
     const ids = new Set((body.ids || []).map((id) => String(id)));
 
@@ -389,7 +389,7 @@ export default {
       data: null,
     });
   },
-  'POST /api/v1/admin/notes/export': (req: any, res: any) => {
+  'POST /__mock/api/v1/admin/notes/export': (req: any, res: any) => {
     const body = normalizeBatch(req.body);
     const ids = new Set((body.ids || []).map((id) => String(id)));
     const rows = noteList.filter((item) => ids.has(item.id));

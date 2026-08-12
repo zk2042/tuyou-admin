@@ -10,9 +10,11 @@ import {
 import { clearAuth } from '@/utils/auth';
 import { message } from '@/utils/message';
 import type { RequestConfig } from '@umijs/max';
+import { history } from '@umijs/max';
 
 const SUCCESS_CODE = API_RESPONSE_SUCCESS_CODE;
 
+// 清理登录状态并携带当前地址跳转登录页
 function redirectToLogin() {
   clearAuth();
 
@@ -27,11 +29,13 @@ function redirectToLogin() {
   window.location.href = `/login?${params.toString()}`;
 }
 
+// 关闭已有提示，避免连续错误消息堆叠
 function showErrorMessage(content: string, duration = 3) {
   message.destroy();
   message.error(content, duration);
 }
 
+// 处理超时和断网等无 HTTP 响应的异常
 function handleNetworkError(error: any): boolean {
   if (
     error?.code === 'ECONNABORTED' ||
@@ -47,6 +51,7 @@ function handleNetworkError(error: any): boolean {
   }
 }
 
+// 按 HTTP 状态码展示提示或跳转对应页面
 function handleHttpStatusError(error: any): boolean {
   const status = error?.response?.status;
 
@@ -58,6 +63,7 @@ function handleHttpStatusError(error: any): boolean {
     return true;
   } else if (status === 403) {
     showErrorMessage('暂无权限访问该资源');
+    setTimeout(() => history.replace('/403'), 300);
     return true;
   } else if (status === 404) {
     showErrorMessage('您访问的内容不存在或已被删除');
@@ -81,6 +87,7 @@ function getBizErrorMessage(errorInfo: ApiResponse): string {
   return errorInfo.message || getStatusCodeMessage(errorInfo.code);
 }
 
+// 处理后端业务状态码抛出的 BizError
 function handleBizError(error: any): boolean {
   if (error?.name !== 'BizError') {
     return false;
@@ -108,6 +115,7 @@ function handleBizError(error: any): boolean {
       return true;
     } else if (isPermissionStatusCode(code)) {
       showErrorMessage(errorMessage);
+      setTimeout(() => history.replace('/403'), 300);
       return true;
     } else {
       showErrorMessage(errorMessage);
@@ -121,6 +129,7 @@ function handleUnknownError(error: any) {
   showErrorMessage('请求失败，请重试');
 }
 
+// 请求异常统一入口，已识别的错误不再向下重复处理
 export function handleRequestError(error: any, opts?: any) {
   if (opts?.skipErrorHandler) throw error;
 

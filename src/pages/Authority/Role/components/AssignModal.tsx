@@ -17,6 +17,9 @@ interface AssignModalProps {
   open: boolean;
   roleId?: string;
   roleName?: string;
+  canLoadMenus: boolean;
+  canLoadPermissions: boolean;
+  canSave: boolean;
   onCancel: () => void;
   onSaved: () => void;
 }
@@ -48,6 +51,9 @@ const AssignModal = ({
   open,
   roleId,
   roleName,
+  canLoadMenus,
+  canLoadPermissions,
+  canSave,
   onCancel,
   onSaved,
 }: AssignModalProps) => {
@@ -71,10 +77,15 @@ const AssignModal = ({
     setPermKeys([]);
     setLoaded(false);
 
-    void Promise.all([queryRoleMenus(roleId), queryRolePermissions(roleId)])
+    void Promise.all([
+      canLoadMenus ? queryRoleMenus(roleId) : Promise.resolve(undefined),
+      canLoadPermissions
+        ? queryRolePermissions(roleId)
+        : Promise.resolve(undefined),
+    ])
       .then(([menuResponse, permResponse]) => {
-        const menus = menuResponse.data?.menu_tree ?? [];
-        const perms = permResponse.data?.permission_tree ?? [];
+        const menus = menuResponse?.data?.menu_tree ?? [];
+        const perms = permResponse?.data?.permission_tree ?? [];
         setMenuTree(menus);
         setPermTree(perms);
         setMenuKeys(getChecked(menus));
@@ -89,14 +100,14 @@ const AssignModal = ({
       })
       .catch(() => undefined)
       .finally(() => setLoading(false));
-  }, [open, roleId]);
+  }, [canLoadMenus, canLoadPermissions, open, roleId]);
 
   const menuData = useMemo(() => toMenuData(menuTree), [menuTree]);
   const permData = useMemo(() => toPermData(permTree), [permTree]);
   const ready = !loading && loaded;
 
   const handleSave = async () => {
-    if (!roleId || !ready) {
+    if (!roleId || !ready || !canSave) {
       return;
     }
 
@@ -151,7 +162,7 @@ const AssignModal = ({
       width={580}
       styles={{ body: { maxHeight: '60vh', overflowY: 'auto' } }}
       confirmLoading={saving}
-      okButtonProps={{ disabled: !ready }}
+      okButtonProps={{ disabled: !ready || !canSave }}
       onCancel={onCancel}
       onOk={() => {
         void handleSave();
@@ -168,14 +179,18 @@ const AssignModal = ({
           {
             key: 'menus',
             label: '菜单权限',
-            children: renderTree(menuData, menuKeys, setMenuKeys),
+            children: canLoadMenus
+              ? renderTree(menuData, menuKeys, setMenuKeys)
+              : null,
           },
           {
             key: 'permissions',
             label: '接口按钮权限',
-            children: renderTree(permData, permKeys, (keys) => {
-              setPermKeys(keys.filter((key) => !key.startsWith('module-')));
-            }),
+            children: canLoadPermissions
+              ? renderTree(permData, permKeys, (keys) => {
+                  setPermKeys(keys.filter((key) => !key.startsWith('module-')));
+                })
+              : null,
           },
         ]}
       />

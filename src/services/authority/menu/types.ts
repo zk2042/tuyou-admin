@@ -1,8 +1,11 @@
 export interface MenuQuery {
-  page: number;
-  size: number;
   menu_name?: string;
   status?: string;
+}
+
+export interface ParentMenu {
+  id: string;
+  menu_name: string;
 }
 
 export type MenuType = '目录' | '菜单';
@@ -10,13 +13,18 @@ export type MenuType = '目录' | '菜单';
 export interface MenuItem {
   id: string;
   menu_name: string;
-  parent_name: string | null;
-  menu_type: MenuType;
+  parent_id: string;
+  parent_name: string;
+  menu_type: 1 | 2;
+  menu_type_name: MenuType;
   route_path: string;
+  component: string;
+  icon: string;
+  hide_in_menu: 0 | 1;
   sort: number;
   status: string;
   create_time: string;
-  update_time: string;
+  children?: MenuItem[];
 }
 
 export interface MenuBody {
@@ -24,14 +32,9 @@ export interface MenuBody {
   parent_name: string | null;
   menu_type: MenuType;
   route_path: string;
+  component: string;
+  icon: string;
+  hide_in_menu: boolean;
   sort: number;
   status: string;
-}
-
-export interface PageData<T> {
-  list: T[];
-  total: number;
-  page: number;
-  size: number;
-  total_page: number;
 }

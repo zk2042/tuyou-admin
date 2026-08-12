@@ -22,16 +22,9 @@ export const STATUS_OPTIONS = [
   { label: '禁用', value: '禁用' },
 ];
 
-export const MODULE_OPTIONS = [
-  '个人中心',
-  '用户管理',
-  '活动管理',
-  '内容管理',
-  '评论管理',
-  '权限管理',
-].map((value) => ({ label: value, value }));
-
 interface ColumnOptions {
+  canEdit: boolean;
+  canDelete: boolean;
   onEdit: (record: PermRecord) => void;
   onDelete: (record: PermRecord) => void;
 }
@@ -46,27 +39,31 @@ const METHOD_COLORS: Record<string, string> = {
 
 const renderActions = (record: PermRecord, options: ColumnOptions) => (
   <Space size={0}>
-    <Button
-      type="link"
-      icon={<EditOutlined />}
-      style={{ paddingInline: 4 }}
-      onClick={() => {
-        options.onEdit(record);
-      }}
-    >
-      编辑
-    </Button>
-    <Button
-      danger
-      type="link"
-      icon={<DeleteOutlined />}
-      style={{ paddingInline: 4 }}
-      onClick={() => {
-        options.onDelete(record);
-      }}
-    >
-      删除
-    </Button>
+    {options.canEdit && (
+      <Button
+        type="link"
+        icon={<EditOutlined />}
+        style={{ paddingInline: 4 }}
+        onClick={() => {
+          options.onEdit(record);
+        }}
+      >
+        编辑
+      </Button>
+    )}
+    {options.canDelete && (
+      <Button
+        danger
+        type="link"
+        icon={<DeleteOutlined />}
+        style={{ paddingInline: 4 }}
+        onClick={() => {
+          options.onDelete(record);
+        }}
+      >
+        删除
+      </Button>
+    )}
   </Space>
 );
 

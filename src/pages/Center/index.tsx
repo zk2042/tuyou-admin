@@ -33,7 +33,7 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { history, useLocation, useModel } from '@umijs/max';
+import { history, useAccess, useLocation, useModel } from '@umijs/max';
 import type { UploadProps } from 'antd';
 import {
   App,
@@ -66,13 +66,17 @@ type UserState = {
   role: string;
   avatar: string;
   adminname?: string;
-  status?: boolean;
+  status?: string;
+  menu_tree?: CurrentInfo['menu_tree'];
+  perm_keys?: string[];
 };
 
 function toCurrentInfo(profile?: UserState): CurrentInfo | undefined {
   return Boolean(profile?.id) &&
     typeof profile?.adminname === 'string' &&
-    typeof profile?.status === 'boolean'
+    typeof profile?.status === 'string' &&
+    Array.isArray(profile.menu_tree) &&
+    Array.isArray(profile.perm_keys)
     ? {
         id: profile.id,
         username: profile.username,
@@ -80,6 +84,8 @@ function toCurrentInfo(profile?: UserState): CurrentInfo | undefined {
         role: profile.role,
         avatar: profile.avatar,
         status: profile.status,
+        menu_tree: profile.menu_tree,
+        perm_keys: profile.perm_keys,
       }
     : undefined;
 }
@@ -105,6 +111,17 @@ const CenterPage: React.FC = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
   const dispatch = useAppDispatch();
   const unreadCount = useAppSelector((state) => state.notice.unreadCount);
+  const { hasPerm } = useAccess();
+  const canUpdateProfile = hasPerm('center:profile');
+  const canUpdateAvatar = hasPerm('center:avatar');
+  const canViewNotification = hasPerm('center:notification:list');
+  const canViewUnread = hasPerm('center:notification:unread');
+  const canReadAll = hasPerm('center:notification:read-all');
+  const canReadOne = hasPerm('center:notification:read');
+  const canDeleteNotice = hasPerm('center:notification:delete');
+  const canClearNotice = hasPerm('center:notification:clear');
+  const canUpdatePassword = hasPerm('auth:password');
+  const canUploadImage = hasPerm('upload:image:batch');
   const [noticeLoading, setNoticeLoading] = React.useState(false);
   const [noticeAct, setNoticeAct] = React.useState<number>();
   const [readAllLoading, setReadAllLoading] = React.useState(false);
@@ -183,17 +200,42 @@ const CenterPage: React.FC = () => {
   }, [initialState]);
 
   React.useEffect(() => {
-    void loadNotifications();
-  }, [loadNotifications]);
+    if (!canViewNotification) {
+      setNotifications([]);
+      setNoticeTotal(0);
+    }
+
+    if (!canViewUnread) {
+      dispatch(setUnreadCount(0));
+    }
+
+    if (!canViewNotification && !canViewUnread) {
+      return;
+    }
+
+    if (canViewNotification) {
+      void loadNotifications();
+    }
+
+    if (canViewUnread) {
+      void loadUnread();
+    }
+  }, [
+    canViewNotification,
+    canViewUnread,
+    dispatch,
+    loadNotifications,
+    loadUnread,
+  ]);
 
   React.useEffect(() => {
     const action = new URLSearchParams(location.search).get('action');
 
-    if (action === 'password') {
+    if (action === 'password' && canUpdatePassword) {
       setPasswordOpen(true);
       history.replace('/center');
     }
-  }, [location.search]);
+  }, [canUpdatePassword, location.search]);
 
   React.useEffect(() => {
     setNoticeOpen(false);
@@ -255,15 +297,20 @@ const CenterPage: React.FC = () => {
         const response = await updatePassword(values);
         message.success(response.message || '密码修改成功');
         setPasswordOpen(false);
-        void loadNotifications();
-        void loadUnread();
+        if (canViewNotification) {
+          void loadNotifications();
+        }
+
+        if (canViewUnread) {
+          void loadUnread();
+        }
       } catch {
         return;
       } finally {
         setPasswordSaving(false);
       }
     },
-    [loadNotifications, loadUnread],
+    [canViewNotification, canViewUnread, loadNotifications, loadUnread],
   );
 
   const readAll = React.useCallback(async () => {
@@ -272,14 +319,19 @@ const CenterPage: React.FC = () => {
     try {
       const response = await readAllNotice();
       message.success(response.message || '已全部标记为已读');
-      void loadNotifications();
-      void loadUnread();
+      if (canViewNotification) {
+        void loadNotifications();
+      }
+
+      if (canViewUnread) {
+        void loadUnread();
+      }
     } catch {
       return;
     } finally {
       setReadAllLoading(false);
     }
-  }, [loadNotifications, loadUnread]);
+  }, [canViewNotification, canViewUnread, loadNotifications, loadUnread]);
 
   const readOne = React.useCallback(
     async (item: NoticeItem) => {
@@ -288,14 +340,17 @@ const CenterPage: React.FC = () => {
       try {
         const response = await readNotice(item.id);
         message.success(response.message || '已标记为已读');
-        await Promise.all([loadNotifications(), loadUnread()]);
+        await Promise.all([
+          canViewNotification ? loadNotifications() : Promise.resolve(),
+          canViewUnread ? loadUnread() : Promise.resolve(),
+        ]);
       } catch {
         return;
       } finally {
         setNoticeAct(undefined);
       }
     },
-    [loadNotifications, loadUnread],
+    [canViewNotification, canViewUnread, loadNotifications, loadUnread],
   );
 
   const deleteOne = React.useCallback(
@@ -314,7 +369,9 @@ const CenterPage: React.FC = () => {
           try {
             const response = await deleteNotice(item.id);
             message.success(response.message || '消息删除成功');
-            await loadUnread();
+            if (canViewUnread) {
+              await loadUnread();
+            }
 
             if (notifications.length === 1 && noticePage > 1) {
               setNoticePage(noticePage - 1);
@@ -329,7 +386,14 @@ const CenterPage: React.FC = () => {
         },
       });
     },
-    [loadNotifications, loadUnread, modal, noticePage, notifications.length],
+    [
+      canViewUnread,
+      loadNotifications,
+      loadUnread,
+      modal,
+      noticePage,
+      notifications.length,
+    ],
   );
 
   const confirmClear = React.useCallback(() => {
@@ -413,52 +477,58 @@ const CenterPage: React.FC = () => {
                     }}
                   />
                 ) : null}
-                <Upload
-                  accept="image/*"
-                  showUploadList={false}
-                  customRequest={uploadAvatar}
-                  beforeUpload={(file) => {
-                    const oversize = file.size / 1024 / 1024 > 5;
+                {canUpdateAvatar && canUploadImage ? (
+                  <Upload
+                    accept="image/*"
+                    showUploadList={false}
+                    customRequest={uploadAvatar}
+                    beforeUpload={(file) => {
+                      const oversize = file.size / 1024 / 1024 > 5;
 
-                    if (oversize) {
-                      message.warning('图片大小不能超过5MB');
-                      return Upload.LIST_IGNORE;
-                    }
+                      if (oversize) {
+                        message.warning('图片大小不能超过5MB');
+                        return Upload.LIST_IGNORE;
+                      }
 
-                    return true;
-                  }}
-                  disabled={avatarSaving}
-                >
-                  <button
-                    type="button"
-                    className={styles.avatarAction}
-                    aria-label="修改头像"
+                      return true;
+                    }}
+                    disabled={avatarSaving}
                   >
-                    <CameraOutlined />
-                  </button>
-                </Upload>
+                    <button
+                      type="button"
+                      className={styles.avatarAction}
+                      aria-label="修改头像"
+                    >
+                      <CameraOutlined />
+                    </button>
+                  </Upload>
+                ) : null}
               </div>
               <div className={styles.profileMeta}>
                 <div className={styles.nameRow}>
                   <Typography.Title level={4} className={styles.name}>
                     {profile?.username || '-'}
                   </Typography.Title>
-                  <Button
-                    type="link"
-                    icon={<EditOutlined />}
-                    className={styles.linkButton}
-                    onClick={() => {
-                      setProfileOpen(true);
-                    }}
-                  />
+                  {canUpdateProfile ? (
+                    <Button
+                      type="link"
+                      icon={<EditOutlined />}
+                      className={styles.linkButton}
+                      onClick={() => {
+                        setProfileOpen(true);
+                      }}
+                    />
+                  ) : null}
                 </div>
                 <Typography.Text type="secondary" className={styles.realName}>
                   {`真实姓名：${profile?.adminname || '-'}`}
                 </Typography.Text>
                 <Space size={8} wrap className={styles.tagGroup}>
                   <Tag color="processing">{profile?.role || '-'}</Tag>
-                  <Tag color={profile?.status ? 'success' : 'default'}>
-                    {profile?.status ? '正常' : '禁用'}
+                  <Tag
+                    color={profile?.status === '启用' ? 'success' : 'default'}
+                  >
+                    {profile?.status || '-'}
                   </Tag>
                 </Space>
               </div>
@@ -474,180 +544,196 @@ const CenterPage: React.FC = () => {
             </div>
 
             <div className={styles.securityList}>
-              <div className={styles.securityItem}>
-                <div className={styles.securityMain}>
-                  <LockOutlined className={styles.securityIcon} />
-                  <div>
-                    <div className={styles.securityTitle}>登录密码</div>
-                    <Typography.Paragraph className={styles.securityDesc}>
-                      为了您的账号安全，建议定期修改密码。
-                    </Typography.Paragraph>
+              {canUpdatePassword ? (
+                <div className={styles.securityItem}>
+                  <div className={styles.securityMain}>
+                    <LockOutlined className={styles.securityIcon} />
+                    <div>
+                      <div className={styles.securityTitle}>登录密码</div>
+                      <Typography.Paragraph className={styles.securityDesc}>
+                        为了您的账号安全，建议定期修改密码。
+                      </Typography.Paragraph>
+                    </div>
                   </div>
+                  <Button
+                    type="link"
+                    className={styles.linkButton}
+                    onClick={() => {
+                      setPasswordOpen(true);
+                    }}
+                  >
+                    修改密码
+                  </Button>
                 </div>
-                <Button
-                  type="link"
-                  className={styles.linkButton}
-                  onClick={() => {
-                    setPasswordOpen(true);
-                  }}
-                >
-                  修改密码
-                </Button>
-              </div>
+              ) : null}
 
-              <div className={styles.securityItem}>
-                <div className={styles.securityMain}>
-                  <BellOutlined className={styles.securityIcon} />
-                  <div>
-                    <div className={styles.securityTitle}>登录提醒</div>
-                    <Typography.Paragraph className={styles.securityDesc}>
-                      当前已开启异常登录提醒，发现异常消息请及时处理。
-                    </Typography.Paragraph>
+              {canViewNotification ? (
+                <div className={styles.securityItem}>
+                  <div className={styles.securityMain}>
+                    <BellOutlined className={styles.securityIcon} />
+                    <div>
+                      <div className={styles.securityTitle}>登录提醒</div>
+                      <Typography.Paragraph className={styles.securityDesc}>
+                        当前已开启异常登录提醒，发现异常消息请及时处理。
+                      </Typography.Paragraph>
+                    </div>
                   </div>
+                  <Tag color="processing">已开启</Tag>
                 </div>
-                <Tag color="processing">已开启</Tag>
-              </div>
+              ) : null}
             </div>
           </Card>
         </div>
 
-        <div className={styles.rightColumn}>
-          <Card className={styles.card} variant="borderless">
-            <div className={styles.cardHeader}>
-              <span className={styles.cardTitle}>
-                <Badge count={unreadCount} size="small">
-                  <BellOutlined className={styles.noticeBell} />
-                </Badge>
-                消息通知
-              </span>
+        {canViewNotification ? (
+          <div className={styles.rightColumn}>
+            <Card className={styles.card} variant="borderless">
+              <div className={styles.cardHeader}>
+                <span className={styles.cardTitle}>
+                  <Badge count={unreadCount} size="small">
+                    <BellOutlined className={styles.noticeBell} />
+                  </Badge>
+                  消息通知
+                </span>
 
-              <div className={styles.notifyActions}>
-                <Button
-                  type="link"
-                  className={styles.linkButton}
-                  onClick={() => {
-                    void readAll();
-                  }}
-                  loading={readAllLoading}
-                  disabled={
-                    noticeLoading || clearLoading || notifications.length === 0
-                  }
-                >
-                  全部已读
-                </Button>
-                <Button
-                  danger
-                  type="link"
-                  className={styles.linkButton}
-                  onClick={() => {
-                    confirmClear();
-                  }}
-                  loading={clearLoading}
-                  disabled={
-                    noticeLoading ||
-                    readAllLoading ||
-                    notifications.length === 0
-                  }
-                >
-                  清空所有消息
-                </Button>
+                {canReadAll || canClearNotice ? (
+                  <div className={styles.notifyActions}>
+                    {canReadAll ? (
+                      <Button
+                        type="link"
+                        className={styles.linkButton}
+                        onClick={() => {
+                          void readAll();
+                        }}
+                        loading={readAllLoading}
+                        disabled={
+                          noticeLoading ||
+                          clearLoading ||
+                          notifications.length === 0
+                        }
+                      >
+                        全部已读
+                      </Button>
+                    ) : null}
+                    {canClearNotice ? (
+                      <Button
+                        danger
+                        type="link"
+                        className={styles.linkButton}
+                        onClick={() => {
+                          confirmClear();
+                        }}
+                        loading={clearLoading}
+                        disabled={
+                          noticeLoading ||
+                          readAllLoading ||
+                          notifications.length === 0
+                        }
+                      >
+                        清空所有消息
+                      </Button>
+                    ) : null}
+                  </div>
+                ) : null}
               </div>
-            </div>
 
-            <Spin spinning={noticeLoading}>
-              {notifications.length ? (
-                <div className={styles.notifyList}>
-                  {visibleNotifications.map((item) => (
-                    <div key={item.id} className={styles.notifyItem}>
-                      <span className={styles.notifyIcon}>
-                        {noticeMap[item.type].icon}
-                      </span>
-                      <div className={styles.notifyBody}>
-                        <div className={styles.notifyTop}>
-                          <span className={styles.notifyTitle}>
-                            {noticeMap[item.type].title}
-                            {item.is_read === 0 ? (
-                              <span className={styles.unreadDot} />
+              <Spin spinning={noticeLoading}>
+                {notifications.length ? (
+                  <div className={styles.notifyList}>
+                    {visibleNotifications.map((item) => (
+                      <div key={item.id} className={styles.notifyItem}>
+                        <span className={styles.notifyIcon}>
+                          {noticeMap[item.type].icon}
+                        </span>
+                        <div className={styles.notifyBody}>
+                          <div className={styles.notifyTop}>
+                            <span className={styles.notifyTitle}>
+                              {noticeMap[item.type].title}
+                              {item.is_read === 0 ? (
+                                <span className={styles.unreadDot} />
+                              ) : null}
+                            </span>
+                            <span className={styles.notifyTime}>
+                              {formatNoticeTime(item.created_at)}
+                            </span>
+                          </div>
+                          <Typography.Paragraph className={styles.notifyDesc}>
+                            {item.content}
+                          </Typography.Paragraph>
+                          <div className={styles.notifyItemActions}>
+                            {item.is_read === 0 && canReadOne ? (
+                              <Button
+                                type="link"
+                                size="small"
+                                icon={<CheckOutlined />}
+                                loading={noticeAct === item.id}
+                                disabled={noticeAct !== undefined}
+                                onClick={() => {
+                                  void readOne(item);
+                                }}
+                              >
+                                标记已读
+                              </Button>
                             ) : null}
-                          </span>
-                          <span className={styles.notifyTime}>
-                            {formatNoticeTime(item.created_at)}
-                          </span>
-                        </div>
-                        <Typography.Paragraph className={styles.notifyDesc}>
-                          {item.content}
-                        </Typography.Paragraph>
-                        <div className={styles.notifyItemActions}>
-                          {item.is_read === 0 ? (
-                            <Button
-                              type="link"
-                              size="small"
-                              icon={<CheckOutlined />}
-                              loading={noticeAct === item.id}
-                              disabled={noticeAct !== undefined}
-                              onClick={() => {
-                                void readOne(item);
-                              }}
-                            >
-                              标记已读
-                            </Button>
-                          ) : null}
-                          <Button
-                            danger
-                            type="link"
-                            size="small"
-                            icon={<DeleteOutlined />}
-                            disabled={noticeAct !== undefined}
-                            onClick={() => {
-                              deleteOne(item);
-                            }}
-                          >
-                            删除
-                          </Button>
+                            {canDeleteNotice ? (
+                              <Button
+                                danger
+                                type="link"
+                                size="small"
+                                icon={<DeleteOutlined />}
+                                disabled={noticeAct !== undefined}
+                                onClick={() => {
+                                  deleteOne(item);
+                                }}
+                              >
+                                删除
+                              </Button>
+                            ) : null}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                ) : (
+                  <Empty
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                    description="暂无消息"
+                  />
+                )}
+              </Spin>
+              {notifications.length > NOTICE_PREVIEW && !noticeOpen ? (
+                <div className={styles.noticeMore}>
+                  <Button
+                    type="link"
+                    className={styles.linkButton}
+                    onClick={() => {
+                      setNoticeOpen(true);
+                    }}
+                  >
+                    查看更多
+                  </Button>
                 </div>
-              ) : (
-                <Empty
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  description="暂无消息"
-                />
-              )}
-            </Spin>
-            {notifications.length > NOTICE_PREVIEW && !noticeOpen ? (
-              <div className={styles.noticeMore}>
-                <Button
-                  type="link"
-                  className={styles.linkButton}
-                  onClick={() => {
-                    setNoticeOpen(true);
-                  }}
-                >
-                  查看更多
-                </Button>
-              </div>
-            ) : null}
-            {noticeTotal > 0 ? (
-              <div className={styles.notifyPager}>
-                <Pagination
-                  current={noticePage}
-                  pageSize={NOTICE_SIZE}
-                  total={noticeTotal}
-                  showSizeChanger={false}
-                  showTotal={(total) => `共 ${total} 条`}
-                  onChange={(page) => {
-                    setNoticePage(page);
-                  }}
-                />
-              </div>
-            ) : null}
-          </Card>
-        </div>
+              ) : null}
+              {noticeTotal > 0 ? (
+                <div className={styles.notifyPager}>
+                  <Pagination
+                    current={noticePage}
+                    pageSize={NOTICE_SIZE}
+                    total={noticeTotal}
+                    showSizeChanger={false}
+                    showTotal={(total) => `共 ${total} 条`}
+                    onChange={(page) => {
+                      setNoticePage(page);
+                    }}
+                  />
+                </div>
+              ) : null}
+            </Card>
+          </div>
+        ) : null}
       </div>
       <EditProfileModal
-        open={profileOpen}
+        open={canUpdateProfile && profileOpen}
         saving={usernameSaving}
         values={{
           username: profile?.username || '',
@@ -661,7 +747,7 @@ const CenterPage: React.FC = () => {
       />
 
       <ChangePasswordModal
-        open={passwordOpen}
+        open={canUpdatePassword && passwordOpen}
         saving={passwordSaving}
         onCancel={() => {
           setPasswordOpen(false);

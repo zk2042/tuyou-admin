@@ -14,6 +14,7 @@ interface ImageUploadProps {
   maxSize?: number;
 }
 
+// 未提供上传接口时，将本地图片转换为 Data URL
 const toDataUrl = (file: File) => {
   return new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
@@ -62,6 +63,7 @@ const ImageUpload = ({
     ];
   }, [value]);
 
+  // 统一处理自定义上传和本地预览两种模式
   const customRequest: UploadProps['customRequest'] = async (options) => {
     const file = options.file as File;
 

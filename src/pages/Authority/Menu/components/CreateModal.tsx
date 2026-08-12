@@ -8,6 +8,9 @@ interface CreateModalProps {
   saving: boolean;
   onCancel: () => void;
   onSubmit: (values: MenuValues) => void;
+  parentOptions: { label: string; value: string }[];
+  parentLoading: boolean;
+  onParentOpen: () => void;
 }
 
 const CreateModal = ({
@@ -15,6 +18,9 @@ const CreateModal = ({
   saving,
   onCancel,
   onSubmit,
+  parentOptions,
+  parentLoading,
+  onParentOpen,
 }: CreateModalProps) => {
   const [form] = Form.useForm<MenuValues>();
 
@@ -29,6 +35,9 @@ const CreateModal = ({
           form.setFieldsValue({
             parent_name: null,
             menu_type: '菜单',
+            component: '',
+            icon: '',
+            hide_in_menu: false,
             sort: 1,
             status: '启用',
           });
@@ -40,15 +49,21 @@ const CreateModal = ({
         void form.validateFields().then((values) => {
           onSubmit({
             ...values,
-            parent_name:
-              values.menu_type === '目录'
-                ? null
-                : values.parent_name?.trim() || null,
+            menu_name: values.menu_name.trim(),
+            parent_name: values.parent_name?.trim() || null,
+            route_path: values.route_path.trim(),
+            component: values.component.trim(),
+            icon: values.icon.trim(),
           });
         });
       }}
     >
-      <MenuForm form={form} />
+      <MenuForm
+        form={form}
+        parentOptions={parentOptions}
+        parentLoading={parentLoading}
+        onParentOpen={onParentOpen}
+      />
     </Modal>
   );
 };

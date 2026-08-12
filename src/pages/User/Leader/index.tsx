@@ -10,10 +10,17 @@ import {
   queryLeader,
 } from '@/services/user/leader';
 import type { ActionType } from '@ant-design/pro-components';
+import { useAccess } from '@umijs/max';
 import { Grid } from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
 
-import { batchActions, getBioWidth, type UserQuery } from '../shared';
+import {
+  batchActions,
+  getBioWidth,
+  getUserPermissions,
+  hasBatchActions,
+  type UserQuery,
+} from '../shared';
 import { leaderColumns, type LeaderRecord } from './leaderConfig';
 
 const leaderRequest = async (params: UserQuery) => {
@@ -45,28 +52,34 @@ const leaderRequest = async (params: UserQuery) => {
 
 const LeaderPage: React.FC = () => {
   const actionRef = useRef<ActionType>();
+  const { hasPerm } = useAccess();
   const screens = Grid.useBreakpoint();
   const bioWidth = getBioWidth(screens);
+  const permissions = getUserPermissions(hasPerm, 'leader');
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [selectedRows, setSelectedRows] = useState<LeaderRecord[]>([]);
 
   const columns = useMemo(() => {
     return leaderColumns(
-      async (id) => {
-        const response = await getLeader(id);
-        return response.data ?? null;
-      },
-      editLeader,
-      delLeader,
+      permissions.detail
+        ? async (id) => {
+            const response = await getLeader(id);
+            return response.data ?? null;
+          }
+        : undefined,
+      permissions.edit ? editLeader : undefined,
+      permissions.delete ? delLeader : undefined,
       () => {
         actionRef.current?.reload();
       },
       bioWidth,
+      permissions,
     );
-  }, [bioWidth]);
+  }, [bioWidth, permissions]);
 
   return (
     <ListPage<LeaderRecord, UserQuery>
+      accessible={permissions.list}
       actionRef={actionRef}
       rowKey="id"
       headerTitle="领队列表"
@@ -77,30 +90,34 @@ const LeaderPage: React.FC = () => {
         defaultCollapsed: true,
         span: 8,
       }}
-      rowSelection={{
-        selectedRowKeys,
-        onChange: (keys, rows) => {
-          setSelectedRowKeys(keys as string[]);
-          setSelectedRows(rows as LeaderRecord[]);
-        },
-      }}
+      rowSelection={
+        hasBatchActions(permissions)
+          ? {
+              selectedRowKeys,
+              onChange: (keys, rows) => {
+                setSelectedRowKeys(keys as string[]);
+                setSelectedRows(rows as LeaderRecord[]);
+              },
+            }
+          : undefined
+      }
       toolbarActions={batchActions({
         entityLabel: '领队',
         selectedKeys: selectedRowKeys,
         selectedRows,
-        statusRun: batchStatusLeader,
+        statusRun: permissions.batchStatus ? batchStatusLeader : undefined,
         onStatused: () => {
           setSelectedRowKeys([]);
           setSelectedRows([]);
           actionRef.current?.reload();
         },
-        delRun: batchDelLeader,
+        delRun: permissions.batchDelete ? batchDelLeader : undefined,
         onDeleted: () => {
           setSelectedRowKeys([]);
           setSelectedRows([]);
           actionRef.current?.reload();
         },
-        exportRequest: exportLeader,
+        exportRequest: permissions.export ? exportLeader : undefined,
       })}
     />
   );

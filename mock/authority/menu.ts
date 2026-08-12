@@ -1,11 +1,14 @@
 type MenuType = '目录' | '菜单';
 
-interface MenuItem {
+export interface MenuItem {
   id: string;
   menu_name: string;
   parent_name: string | null;
   menu_type: MenuType;
   route_path: string;
+  component?: string;
+  icon?: string;
+  hide_in_menu?: 0 | 1;
   sort: number;
   status: string;
   create_time: string;
@@ -13,8 +16,6 @@ interface MenuItem {
 }
 
 interface MenuQuery {
-  page?: string | number;
-  size?: string | number;
   menu_name?: string;
   status?: string;
 }
@@ -24,16 +25,19 @@ interface MenuBody {
   parent_name?: string | null;
   menu_type?: MenuType;
   route_path?: string;
+  component?: string;
+  icon?: string;
+  hide_in_menu?: boolean;
   sort?: number;
   status?: string;
 }
 
-const menuList: MenuItem[] = [
+export const menuList: MenuItem[] = [
   {
     id: '1',
     menu_name: '工作台',
     parent_name: null,
-    menu_type: '目录',
+    menu_type: '菜单',
     route_path: '/dashboard',
     sort: 1,
     status: '启用',
@@ -77,7 +81,7 @@ const menuList: MenuItem[] = [
     id: '5',
     menu_name: '活动管理',
     parent_name: null,
-    menu_type: '目录',
+    menu_type: '菜单',
     route_path: '/activity',
     sort: 3,
     status: '启用',
@@ -121,7 +125,7 @@ const menuList: MenuItem[] = [
     id: '9',
     menu_name: '评论管理',
     parent_name: null,
-    menu_type: '目录',
+    menu_type: '菜单',
     route_path: '/comment',
     sort: 5,
     status: '禁用',
@@ -172,6 +176,17 @@ const menuList: MenuItem[] = [
     create_time: '2026-08-05 09:18:32',
     update_time: '2026-08-05 09:18:32',
   },
+  {
+    id: '14',
+    menu_name: 'API 权限管理',
+    parent_name: '权限管理',
+    menu_type: '菜单',
+    route_path: '/authority/permissions',
+    sort: 4,
+    status: '启用',
+    create_time: '2026-08-11 09:18:32',
+    update_time: '2026-08-11 09:18:32',
+  },
 ];
 
 const normalizeBody = <T extends object>(body?: T | string) => {
@@ -192,20 +207,105 @@ const normalizeBody = <T extends object>(body?: T | string) => {
 
 const validBody = (body: MenuBody) => {
   const validType = body.menu_type === '目录' || body.menu_type === '菜单';
-  const validParent =
-    body.menu_type === '目录'
-      ? body.parent_name === null
-      : Boolean(body.parent_name?.trim());
 
   return (
     Boolean(body.menu_name?.trim()) &&
     Object.prototype.hasOwnProperty.call(body, 'parent_name') &&
     validType &&
-    validParent &&
     Boolean(body.route_path?.trim()) &&
+    typeof body.component === 'string' &&
+    typeof body.icon === 'string' &&
+    typeof body.hide_in_menu === 'boolean' &&
+    (body.menu_type === '目录' || Boolean(body.component.trim())) &&
     Number.isInteger(body.sort) &&
     ['启用', '禁用'].includes(body.status || '')
   );
+};
+
+const componentMap: Record<string, string> = {
+  '/dashboard': './Dashboard',
+  '/user/member': './User/Member',
+  '/user/leader': './User/Leader',
+  '/activity': './Activity',
+  '/content/note': './Content/Note',
+  '/content/guide': './Content/Guide',
+  '/comment': './Comment',
+  '/authority/manager': './Authority/Manager',
+  '/authority/role': './Authority/Role',
+  '/authority/menu': './Authority/Menu',
+  '/authority/permissions': './Authority/Permissions',
+};
+
+const iconMap: Record<string, string> = {
+  '/dashboard': 'dashboard',
+  '/user': 'team',
+  '/activity': 'calendar',
+  '/content': 'read',
+  '/comment': 'comment',
+  '/authority': 'safetyCertificate',
+};
+
+const getParentId = (item: MenuItem) => {
+  if (!item.parent_name) return '0';
+  return (
+    menuList.find((menu) => menu.menu_name === item.parent_name)?.id || '0'
+  );
+};
+
+const toResponse = (item: MenuItem): any => ({
+  id: item.id,
+  menu_name: item.menu_name,
+  parent_id: getParentId(item),
+  parent_name: item.parent_name || '',
+  menu_type: item.menu_type === '目录' ? 1 : 2,
+  menu_type_name: item.menu_type,
+  route_path: item.route_path,
+  component: item.component ?? componentMap[item.route_path] ?? '',
+  icon: item.icon ?? iconMap[item.route_path] ?? '',
+  hide_in_menu: item.hide_in_menu ?? 0,
+  sort: item.sort,
+  status: item.status,
+  create_time: item.create_time.slice(0, 10),
+  children: [],
+});
+
+const buildTree = (source: MenuItem[]) => {
+  const matched = new Set(source.map((item) => item.id));
+  const nodes = new Map(source.map((item) => [item.id, toResponse(item)]));
+  const roots: any[] = [];
+
+  source.forEach((item) => {
+    const node = nodes.get(item.id);
+    const parentId = getParentId(item);
+    if (parentId !== '0' && matched.has(parentId)) {
+      nodes.get(parentId)?.children.push(node);
+    } else {
+      roots.push(node);
+    }
+  });
+
+  const sort = (list: any[]) => {
+    list.sort((a, b) => a.sort - b.sort);
+    list.forEach((item) => sort(item.children));
+    return list;
+  };
+
+  return sort(roots);
+};
+
+const filterTree = (list: any[], name?: string, status?: string): any[] => {
+  return list.reduce<any[]>((result, item) => {
+    const children = filterTree(item.children, name, status);
+    const matched =
+      (!name || item.menu_name.toLowerCase().includes(name)) &&
+      (!status || item.status === status);
+
+    if (matched || children.length) {
+      result.push({ ...item, children });
+    }
+
+    return result;
+  }, []);
 };
 
 const formatTime = () => {
@@ -221,27 +321,26 @@ const formatTime = () => {
 
 const listHandler = (req: any, res: any) => {
   const query = (req.query || {}) as MenuQuery;
-  const page = Number(query.page || 1);
-  const size = Number(query.size || 10);
   const name = query.menu_name?.trim().toLowerCase();
-  const filtered = menuList.filter((item) => {
-    return (
-      (!name || item.menu_name.toLowerCase().includes(name)) &&
-      (!query.status || item.status === query.status)
-    );
-  });
-  const start = (page - 1) * size;
 
   res.json({
     code: 0,
-    message: 'success',
-    data: {
-      total: filtered.length,
-      page,
-      size,
-      total_page: Math.ceil(filtered.length / size) || 1,
-      list: filtered.slice(start, start + size),
-    },
+    message: '成功',
+    data: filterTree(buildTree(menuList), name, query.status),
+  });
+};
+
+const parentListHandler = (_req: any, res: any) => {
+  res.json({
+    code: 0,
+    message: '成功',
+    data: menuList
+      .filter((item) => item.parent_name === null)
+      .sort((prev, next) => prev.sort - next.sort)
+      .map((item) => ({
+        id: item.id,
+        menu_name: item.menu_name,
+      })),
   });
 };
 
@@ -278,6 +377,9 @@ const createHandler = (req: any, res: any) => {
     parent_name: body.parent_name?.trim() || null,
     menu_type: body.menu_type!,
     route_path: body.route_path!.trim(),
+    component: body.component!.trim(),
+    icon: body.icon!.trim(),
+    hide_in_menu: body.hide_in_menu ? 1 : 0,
     sort: body.sort!,
     status: body.status!,
     create_time: now,
@@ -289,7 +391,7 @@ const createHandler = (req: any, res: any) => {
   res.json({
     code: 0,
     message: '新增菜单成功',
-    data: created,
+    data: toResponse(created),
   });
 };
 
@@ -333,6 +435,9 @@ const editHandler = (req: any, res: any) => {
   current.parent_name = body.parent_name?.trim() || null;
   current.menu_type = body.menu_type!;
   current.route_path = body.route_path!.trim();
+  current.component = body.component!.trim();
+  current.icon = body.icon!.trim();
+  current.hide_in_menu = body.hide_in_menu ? 1 : 0;
   current.sort = body.sort!;
   current.status = body.status!;
   current.update_time = formatTime();
@@ -340,7 +445,7 @@ const editHandler = (req: any, res: any) => {
   res.json({
     code: 0,
     message: '编辑菜单成功',
-    data: current,
+    data: toResponse(current),
   });
 };
 
@@ -366,12 +471,14 @@ const deleteHandler = (req: any, res: any) => {
 };
 
 export default {
-  'GET /api/v1/admin/menus': listHandler,
+  'GET /__mock/api/v1/admin/menus/all': parentListHandler,
+  'GET /admin/menus/all': parentListHandler,
+  'GET /__mock/api/v1/admin/menus': listHandler,
   'GET /admin/menus': listHandler,
-  'POST /api/v1/admin/menus': createHandler,
+  'POST /__mock/api/v1/admin/menus': createHandler,
   'POST /admin/menus': createHandler,
-  'PUT /api/v1/admin/menus/:id': editHandler,
+  'PUT /__mock/api/v1/admin/menus/:id': editHandler,
   'PUT /admin/menus/:id': editHandler,
-  'DELETE /api/v1/admin/menus/:id': deleteHandler,
+  'DELETE /__mock/api/v1/admin/menus/:id': deleteHandler,
   'DELETE /admin/menus/:id': deleteHandler,
 };

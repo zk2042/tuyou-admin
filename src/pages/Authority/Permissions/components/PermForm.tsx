@@ -1,17 +1,25 @@
 import type { FormInstance } from 'antd';
-import { Form, Input, Select, Switch } from 'antd';
+import { Form, Input, Select, Spin, Switch } from 'antd';
 
-import { MODULE_OPTIONS, type PermValues } from '../permissionsConfig';
+import type { PermValues } from '../permissionsConfig';
 
 interface PermFormProps {
   form: FormInstance<PermValues>;
+  moduleOptions: { label: string; value: string }[];
+  moduleLoading: boolean;
+  onModuleOpen: () => void;
 }
 
 const METHOD_OPTIONS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map(
   (value) => ({ value, label: value }),
 );
 
-const PermForm = ({ form }: PermFormProps) => (
+const PermForm = ({
+  form,
+  moduleOptions,
+  moduleLoading,
+  onModuleOpen,
+}: PermFormProps) => (
   <Form<PermValues> form={form} layout="vertical">
     <Form.Item
       label="权限名称"
@@ -25,7 +33,17 @@ const PermForm = ({ form }: PermFormProps) => (
       name="module"
       rules={[{ required: true, message: '请选择模块' }]}
     >
-      <Select placeholder="请选择模块" options={MODULE_OPTIONS} />
+      <Select
+        showSearch
+        loading={moduleLoading}
+        placeholder="请选择模块"
+        options={moduleOptions}
+        optionFilterProp="label"
+        notFoundContent={moduleLoading ? <Spin size="small" /> : '暂无模块'}
+        onOpenChange={(open) => {
+          if (open) onModuleOpen();
+        }}
+      />
     </Form.Item>
     <Form.Item
       label="权限标识"

@@ -158,7 +158,7 @@ export const generateUniqueId = (): string => {
 };
 
 /**
- * 日期格式化工具
+ * 日期格式化及相对时间工具
  */
 export const dateUtils = {
   /**
@@ -230,7 +230,7 @@ export const dateUtils = {
  * @returns 是否为有效的身份证号
  */
 export const isValidIdentityNumber = (identityNumber: string): boolean => {
-  // 身份证号格式验证（18位）
+  // 兼容 15 位和 18 位身份证号，末位允许 X
   const idCardPattern = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
   return idCardPattern.test(identityNumber);
 };

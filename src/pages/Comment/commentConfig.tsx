@@ -133,6 +133,8 @@ interface CommentActionsProps {
   onDetail: (record: CommentItem) => void;
   onDelete: (record: CommentItem) => void;
   deleting: boolean;
+  canDetail: boolean;
+  canDelete: boolean;
 }
 
 const CommentActions = ({
@@ -140,29 +142,35 @@ const CommentActions = ({
   onDetail,
   onDelete,
   deleting,
+  canDetail,
+  canDelete,
 }: CommentActionsProps) => {
   const { token } = theme.useToken();
 
   return (
     <Space size={0}>
-      <Button
-        type="link"
-        icon={<EyeOutlined />}
-        style={{ color: token.colorInfo, paddingInline: 4 }}
-        onClick={() => onDetail(record)}
-      >
-        详情
-      </Button>
-      <Button
-        danger
-        type="link"
-        icon={<DeleteOutlined />}
-        style={{ paddingInline: 4 }}
-        loading={deleting}
-        onClick={() => onDelete(record)}
-      >
-        删除
-      </Button>
+      {canDetail && (
+        <Button
+          type="link"
+          icon={<EyeOutlined />}
+          style={{ color: token.colorInfo, paddingInline: 4 }}
+          onClick={() => onDetail(record)}
+        >
+          详情
+        </Button>
+      )}
+      {canDelete && (
+        <Button
+          danger
+          type="link"
+          icon={<DeleteOutlined />}
+          style={{ paddingInline: 4 }}
+          loading={deleting}
+          onClick={() => onDelete(record)}
+        >
+          删除
+        </Button>
+      )}
     </Space>
   );
 };
@@ -171,14 +179,18 @@ interface ColsProps {
   onDetail: (record: CommentItem) => void;
   onDelete: (record: CommentItem) => void;
   deleting: boolean;
+  canDetail: boolean;
+  canDelete: boolean;
 }
 
 export const commentColumns = ({
   onDetail,
   onDelete,
   deleting,
+  canDetail,
+  canDelete,
 }: ColsProps): ProColumns<CommentItem>[] => {
-  return [
+  const columns: ProColumns<CommentItem>[] = [
     {
       title: 'ID',
       dataIndex: 'id',
@@ -292,8 +304,14 @@ export const commentColumns = ({
           onDetail={onDetail}
           onDelete={onDelete}
           deleting={deleting}
+          canDetail={canDetail}
+          canDelete={canDelete}
         />
       ),
     },
   ];
+
+  return canDetail || canDelete
+    ? columns
+    : columns.filter((item) => item.key !== 'option');
 };
