@@ -88,7 +88,7 @@ const iconMap: Record<string, ComponentType> = {
   safetyCertificate: SafetyCertificateOutlined,
 };
 
-const reservedPaths = new Set(['/', '/login', '/403', '*']);
+const reservedPaths = new Set(['/', '/login', '/center', '/403', '*']);
 
 // 统一移除非根路径末尾的斜杠，便于路由比较
 export function normalizePath(path: string) {
@@ -233,6 +233,12 @@ export function buildAppRoutes(menuTree?: AuthMenu[]) {
     {
       path: '/',
       redirect: homePath,
+    },
+    {
+      path: '/center',
+      name: '个人中心',
+      hideInMenu: true,
+      component: './Center',
     },
     ...transformMenu(menuTree),
     {

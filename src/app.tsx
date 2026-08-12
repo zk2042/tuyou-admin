@@ -1,14 +1,9 @@
 // 运行时配置
 import Footer from '@/components/Footer';
-import { formatNoticeTime } from '@/constants/common-const';
 import Forbidden from '@/pages/Exception/403';
 import NotFound from '@/pages/Exception/404';
 import { getMe, type CurrentInfo } from '@/services/auth';
-import {
-  queryNotice,
-  queryNoticeUnread,
-  type NoticeItem,
-} from '@/services/center';
+import { queryNoticeUnread } from '@/services/center';
 import { adminLogout } from '@/services/login';
 import { store } from '@/store';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
@@ -23,7 +18,6 @@ import { setAppInstance } from '@/utils/message';
 import {
   buildAppRoutes,
   buildMenuMeta,
-  hasMenuPath,
   normalizePath,
   pageMap,
 } from '@/utils/route';
@@ -41,10 +35,7 @@ import {
   Badge,
   Breadcrumb,
   Dropdown,
-  Empty,
-  Popover,
   Space,
-  Spin,
   Typography,
 } from 'antd';
 import type { ComponentType, ReactNode } from 'react';
@@ -57,12 +48,6 @@ const APP_LOGO =
   'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png';
 
 export type InitialState = CurrentInfo;
-
-const headerNoticeMap = {
-  0: '系统通知',
-  1: '安全设置提醒',
-  2: '设备登录提醒',
-} as const;
 
 // 清理登录状态，并根据需要记录登录后的回跳地址
 function redirectToLogin(redirect = true) {
@@ -142,17 +127,14 @@ function LayoutHeader() {
   const dispatch = useAppDispatch();
   const unreadCount = useAppSelector((state) => state.notice.unreadCount);
   const { hasPerm } = useAccess();
-  const canViewProfile = hasPerm('center:profile');
-  const canUpdateAvatar = hasPerm('center:avatar');
   const canViewNotification = hasPerm('center:notification:list');
   const canViewUnread = hasPerm('center:notification:unread');
-  const canUpdatePassword = hasPerm('auth:password');
-  const [noticeOpen, setNoticeOpen] = useState(false);
-  const [noticeLoading, setNoticeLoading] = useState(false);
-  const [noticeList, setNoticeList] = useState<NoticeItem[]>([]);
 
   const menuMeta = useMemo(
-    () => buildMenuMeta(initialState?.menu_tree),
+    () => [
+      ...buildMenuMeta(initialState?.menu_tree),
+      { path: '/center', title: '个人中心' },
+    ],
     [initialState?.menu_tree],
   );
 
@@ -172,30 +154,20 @@ function LayoutHeader() {
   }, [location.pathname, menuMeta]);
 
   const displayName = initialState?.username || '当前用户';
-  const canOpenCenter =
-    (canViewProfile ||
-      canUpdateAvatar ||
-      canViewNotification ||
-      canUpdatePassword) &&
-    hasMenuPath('/center', initialState?.menu_tree);
 
   const menuItems = useMemo<MenuProps['items']>(
     () => [
-      ...(canOpenCenter
-        ? [
-            {
-              key: 'profile',
-              label: '个人中心',
-            },
-          ]
-        : []),
+      {
+        key: 'profile',
+        label: '个人中心',
+      },
       {
         key: 'logout',
         label: '退出登录',
         danger: true,
       },
     ],
-    [canOpenCenter],
+    [],
   );
 
   const handleUserMenuClick: MenuProps['onClick'] = ({ key }) => {
@@ -219,23 +191,6 @@ function LayoutHeader() {
     }
   };
 
-  const loadTopNotice = async () => {
-    setNoticeLoading(true);
-
-    try {
-      const response = await queryNotice({
-        page: 1,
-        size: 5,
-      });
-
-      setNoticeList(response.data?.list ?? []);
-    } catch {
-      setNoticeList([]);
-    } finally {
-      setNoticeLoading(false);
-    }
-  };
-
   useEffect(() => {
     if (!getToken() || !initialState?.id || !canViewUnread) {
       dispatch(setUnreadCount(0));
@@ -244,44 +199,6 @@ function LayoutHeader() {
 
     void loadUnread();
   }, [canViewUnread, dispatch, initialState?.id, location.pathname]);
-
-  const noticeContent = (
-    <div className="notice-pop">
-      <div className="notice-list">
-        <Spin spinning={noticeLoading}>
-          {noticeList.length ? (
-            noticeList.map((item) => (
-              <div key={item.id} className="notice-item">
-                <div className="notice-top">
-                  <span className="notice-title">
-                    {headerNoticeMap[item.type]}
-                  </span>
-                  <span className="notice-time">
-                    {formatNoticeTime(item.created_at)}
-                  </span>
-                </div>
-                <div className="notice-text">{item.content}</div>
-              </div>
-            ))
-          ) : (
-            <Empty
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description="暂无消息"
-            />
-          )}
-        </Spin>
-      </div>
-      <div
-        className="notice-more"
-        onClick={() => {
-          setNoticeOpen(false);
-          history.push('/center');
-        }}
-      >
-        查看全部
-      </div>
-    </div>
-  );
 
   return (
     <div className="app-header">
@@ -308,29 +225,18 @@ function LayoutHeader() {
 
       <Space size={20} className="header-actions">
         {canViewNotification ? (
-          <Popover
-            trigger="click"
-            open={noticeOpen}
-            placement="bottomRight"
-            content={noticeContent}
-            onOpenChange={(open) => {
-              setNoticeOpen(open);
-
-              if (open) {
-                void loadTopNotice();
-              }
-            }}
+          <span
+            className="header-action"
+            onClick={() => history.push('/center')}
           >
-            <span className="header-action">
-              <Badge dot={unreadCount > 0} className="header-badge">
-                <BellOutlined />
-              </Badge>
-            </span>
-          </Popover>
+            <Badge dot={unreadCount > 0} className="header-badge">
+              <BellOutlined />
+            </Badge>
+          </span>
         ) : null}
 
         <Dropdown
-          trigger={['hover']}
+          trigger={['click']}
           menu={{
             items: menuItems,
             onClick: handleUserMenuClick,
