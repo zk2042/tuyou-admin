@@ -1,8 +1,15 @@
 import type { ProColumns } from '@ant-design/pro-components';
 
-import type { DelRun, DetailLoad, EditSave, UserRecord } from '../shared';
+import type {
+  DelRun,
+  DetailLoad,
+  EditSave,
+  UserPermissions,
+  UserRecord,
+} from '../shared';
 import {
   dateRange,
+  hasRowActions,
   roleTag,
   statusTag,
   tableActions,
@@ -13,13 +20,14 @@ import {
 export type MemberRecord = UserRecord;
 
 export const memberColumns = (
-  loadDetail: DetailLoad,
+  loadDetail: DetailLoad | undefined,
   editSave: EditSave | undefined,
   delRun: DelRun | undefined,
   onEdited: (() => void) | undefined,
   bioWidth: number,
+  permissions: UserPermissions,
 ): ProColumns<MemberRecord>[] => {
-  return [
+  const columns: ProColumns<MemberRecord>[] = [
     {
       title: 'ID',
       dataIndex: 'id',
@@ -98,13 +106,18 @@ export const memberColumns = (
       width: 140,
       hideInSearch: true,
     },
-    {
+  ];
+
+  if (hasRowActions(permissions)) {
+    columns.push({
       title: '操作',
       key: 'option',
       valueType: 'option',
       width: 220,
       render: (_, record) =>
         tableActions('会员', loadDetail, editSave, delRun, onEdited, record),
-    },
-  ];
+    });
+  }
+
+  return columns;
 };

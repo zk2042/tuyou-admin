@@ -116,6 +116,44 @@ export type BatchStatus = (
   status: boolean,
 ) => Promise<ApiResponse>;
 
+export type UserScope = 'member' | 'leader';
+export type PermCheck = (permKey: string) => boolean;
+
+export interface UserPermissions {
+  list: boolean;
+  detail: boolean;
+  edit: boolean;
+  delete: boolean;
+  batchStatus: boolean;
+  batchDelete: boolean;
+  export: boolean;
+}
+
+export const getUserPermissions = (
+  hasPerm: PermCheck,
+  scope: UserScope,
+): UserPermissions => {
+  const has = (action: string) => hasPerm(`${scope}:${action}`);
+
+  return {
+    list: has('list'),
+    detail: has('detail'),
+    edit: has('edit'),
+    delete: has('delete'),
+    batchStatus: has('batch-status'),
+    batchDelete: has('batch-delete'),
+    export: has('export'),
+  };
+};
+
+export const hasRowActions = (permissions: UserPermissions) => {
+  return permissions.detail || permissions.edit || permissions.delete;
+};
+
+export const hasBatchActions = (permissions: UserPermissions) => {
+  return permissions.batchStatus || permissions.batchDelete;
+};
+
 const formatDateValue = (value: DateValue) => {
   if (typeof value === 'string') {
     return value;
@@ -211,7 +249,7 @@ const switchTheme = {
 
 interface RowProps {
   entityLabel: string;
-  loadDetail: DetailLoad;
+  loadDetail?: DetailLoad;
   editSave?: EditSave;
   delRun?: DelRun;
   onEdited?: () => void;
@@ -245,6 +283,10 @@ const RowActions = ({
   });
 
   const openDetail = async () => {
+    if (!loadDetail) {
+      return;
+    }
+
     setDetailOpen(true);
     setDetailLoading(true);
 
@@ -262,6 +304,11 @@ const RowActions = ({
 
   const openEdit = async () => {
     setEditOpen(true);
+
+    if (!loadDetail) {
+      return;
+    }
+
     setEditFetching(true);
 
     try {
@@ -303,34 +350,40 @@ const RowActions = ({
   return (
     <>
       <Space size={0}>
-        <Button
-          type="link"
-          icon={<EyeOutlined />}
-          style={{ color: token.colorInfo, paddingInline: 4 }}
-          onClick={() => void openDetail()}
-        >
-          详情
-        </Button>
-        <Button
-          type="link"
-          icon={<EditOutlined />}
-          style={{ paddingInline: 4 }}
-          onClick={() => void openEdit()}
-        >
-          编辑
-        </Button>
-        <Button
-          danger
-          type="link"
-          icon={<DeleteOutlined />}
-          style={{ paddingInline: 4 }}
-          loading={deleting}
-          onClick={() => {
-            confirmDelete(record);
-          }}
-        >
-          删除
-        </Button>
+        {loadDetail ? (
+          <Button
+            type="link"
+            icon={<EyeOutlined />}
+            style={{ color: token.colorInfo, paddingInline: 4 }}
+            onClick={() => void openDetail()}
+          >
+            详情
+          </Button>
+        ) : null}
+        {editSave ? (
+          <Button
+            type="link"
+            icon={<EditOutlined />}
+            style={{ paddingInline: 4 }}
+            onClick={() => void openEdit()}
+          >
+            编辑
+          </Button>
+        ) : null}
+        {delRun ? (
+          <Button
+            danger
+            type="link"
+            icon={<DeleteOutlined />}
+            style={{ paddingInline: 4 }}
+            loading={deleting}
+            onClick={() => {
+              confirmDelete(record);
+            }}
+          >
+            删除
+          </Button>
+        ) : null}
       </Space>
       <DetailModal
         entityLabel={entityLabel}
@@ -363,7 +416,7 @@ const RowActions = ({
 
 export const tableActions = (
   entityLabel: string,
-  loadDetail: DetailLoad,
+  loadDetail: DetailLoad | undefined,
   editSave: EditSave | undefined,
   delRun: DelRun | undefined,
   onEdited: (() => void) | undefined,
@@ -389,7 +442,7 @@ interface BatchOptions {
   onStatused?: () => void;
   delRun?: BatchDel;
   onDeleted?: () => void;
-  exportRequest: () => Promise<Blob>;
+  exportRequest?: () => Promise<Blob>;
 }
 
 interface StatusBtnProps {
@@ -666,27 +719,43 @@ export const batchActions = ({
   onDeleted,
   exportRequest,
 }: BatchOptions) => {
-  return [
-    <BatchStatusButton
-      key="batch-status"
-      entityLabel={entityLabel}
-      selectedKeys={selectedKeys}
-      selectedRows={selectedRows}
-      statusRun={statusRun}
-      onStatused={onStatused}
-    />,
-    <BatchDeleteButton
-      key="batch-delete"
-      entityLabel={entityLabel}
-      selectedKeys={selectedKeys}
-      selectedRows={selectedRows}
-      delRun={delRun}
-      onDeleted={onDeleted}
-    />,
-    <ExportButton
-      key="export"
-      entityLabel={entityLabel}
-      exportRequest={exportRequest}
-    />,
-  ];
+  const actions: ReactNode[] = [];
+
+  if (statusRun) {
+    actions.push(
+      <BatchStatusButton
+        key="batch-status"
+        entityLabel={entityLabel}
+        selectedKeys={selectedKeys}
+        selectedRows={selectedRows}
+        statusRun={statusRun}
+        onStatused={onStatused}
+      />,
+    );
+  }
+
+  if (delRun) {
+    actions.push(
+      <BatchDeleteButton
+        key="batch-delete"
+        entityLabel={entityLabel}
+        selectedKeys={selectedKeys}
+        selectedRows={selectedRows}
+        delRun={delRun}
+        onDeleted={onDeleted}
+      />,
+    );
+  }
+
+  if (exportRequest) {
+    actions.push(
+      <ExportButton
+        key="export"
+        entityLabel={entityLabel}
+        exportRequest={exportRequest}
+      />,
+    );
+  }
+
+  return actions;
 };

@@ -10,10 +10,17 @@ import {
   queryMember,
 } from '@/services/user/member';
 import type { ActionType } from '@ant-design/pro-components';
+import { useAccess } from '@umijs/max';
 import { Grid } from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
 
-import { batchActions, getBioWidth, type UserQuery } from '../shared';
+import {
+  batchActions,
+  getBioWidth,
+  getUserPermissions,
+  hasBatchActions,
+  type UserQuery,
+} from '../shared';
 import { memberColumns, type MemberRecord } from './memberConfig';
 
 const memberRequest = async (params: UserQuery) => {
@@ -45,28 +52,34 @@ const memberRequest = async (params: UserQuery) => {
 
 const MemberPage: React.FC = () => {
   const actionRef = useRef<ActionType>();
+  const { hasPerm } = useAccess();
   const screens = Grid.useBreakpoint();
   const bioWidth = getBioWidth(screens);
+  const permissions = getUserPermissions(hasPerm, 'member');
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [selectedRows, setSelectedRows] = useState<MemberRecord[]>([]);
 
   const columns = useMemo(() => {
     return memberColumns(
-      async (id) => {
-        const response = await getMember(id);
-        return response.data ?? null;
-      },
-      editMember,
-      delMember,
+      permissions.detail
+        ? async (id) => {
+            const response = await getMember(id);
+            return response.data ?? null;
+          }
+        : undefined,
+      permissions.edit ? editMember : undefined,
+      permissions.delete ? delMember : undefined,
       () => {
         actionRef.current?.reload();
       },
       bioWidth,
+      permissions,
     );
-  }, [bioWidth]);
+  }, [bioWidth, permissions]);
 
   return (
     <ListPage<MemberRecord, UserQuery>
+      accessible={permissions.list}
       actionRef={actionRef}
       rowKey="id"
       headerTitle="会员列表"
@@ -77,30 +90,34 @@ const MemberPage: React.FC = () => {
         defaultCollapsed: true,
         span: 8,
       }}
-      rowSelection={{
-        selectedRowKeys,
-        onChange: (keys, rows) => {
-          setSelectedRowKeys(keys as string[]);
-          setSelectedRows(rows as MemberRecord[]);
-        },
-      }}
+      rowSelection={
+        hasBatchActions(permissions)
+          ? {
+              selectedRowKeys,
+              onChange: (keys, rows) => {
+                setSelectedRowKeys(keys as string[]);
+                setSelectedRows(rows as MemberRecord[]);
+              },
+            }
+          : undefined
+      }
       toolbarActions={batchActions({
         entityLabel: '会员',
         selectedKeys: selectedRowKeys,
         selectedRows,
-        statusRun: batchStatusMember,
+        statusRun: permissions.batchStatus ? batchStatusMember : undefined,
         onStatused: () => {
           setSelectedRowKeys([]);
           setSelectedRows([]);
           actionRef.current?.reload();
         },
-        delRun: batchDelMember,
+        delRun: permissions.batchDelete ? batchDelMember : undefined,
         onDeleted: () => {
           setSelectedRowKeys([]);
           setSelectedRows([]);
           actionRef.current?.reload();
         },
-        exportRequest: exportMember,
+        exportRequest: permissions.export ? exportMember : undefined,
       })}
     />
   );

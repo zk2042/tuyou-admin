@@ -1,3 +1,5 @@
+import { permList } from './authority/permissions';
+
 type CurrentAdminInfo = {
   id: string;
   username: string;
@@ -199,17 +201,9 @@ const menuTree: AuthMenu[] = [
   },
 ];
 
-const permKeys = [
-  'activity:list',
-  'activity:edit',
-  'member:list',
-  'member:edit',
-  'member:delete',
-  'note:list',
-  'note:edit',
-  'note:delete',
-  'strategy:list',
-];
+const permKeys = permList
+  .filter((item) => item.status === '启用')
+  .map((item) => item.perm_key);
 
 currentAdmin.menu_tree = menuTree;
 currentAdmin.perm_keys = permKeys;
