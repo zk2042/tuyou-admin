@@ -155,6 +155,9 @@ interface GuideActionsProps {
   onEdit: (record: GuideItem) => void;
   onDelete: (record: GuideItem) => void;
   deleting: boolean;
+  canDetail: boolean;
+  canEdit: boolean;
+  canDelete: boolean;
 }
 
 const GuideActions = ({
@@ -163,37 +166,46 @@ const GuideActions = ({
   onEdit,
   onDelete,
   deleting,
+  canDetail,
+  canEdit,
+  canDelete,
 }: GuideActionsProps) => {
   const { token } = theme.useToken();
 
   return (
     <Space size={0}>
-      <Button
-        type="link"
-        icon={<EyeOutlined />}
-        style={{ color: token.colorInfo, paddingInline: 4 }}
-        onClick={() => onDetail(record)}
-      >
-        详情
-      </Button>
-      <Button
-        type="link"
-        icon={<EditOutlined />}
-        style={{ paddingInline: 4 }}
-        onClick={() => onEdit(record)}
-      >
-        编辑
-      </Button>
-      <Button
-        danger
-        type="link"
-        icon={<DeleteOutlined />}
-        style={{ paddingInline: 4 }}
-        loading={deleting}
-        onClick={() => onDelete(record)}
-      >
-        删除
-      </Button>
+      {canDetail && (
+        <Button
+          type="link"
+          icon={<EyeOutlined />}
+          style={{ color: token.colorInfo, paddingInline: 4 }}
+          onClick={() => onDetail(record)}
+        >
+          详情
+        </Button>
+      )}
+      {canEdit && (
+        <Button
+          type="link"
+          icon={<EditOutlined />}
+          style={{ paddingInline: 4 }}
+          onClick={() => onEdit(record)}
+        >
+          编辑
+        </Button>
+      )}
+      {canDelete && (
+        <Button
+          danger
+          type="link"
+          icon={<DeleteOutlined />}
+          style={{ paddingInline: 4 }}
+          loading={deleting}
+          onClick={() => onDelete(record)}
+        >
+          删除
+        </Button>
+      )}
     </Space>
   );
 };
@@ -203,6 +215,9 @@ interface ColsProps {
   onEdit: (record: GuideItem) => void;
   onDelete: (record: GuideItem) => void;
   deleting: boolean;
+  canDetail: boolean;
+  canEdit: boolean;
+  canDelete: boolean;
 }
 
 export const guideColumns = ({
@@ -210,8 +225,11 @@ export const guideColumns = ({
   onEdit,
   onDelete,
   deleting,
+  canDetail,
+  canEdit,
+  canDelete,
 }: ColsProps): ProColumns<GuideItem>[] => {
-  return [
+  const columns: ProColumns<GuideItem>[] = [
     {
       title: 'ID',
       dataIndex: 'id',
@@ -348,8 +366,15 @@ export const guideColumns = ({
           onEdit={onEdit}
           onDelete={onDelete}
           deleting={deleting}
+          canDetail={canDetail}
+          canEdit={canEdit}
+          canDelete={canDelete}
         />
       ),
     },
   ];
+
+  return canDetail || canEdit || canDelete
+    ? columns
+    : columns.filter((item) => item.key !== 'option');
 };

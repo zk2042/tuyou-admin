@@ -14,6 +14,7 @@ import type {
 } from '@/services/comment/types';
 import { message } from '@/utils/message';
 import type { ActionType, ProTableProps } from '@ant-design/pro-components';
+import { useAccess } from '@umijs/max';
 import { Button, Divider, Modal, Table, Typography } from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
 
@@ -119,6 +120,11 @@ const previewContent = (record: BatchRow) => {
 };
 
 const CommentPage: React.FC = () => {
+  const { hasPerm } = useAccess();
+  const canList = hasPerm('comment:list');
+  const canDetail = hasPerm('comment:detail');
+  const canDelete = hasPerm('comment:delete');
+  const canBatchDelete = hasPerm('comment:batch-delete');
   const actionRef = useRef<ActionType>();
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<BatchRow[]>([]);
@@ -198,13 +204,16 @@ const CommentPage: React.FC = () => {
         onDetail: openDetail,
         onDelete: confirmDelete,
         deleting,
+        canDetail,
+        canDelete,
       }),
-    [confirmDelete, deleting, openDetail],
+    [canDelete, canDetail, confirmDelete, deleting, openDetail],
   );
 
   return (
     <>
       <ListPage<CommentItem, CommentQuery>
+        accessible={canList}
         actionRef={actionRef}
         rowKey="id"
         headerTitle="评论列表"
@@ -215,31 +224,39 @@ const CommentPage: React.FC = () => {
           defaultCollapsed: true,
           span: 8,
         }}
-        rowSelection={{
-          selectedRowKeys: selectedKeys,
-          onChange: (keys, rows) => {
-            setSelectedKeys(keys);
-            setSelectedRows(rows as BatchRow[]);
-          },
-        }}
-        toolbarActions={[
-          <Button
-            key="delete"
-            disabled={selectedKeys.length === 0}
-            danger
-            loading={batchDeleting}
-            onClick={() => {
-              if (!selectedKeys.length) {
-                message.warning('请先选择要批量删除的评论');
-                return;
+        rowSelection={
+          canBatchDelete
+            ? {
+                selectedRowKeys: selectedKeys,
+                onChange: (keys, rows) => {
+                  setSelectedKeys(keys);
+                  setSelectedRows(rows as BatchRow[]);
+                },
               }
+            : undefined
+        }
+        toolbarActions={
+          canBatchDelete
+            ? [
+                <Button
+                  key="delete"
+                  disabled={selectedKeys.length === 0}
+                  danger
+                  loading={batchDeleting}
+                  onClick={() => {
+                    if (!selectedKeys.length) {
+                      message.warning('请先选择要批量删除的评论');
+                      return;
+                    }
 
-              setBatchOpen(true);
-            }}
-          >
-            批量删除
-          </Button>,
-        ]}
+                    setBatchOpen(true);
+                  }}
+                >
+                  批量删除
+                </Button>,
+              ]
+            : []
+        }
       />
       <DetailModal
         open={detailOpen}
