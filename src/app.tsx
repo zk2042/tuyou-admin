@@ -33,7 +33,7 @@ import {
   MenuUnfoldOutlined,
 } from '@ant-design/icons';
 import type { RequestConfig, RunTimeLayoutConfig } from '@umijs/max';
-import { history, Outlet, useLocation, useModel } from '@umijs/max';
+import { history, Outlet, useAccess, useLocation, useModel } from '@umijs/max';
 import type { MenuProps } from 'antd';
 import {
   App,
@@ -141,6 +141,12 @@ function LayoutHeader() {
   const { collapsed, toggleMenu } = useSider();
   const dispatch = useAppDispatch();
   const unreadCount = useAppSelector((state) => state.notice.unreadCount);
+  const { hasPerm } = useAccess();
+  const canViewProfile = hasPerm('center:profile');
+  const canUpdateAvatar = hasPerm('center:avatar');
+  const canViewNotification = hasPerm('center:notification:list');
+  const canViewUnread = hasPerm('center:notification:unread');
+  const canUpdatePassword = hasPerm('auth:password');
   const [noticeOpen, setNoticeOpen] = useState(false);
   const [noticeLoading, setNoticeLoading] = useState(false);
   const [noticeList, setNoticeList] = useState<NoticeItem[]>([]);
@@ -166,7 +172,12 @@ function LayoutHeader() {
   }, [location.pathname, menuMeta]);
 
   const displayName = initialState?.username || '当前用户';
-  const canOpenCenter = hasMenuPath('/center', initialState?.menu_tree);
+  const canOpenCenter =
+    (canViewProfile ||
+      canUpdateAvatar ||
+      canViewNotification ||
+      canUpdatePassword) &&
+    hasMenuPath('/center', initialState?.menu_tree);
 
   const menuItems = useMemo<MenuProps['items']>(
     () => [
@@ -226,13 +237,13 @@ function LayoutHeader() {
   };
 
   useEffect(() => {
-    if (!getToken() || !initialState?.id) {
+    if (!getToken() || !initialState?.id || !canViewUnread) {
       dispatch(setUnreadCount(0));
       return;
     }
 
     void loadUnread();
-  }, [dispatch, initialState?.id, location.pathname]);
+  }, [canViewUnread, dispatch, initialState?.id, location.pathname]);
 
   const noticeContent = (
     <div className="notice-pop">
@@ -296,25 +307,27 @@ function LayoutHeader() {
       </Space>
 
       <Space size={20} className="header-actions">
-        <Popover
-          trigger="click"
-          open={noticeOpen}
-          placement="bottomRight"
-          content={noticeContent}
-          onOpenChange={(open) => {
-            setNoticeOpen(open);
+        {canViewNotification ? (
+          <Popover
+            trigger="click"
+            open={noticeOpen}
+            placement="bottomRight"
+            content={noticeContent}
+            onOpenChange={(open) => {
+              setNoticeOpen(open);
 
-            if (open) {
-              void loadTopNotice();
-            }
-          }}
-        >
-          <span className="header-action">
-            <Badge dot={unreadCount > 0} className="header-badge">
-              <BellOutlined />
-            </Badge>
-          </span>
-        </Popover>
+              if (open) {
+                void loadTopNotice();
+              }
+            }}
+          >
+            <span className="header-action">
+              <Badge dot={unreadCount > 0} className="header-badge">
+                <BellOutlined />
+              </Badge>
+            </span>
+          </Popover>
+        ) : null}
 
         <Dropdown
           trigger={['hover']}
@@ -477,14 +490,23 @@ export async function getInitialState(): Promise<InitialState | undefined> {
   try {
     const response = await getMe();
     if (!response.data) {
-      return cachedUser;
+      clearToken();
+      return undefined;
     }
 
+    const menuChanged =
+      JSON.stringify(cachedUser?.menu_tree ?? []) !==
+      JSON.stringify(response.data.menu_tree);
     setUser(response.data);
+
+    if (menuChanged && window.location.pathname !== '/login') {
+      window.location.replace('/');
+    }
 
     return response.data;
   } catch {
-    return cachedUser;
+    clearToken();
+    return undefined;
   }
 }
 

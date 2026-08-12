@@ -1,21 +1,22 @@
+import Forbidden from '@/pages/Exception/403';
 import { queryActivity } from '@/services/activity';
 import type { ActivityItem } from '@/services/activity/types';
 import type { WorkbenchData } from '@/services/workbench';
 import { getWorkbench } from '@/services/workbench';
 import { message } from '@/utils/message';
+import { hasMenuPath } from '@/utils/route';
 import {
   ArrowRightOutlined,
   CalendarOutlined,
   CommentOutlined,
   FileTextOutlined,
-  PlusOutlined,
   ReadOutlined,
   SafetyCertificateOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
 import { Column } from '@ant-design/plots';
 import { PageContainer } from '@ant-design/pro-components';
-import { history, useModel } from '@umijs/max';
+import { history, useAccess, useModel } from '@umijs/max';
 import {
   Avatar,
   Button,
@@ -30,39 +31,44 @@ import {
   Timeline,
   Typography,
 } from 'antd';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './index.less';
 
 const shortcuts = [
   {
-    title: '创建活动',
-    desc: '发布一场新的旅行活动',
-    icon: <PlusOutlined />,
+    title: '活动管理',
+    desc: '查看和管理旅行活动',
+    icon: <CalendarOutlined />,
     path: '/activity',
+    perm: 'activity:list',
   },
   {
     title: '会员管理',
     desc: '查看和管理平台会员',
     icon: <TeamOutlined />,
     path: '/user/member',
+    perm: 'member:list',
   },
   {
     title: '笔记管理',
     desc: '审核最新发布的内容',
     icon: <FileTextOutlined />,
     path: '/content/note',
+    perm: 'note:list',
   },
   {
     title: '评论管理',
     desc: '处理用户互动与评论',
     icon: <CommentOutlined />,
     path: '/comment',
+    perm: 'comment:list',
   },
   {
     title: '权限管理',
     desc: '管理后台角色与权限',
     icon: <SafetyCertificateOutlined />,
-    path: '/authority',
+    path: '/authority/role',
+    perm: 'role:list',
   },
 ];
 
@@ -274,10 +280,23 @@ function LatestNotices({ list }: { list: LatestNotice[] }) {
 
 const DashboardPage: React.FC = () => {
   const { initialState } = useModel('@@initialState');
+  const { hasPerm } = useAccess();
+  const canView = hasPerm('workbench:view');
+  const canViewActivities =
+    hasPerm('activity:list') &&
+    hasMenuPath('/activity', initialState?.menu_tree);
+  const visibleShortcuts = useMemo(
+    () =>
+      shortcuts.filter(
+        (item) =>
+          hasPerm(item.perm) && hasMenuPath(item.path, initialState?.menu_tree),
+      ),
+    [hasPerm, initialState?.menu_tree],
+  );
   const [data, setData] = useState<WorkbenchData>();
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [actLoading, setActLoading] = useState(true);
+  const [actLoading, setActLoading] = useState(false);
   const [welcome, setWelcome] = useState('');
 
   const loadData = useCallback(async () => {
@@ -313,9 +332,15 @@ const DashboardPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    if (!canView) {
+      return;
+    }
+
     void loadData();
-    void loadActivities();
-  }, [loadActivities, loadData]);
+    if (canViewActivities) {
+      void loadActivities();
+    }
+  }, [canView, canViewActivities, loadActivities, loadData]);
 
   const name = initialState?.username || '旅行伙伴';
   const today = new Intl.DateTimeFormat('zh-CN', {
@@ -326,6 +351,10 @@ const DashboardPage: React.FC = () => {
   }).format(new Date());
 
   useEffect(() => {
+    if (!canView) {
+      return;
+    }
+
     const text = `欢迎回来，${name}！今天是${today}，愿你今天也能把每一次出发，变成值得记住的故事。`;
     let index = 0;
     setWelcome('');
@@ -338,7 +367,11 @@ const DashboardPage: React.FC = () => {
     }, 35);
 
     return () => window.clearInterval(timer);
-  }, [name, today]);
+  }, [canView, name, today]);
+
+  if (!canView) {
+    return <Forbidden />;
+  }
 
   return (
     <PageContainer title="工作台" ghost breadcrumbRender={false}>
@@ -387,7 +420,7 @@ const DashboardPage: React.FC = () => {
             }
           >
             <Row gutter={[12, 12]}>
-              {shortcuts.map((item) => (
+              {visibleShortcuts.map((item) => (
                 <Col xs={24} sm={12} key={item.title}>
                   <Card
                     hoverable
@@ -431,9 +464,11 @@ const DashboardPage: React.FC = () => {
         <Col xs={24} xl={12}>
           <LatestNotices list={latestNotices} />
         </Col>
-        <Col xs={24} xl={12}>
-          <LatestActivities loading={actLoading} list={activities} />
-        </Col>
+        {canViewActivities && (
+          <Col xs={24} xl={12}>
+            <LatestActivities loading={actLoading} list={activities} />
+          </Col>
+        )}
       </Row>
     </PageContainer>
   );

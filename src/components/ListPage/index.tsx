@@ -3,6 +3,7 @@ import {
   PAGE_SIZE_OPTIONS,
   showTableTotal,
 } from '@/constants/common-const';
+import Forbidden from '@/pages/Exception/403';
 import {
   PageContainer,
   ProTable,
@@ -33,6 +34,7 @@ export interface ListProps<
     ProTableProps<T, U, ValueType>,
     'pagination' | 'request' | 'toolBarRender'
   > {
+  accessible?: boolean;
   pageTitle?: PageContainerProps['title'];
   pageContainerProps?: Omit<PageContainerProps, 'children' | 'title'>;
   request?: TableRequest<T, U, ValueType>;
@@ -109,6 +111,7 @@ const ListPage = <
   U extends Record<string, any> = Record<string, any>,
   ValueType = 'text',
 >({
+  accessible = true,
   pageTitle,
   pageContainerProps,
   request,
@@ -123,6 +126,10 @@ const ListPage = <
   const tableColumns = React.useMemo(() => {
     return buildColumns<T, ValueType>(columns);
   }, [columns]);
+
+  if (!accessible) {
+    return <Forbidden />;
+  }
 
   return (
     <PageContainer
