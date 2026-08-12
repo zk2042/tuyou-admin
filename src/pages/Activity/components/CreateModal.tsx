@@ -55,6 +55,7 @@ interface CreateProps {
   onCancel: () => void;
   onSubmit: (vals: CreateVals) => void;
   uploadRequest?: (file: File) => Promise<string>;
+  uploadDisabled?: boolean;
 }
 
 const CreateModal = ({
@@ -65,6 +66,7 @@ const CreateModal = ({
   onCancel,
   onSubmit,
   uploadRequest,
+  uploadDisabled = false,
 }: CreateProps) => {
   const [form] = Form.useForm<CreateVals>();
 
@@ -144,10 +146,11 @@ const CreateModal = ({
             >
               <ImageUpload
                 uploadRequest={uploadRequest}
+                disabled={uploadDisabled}
                 tip={
-                  uploadRequest
-                    ? '支持上传图片作为活动封面'
-                    : '当前先用本地预览结果兜底，后续可替换为真实上传接口'
+                  uploadDisabled
+                    ? '暂无图片上传权限'
+                    : '支持上传图片作为活动封面'
                 }
               />
             </Form.Item>
@@ -192,7 +195,7 @@ const CreateModal = ({
             >
               <DatePicker
                 showTime
-                format="YYYY-MM-DD HH:mm:ss"
+                format="YYYY-MM-DD HH:mm"
                 placeholder="请选择开始时间"
                 style={{ width: '100%' }}
               />
@@ -222,7 +225,7 @@ const CreateModal = ({
             >
               <DatePicker
                 showTime
-                format="YYYY-MM-DD HH:mm:ss"
+                format="YYYY-MM-DD HH:mm"
                 placeholder="请选择结束时间"
                 style={{ width: '100%' }}
               />

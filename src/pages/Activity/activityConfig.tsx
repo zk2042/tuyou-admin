@@ -92,9 +92,9 @@ const textEllipsis = (text?: string, width = 120) => {
 
 interface ActActionsProps {
   record: ActItem;
-  onDetail: (record: ActItem) => void;
-  onEdit: (record: ActItem) => void;
-  onDelete: (record: ActItem) => void;
+  onDetail?: (record: ActItem) => void;
+  onEdit?: (record: ActItem) => void;
+  onDelete?: (record: ActItem) => void;
   deleting: boolean;
 }
 
@@ -162,40 +162,46 @@ const ActActions = ({
 
   return (
     <Space size={0}>
-      <Button
-        type="link"
-        icon={<EyeOutlined />}
-        style={{ color: token.colorInfo, paddingInline: 4 }}
-        onClick={() => onDetail(record)}
-      >
-        详情
-      </Button>
-      <Button
-        type="link"
-        icon={<EditOutlined />}
-        style={{ paddingInline: 4 }}
-        onClick={() => onEdit(record)}
-      >
-        编辑
-      </Button>
-      <Button
-        danger
-        type="link"
-        icon={<DeleteOutlined />}
-        style={{ paddingInline: 4 }}
-        loading={deleting}
-        onClick={() => onDelete(record)}
-      >
-        删除
-      </Button>
+      {onDetail && (
+        <Button
+          type="link"
+          icon={<EyeOutlined />}
+          style={{ color: token.colorInfo, paddingInline: 4 }}
+          onClick={() => onDetail(record)}
+        >
+          详情
+        </Button>
+      )}
+      {onEdit && (
+        <Button
+          type="link"
+          icon={<EditOutlined />}
+          style={{ paddingInline: 4 }}
+          onClick={() => onEdit(record)}
+        >
+          编辑
+        </Button>
+      )}
+      {onDelete && (
+        <Button
+          danger
+          type="link"
+          icon={<DeleteOutlined />}
+          style={{ paddingInline: 4 }}
+          loading={deleting}
+          onClick={() => onDelete(record)}
+        >
+          删除
+        </Button>
+      )}
     </Space>
   );
 };
 
 interface ColsProps {
-  onDetail: (record: ActItem) => void;
-  onEdit: (record: ActItem) => void;
-  onDelete: (record: ActItem) => void;
+  onDetail?: (record: ActItem) => void;
+  onEdit?: (record: ActItem) => void;
+  onDelete?: (record: ActItem) => void;
   deleting: boolean;
 }
 
@@ -205,7 +211,7 @@ export const activityColumns = ({
   onDelete,
   deleting,
 }: ColsProps): ProColumns<ActItem>[] => {
-  return [
+  const columns: ProColumns<ActItem>[] = [
     {
       title: 'ID',
       dataIndex: 'id',
@@ -351,4 +357,8 @@ export const activityColumns = ({
       ),
     },
   ];
+
+  return onDetail || onEdit || onDelete
+    ? columns
+    : columns.filter((item) => item.key !== 'option');
 };
