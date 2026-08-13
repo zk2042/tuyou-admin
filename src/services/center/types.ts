@@ -10,11 +10,11 @@ export type NoticeQuery = {
 };
 
 export type NoticeItem = {
-  id: number;
+  id: string;
   type: 0 | 1 | 2;
   content: string;
   is_read: 0 | 1;
-  created_at: string;
+  send_time: string;
 };
 
 export type NoticeData = {

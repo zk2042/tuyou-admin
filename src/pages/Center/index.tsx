@@ -26,6 +26,7 @@ import {
   BellOutlined,
   CameraOutlined,
   CheckOutlined,
+  ClearOutlined,
   DeleteOutlined,
   EditOutlined,
   LockOutlined,
@@ -48,6 +49,7 @@ import {
   Space,
   Spin,
   Tag,
+  Tooltip,
   Typography,
   Upload,
 } from 'antd';
@@ -57,8 +59,7 @@ import ChangePasswordModal from './components/ChangePasswordModal';
 import EditProfileModal from './components/EditProfileModal';
 import styles from './index.less';
 
-const NOTICE_SIZE = 10;
-const NOTICE_PREVIEW = 5;
+const NOTICE_SIZE = 5;
 
 type UserState = {
   id: string;
@@ -93,15 +94,15 @@ function toCurrentInfo(profile?: UserState): CurrentInfo | undefined {
 const noticeMap = {
   0: {
     title: '系统通知',
-    icon: <BellOutlined />,
+    icon: <SafetyCertificateOutlined />,
   },
   1: {
     title: '安全设置提醒',
-    icon: <SafetyCertificateOutlined />,
+    icon: <LockOutlined />,
   },
   2: {
     title: '设备登录提醒',
-    icon: <LockOutlined />,
+    icon: <BellOutlined />,
   },
 } as const;
 
@@ -123,7 +124,7 @@ const CenterPage: React.FC = () => {
   const canUpdatePassword = hasPerm('auth:password');
   const canUploadImage = hasPerm('upload:image:batch');
   const [noticeLoading, setNoticeLoading] = React.useState(false);
-  const [noticeAct, setNoticeAct] = React.useState<number>();
+  const [noticeAct, setNoticeAct] = React.useState<string>();
   const [readAllLoading, setReadAllLoading] = React.useState(false);
   const [clearLoading, setClearLoading] = React.useState(false);
   const [usernameSaving, setUsernameSaving] = React.useState(false);
@@ -132,7 +133,6 @@ const CenterPage: React.FC = () => {
   const [profileOpen, setProfileOpen] = React.useState(false);
   const [passwordOpen, setPasswordOpen] = React.useState(false);
   const [avatarPreviewOpen, setAvatarPreviewOpen] = React.useState(false);
-  const [noticeOpen, setNoticeOpen] = React.useState(false);
   const [noticePage, setNoticePage] = React.useState(1);
   const [noticeTotal, setNoticeTotal] = React.useState(0);
   const [profile, setProfile] = React.useState<CurrentInfo | undefined>(
@@ -237,10 +237,6 @@ const CenterPage: React.FC = () => {
     }
   }, [canUpdatePassword, location.search]);
 
-  React.useEffect(() => {
-    setNoticeOpen(false);
-  }, [noticePage, notifications.length]);
-
   const uploadAvatar = React.useCallback<
     NonNullable<UploadProps['customRequest']>
   >(
@@ -335,6 +331,10 @@ const CenterPage: React.FC = () => {
 
   const readOne = React.useCallback(
     async (item: NoticeItem) => {
+      if (item.is_read === 1 || !canReadOne || noticeAct !== undefined) {
+        return;
+      }
+
       setNoticeAct(item.id);
 
       try {
@@ -350,7 +350,14 @@ const CenterPage: React.FC = () => {
         setNoticeAct(undefined);
       }
     },
-    [canViewNotification, canViewUnread, loadNotifications, loadUnread],
+    [
+      canReadOne,
+      canViewNotification,
+      canViewUnread,
+      loadNotifications,
+      loadUnread,
+      noticeAct,
+    ],
   );
 
   const deleteOne = React.useCallback(
@@ -423,10 +430,6 @@ const CenterPage: React.FC = () => {
       },
     });
   }, [dispatch, modal]);
-
-  const visibleNotifications = noticeOpen
-    ? notifications
-    : notifications.slice(0, NOTICE_PREVIEW);
 
   return (
     <PageContainer ghost breadcrumbRender={false}>
@@ -568,17 +571,14 @@ const CenterPage: React.FC = () => {
               ) : null}
 
               {canViewNotification ? (
-                <div className={styles.securityItem}>
-                  <div className={styles.securityMain}>
-                    <BellOutlined className={styles.securityIcon} />
-                    <div>
-                      <div className={styles.securityTitle}>登录提醒</div>
-                      <Typography.Paragraph className={styles.securityDesc}>
-                        当前已开启异常登录提醒，发现异常消息请及时处理。
-                      </Typography.Paragraph>
-                    </div>
+                <div className={styles.securityMain}>
+                  <BellOutlined className={styles.securityIcon} />
+                  <div>
+                    <div className={styles.securityTitle}>登录提醒</div>
+                    <Typography.Paragraph className={styles.securityDesc}>
+                      当前系统登录后发送登录提醒，如发现异常登录信息请及时修改账号或密码。
+                    </Typography.Paragraph>
                   </div>
-                  <Tag color="processing">已开启</Tag>
                 </div>
               ) : null}
             </div>
@@ -599,39 +599,43 @@ const CenterPage: React.FC = () => {
                 {canReadAll || canClearNotice ? (
                   <div className={styles.notifyActions}>
                     {canReadAll ? (
-                      <Button
-                        type="link"
-                        className={styles.linkButton}
-                        onClick={() => {
-                          void readAll();
-                        }}
-                        loading={readAllLoading}
-                        disabled={
-                          noticeLoading ||
-                          clearLoading ||
-                          notifications.length === 0
-                        }
-                      >
-                        全部已读
-                      </Button>
+                      <Tooltip title="全部已读">
+                        <Button
+                          type="text"
+                          className={styles.notifyActionButton}
+                          aria-label="全部已读"
+                          icon={<CheckOutlined />}
+                          onClick={() => {
+                            void readAll();
+                          }}
+                          loading={readAllLoading}
+                          disabled={
+                            noticeLoading ||
+                            clearLoading ||
+                            notifications.length === 0
+                          }
+                        />
+                      </Tooltip>
                     ) : null}
                     {canClearNotice ? (
-                      <Button
-                        danger
-                        type="link"
-                        className={styles.linkButton}
-                        onClick={() => {
-                          confirmClear();
-                        }}
-                        loading={clearLoading}
-                        disabled={
-                          noticeLoading ||
-                          readAllLoading ||
-                          notifications.length === 0
-                        }
-                      >
-                        清空所有消息
-                      </Button>
+                      <Tooltip title="清空所有消息">
+                        <Button
+                          danger
+                          type="text"
+                          className={styles.notifyActionButton}
+                          aria-label="清空所有消息"
+                          icon={<ClearOutlined />}
+                          onClick={() => {
+                            confirmClear();
+                          }}
+                          loading={clearLoading}
+                          disabled={
+                            noticeLoading ||
+                            readAllLoading ||
+                            notifications.length === 0
+                          }
+                        />
+                      </Tooltip>
                     ) : null}
                   </div>
                 ) : null}
@@ -640,8 +644,32 @@ const CenterPage: React.FC = () => {
               <Spin spinning={noticeLoading}>
                 {notifications.length ? (
                   <div className={styles.notifyList}>
-                    {visibleNotifications.map((item) => (
-                      <div key={item.id} className={styles.notifyItem}>
+                    {notifications.map((item) => (
+                      <div
+                        key={item.id}
+                        className={`${styles.notifyItem} ${
+                          item.is_read === 0
+                            ? styles.notifyUnread
+                            : styles.notifyRead
+                        }`}
+                        role={
+                          item.is_read === 0 && canReadOne
+                            ? 'button'
+                            : undefined
+                        }
+                        tabIndex={
+                          item.is_read === 0 && canReadOne ? 0 : undefined
+                        }
+                        onClick={() => {
+                          void readOne(item);
+                        }}
+                        onKeyDown={(event) => {
+                          if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            void readOne(item);
+                          }
+                        }}
+                      >
                         <span className={styles.notifyIcon}>
                           {noticeMap[item.type].icon}
                         </span>
@@ -654,40 +682,34 @@ const CenterPage: React.FC = () => {
                               ) : null}
                             </span>
                             <span className={styles.notifyTime}>
-                              {formatNoticeTime(item.created_at)}
+                              {formatNoticeTime(item.send_time)}
                             </span>
                           </div>
-                          <Typography.Paragraph className={styles.notifyDesc}>
-                            {item.content}
-                          </Typography.Paragraph>
-                          <div className={styles.notifyItemActions}>
-                            {item.is_read === 0 && canReadOne ? (
-                              <Button
-                                type="link"
-                                size="small"
-                                icon={<CheckOutlined />}
-                                loading={noticeAct === item.id}
-                                disabled={noticeAct !== undefined}
-                                onClick={() => {
-                                  void readOne(item);
-                                }}
-                              >
-                                标记已读
-                              </Button>
-                            ) : null}
+                          <div className={styles.notifyContentRow}>
+                            <Typography.Paragraph className={styles.notifyDesc}>
+                              {item.content}
+                            </Typography.Paragraph>
                             {canDeleteNotice ? (
-                              <Button
-                                danger
-                                type="link"
-                                size="small"
-                                icon={<DeleteOutlined />}
-                                disabled={noticeAct !== undefined}
-                                onClick={() => {
-                                  deleteOne(item);
-                                }}
-                              >
-                                删除
-                              </Button>
+                              <Tooltip title="删除消息">
+                                <Button
+                                  danger
+                                  type="text"
+                                  size="small"
+                                  className={styles.notifyDelete}
+                                  aria-label="删除消息"
+                                  icon={<DeleteOutlined />}
+                                  disabled={noticeAct !== undefined}
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    deleteOne(item);
+                                  }}
+                                  onKeyDown={(event) => {
+                                    event.stopPropagation();
+                                  }}
+                                >
+                                  删除
+                                </Button>
+                              </Tooltip>
                             ) : null}
                           </div>
                         </div>
@@ -701,27 +723,16 @@ const CenterPage: React.FC = () => {
                   />
                 )}
               </Spin>
-              {notifications.length > NOTICE_PREVIEW && !noticeOpen ? (
-                <div className={styles.noticeMore}>
-                  <Button
-                    type="link"
-                    className={styles.linkButton}
-                    onClick={() => {
-                      setNoticeOpen(true);
-                    }}
-                  >
-                    查看更多
-                  </Button>
-                </div>
-              ) : null}
               {noticeTotal > 0 ? (
                 <div className={styles.notifyPager}>
                   <Pagination
                     current={noticePage}
                     pageSize={NOTICE_SIZE}
                     total={noticeTotal}
-                    showSizeChanger={false}
+                    showSizeChanger={true}
                     showTotal={(total) => `共 ${total} 条`}
+                    size="small"
+                    align="end"
                     onChange={(page) => {
                       setNoticePage(page);
                     }}
