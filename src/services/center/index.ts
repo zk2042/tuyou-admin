@@ -60,10 +60,8 @@ export async function queryNotice(
   });
 }
 
-export async function readAllNotice(options?: {
-  [key: string]: any;
-}): Promise<ApiResponse<NoticeData>> {
-  return apiRequest<NoticeData>({
+export async function readAllNotice(options?: { [key: string]: any }) {
+  return apiRequest({
     url: '/admin/center/notifications/read-all',
     method: 'PUT',
     ...(options || {}),
@@ -71,7 +69,7 @@ export async function readAllNotice(options?: {
 }
 
 export async function readNotice(
-  id: number,
+  id: string,
   options?: {
     [key: string]: any;
   },
@@ -84,7 +82,7 @@ export async function readNotice(
 }
 
 export async function deleteNotice(
-  id: number,
+  id: string,
   options?: {
     [key: string]: any;
   },
@@ -96,10 +94,8 @@ export async function deleteNotice(
   });
 }
 
-export async function clearNotice(options?: {
-  [key: string]: any;
-}): Promise<ApiResponse<NoticeData>> {
-  return apiRequest<NoticeData>({
+export async function clearNotice(options?: { [key: string]: any }) {
+  return apiRequest({
     url: '/admin/center/notifications',
     method: 'DELETE',
     ...(options || {}),

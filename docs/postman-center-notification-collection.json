@@ -64,7 +64,7 @@
               "header": [
                 { "key": "Content-Type", "value": "application/json" }
               ],
-              "body": "{\n  \"code\": 0,\n  \"message\": \"获取成功\",\n  \"data\": {\n    \"list\": [\n      {\n        \"id\": 75,\n        \"type\": 2,\n        \"content\": \"您的账号于2026-07-29 20:30:39在Windows - Edge上登录，如非本人操作，请尽快修改密码\",\n        \"is_read\": 0,\n        \"created_at\": \"2026-07-29T20:30:39.326+08:00\"\n      }\n    ],\n    \"total\": 5,\n    \"page\": 1,\n    \"size\": 10,\n    \"total_page\": 1\n  }\n}"
+              "body": "{\n  \"code\": 0,\n  \"message\": \"获取成功\",\n  \"data\": {\n    \"list\": [\n      {\n        \"id\": \"7\",\n        \"type\": 2,\n        \"content\": \"您的账号于2026-07-29 20:30:39在Windows - Edge上登录，如非本人操作，请尽快修改密码\",\n        \"is_read\": 0,\n        \"send_time\": \"2026-07-29T20:30:39.326+08:00\"\n      }\n    ],\n    \"total\": 5,\n    \"page\": 1,\n    \"size\": 10,\n    \"total_page\": 1\n  }\n}"
             }
           ]
         },
@@ -136,7 +136,7 @@
               "header": [
                 { "key": "Content-Type", "value": "application/json" }
               ],
-              "body": "{\n  \"code\": 0,\n  \"message\": \"已全部标记为已读\",\n  \"data\": {\n    \"list\": [],\n    \"total\": 5,\n    \"page\": 1,\n    \"size\": 10,\n    \"total_page\": 1\n  }\n}"
+              "body": "{\n  \"code\": 0,\n  \"message\": \"已全部标记为已读\",\n  \"data\": {}\n}"
             }
           ]
         },
@@ -146,15 +146,9 @@
             "method": "PUT",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/admin/center/notifications/{{noticeId}}/read",
+              "raw": "{{baseUrl}}/admin/center/notifications/{{id}}/read",
               "host": ["{{baseUrl}}"],
-              "path": [
-                "admin",
-                "center",
-                "notifications",
-                "{{noticeId}}",
-                "read"
-              ],
+              "path": ["admin", "center", "notifications", "{{id}}", "read"],
               "query": []
             },
             "description": "根据消息 ID 将单条消息标记为已读，无请求体。"
@@ -166,13 +160,13 @@
                 "method": "PUT",
                 "header": [],
                 "url": {
-                  "raw": "{{baseUrl}}/admin/center/notifications/{{noticeId}}/read",
+                  "raw": "{{baseUrl}}/admin/center/notifications/{{id}}/read",
                   "host": ["{{baseUrl}}"],
                   "path": [
                     "admin",
                     "center",
                     "notifications",
-                    "{{noticeId}}",
+                    "{{id}}",
                     "read"
                   ],
                   "query": []
@@ -184,7 +178,7 @@
               "header": [
                 { "key": "Content-Type", "value": "application/json" }
               ],
-              "body": "{\n  \"code\": 0,\n  \"message\": \"已标记为已读\",\n  \"data\": null\n}"
+              "body": "{\n  \"code\": 0,\n  \"message\": \"已标记为已读\",\n  \"data\": {}\n}"
             },
             {
               "name": "消息不存在",
@@ -192,13 +186,13 @@
                 "method": "PUT",
                 "header": [],
                 "url": {
-                  "raw": "{{baseUrl}}/admin/center/notifications/{{noticeId}}/read",
+                  "raw": "{{baseUrl}}/admin/center/notifications/{{id}}/read",
                   "host": ["{{baseUrl}}"],
                   "path": [
                     "admin",
                     "center",
                     "notifications",
-                    "{{noticeId}}",
+                    "{{id}}",
                     "read"
                   ],
                   "query": []
@@ -220,9 +214,9 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/admin/center/notifications/{{noticeId}}",
+              "raw": "{{baseUrl}}/admin/center/notifications/{{id}}",
               "host": ["{{baseUrl}}"],
-              "path": ["admin", "center", "notifications", "{{noticeId}}"],
+              "path": ["admin", "center", "notifications", "{{id}}"],
               "query": []
             },
             "description": "根据消息 ID 永久删除单条消息。"
@@ -234,9 +228,9 @@
                 "method": "DELETE",
                 "header": [],
                 "url": {
-                  "raw": "{{baseUrl}}/admin/center/notifications/{{noticeId}}",
+                  "raw": "{{baseUrl}}/admin/center/notifications/{{id}}",
                   "host": ["{{baseUrl}}"],
-                  "path": ["admin", "center", "notifications", "{{noticeId}}"],
+                  "path": ["admin", "center", "notifications", "{{id}}"],
                   "query": []
                 }
               },
@@ -246,7 +240,7 @@
               "header": [
                 { "key": "Content-Type", "value": "application/json" }
               ],
-              "body": "{\n  \"code\": 0,\n  \"message\": \"消息删除成功\",\n  \"data\": null\n}"
+              "body": "{\n  \"code\": 0,\n  \"message\": \"消息删除成功\",\n  \"data\": {}\n}"
             },
             {
               "name": "消息不存在",
@@ -254,9 +248,9 @@
                 "method": "DELETE",
                 "header": [],
                 "url": {
-                  "raw": "{{baseUrl}}/admin/center/notifications/{{noticeId}}",
+                  "raw": "{{baseUrl}}/admin/center/notifications/{{id}}",
                   "host": ["{{baseUrl}}"],
-                  "path": ["admin", "center", "notifications", "{{noticeId}}"],
+                  "path": ["admin", "center", "notifications", "{{id}}"],
                   "query": []
                 }
               },
@@ -302,7 +296,7 @@
               "header": [
                 { "key": "Content-Type", "value": "application/json" }
               ],
-              "body": "{\n  \"code\": 0,\n  \"message\": \"已清空所有消息\",\n  \"data\": {\n    \"list\": [],\n    \"total\": 0,\n    \"page\": 1,\n    \"size\": 10,\n    \"total_page\": 1\n  }\n}"
+              "body": "{\n  \"code\": 0,\n  \"message\": \"已清空所有消息\",\n  \"data\": {}\n}"
             }
           ]
         }
@@ -319,8 +313,8 @@
       "value": ""
     },
     {
-      "key": "noticeId",
-      "value": "75"
+      "key": "id",
+      "value": "7"
     }
   ]
 }

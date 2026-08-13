@@ -1,4 +1,4 @@
-import { permList } from './authority/permissions';
+﻿import { permList } from './authority/permissions';
 
 type CurrentAdminInfo = {
   id: string;
@@ -39,11 +39,11 @@ type NoticeQuery = {
 };
 
 type NoticeItem = {
-  id: number;
+  id: string;
   type: 0 | 1 | 2;
   content: string;
   is_read: 0 | 1;
-  created_at: string;
+  send_time: string;
 };
 
 const currentAdmin: CurrentAdminInfo = {
@@ -61,42 +61,74 @@ let adminPassword = '123456';
 
 let notificationList: NoticeItem[] = [
   {
-    id: 75,
+    id: '79',
+    type: 2,
+    content:
+      '您的账号于2026-07-29 20:30:39在Windows - Edge上登录，如非本人操作，请尽快修改密码',
+    is_read: 1,
+    send_time: '2026-07-29T20:30:39.326+08:00',
+  },
+  {
+    id: '78',
+    type: 2,
+    content:
+      '您的账号于2026-07-29 20:30:39在Windows - Edge上登录，如非本人操作，请尽快修改密码',
+    is_read: 1,
+    send_time: '2026-07-29T20:30:39.326+08:00',
+  },
+  {
+    id: '77',
+    type: 2,
+    content:
+      '您的账号于2026-07-29 20:30:39在Windows - Edge上登录，如非本人操作，请尽快修改密码',
+    is_read: 1,
+    send_time: '2026-07-29T20:30:39.326+08:00',
+  },
+  {
+    id: '76',
+    type: 2,
+    content:
+      '您的账号于2026-07-29 20:30:39在Windows - Edge上登录，如非本人操作，请尽快修改密码',
+    is_read: 1,
+    send_time: '2026-07-29T20:30:39.326+08:00',
+  },
+  {
+    id: '75',
     type: 2,
     content:
       '您的账号于2026-07-29 20:30:39在Windows - Edge上登录，如非本人操作，请尽快修改密码',
     is_read: 0,
-    created_at: '2026-07-29T20:30:39.326+08:00',
+    send_time: '2026-07-29T20:30:39.326+08:00',
   },
   {
-    id: 74,
+    id: '74',
     type: 2,
     content:
       '您的账号于2026-07-28 15:44:11在Windows - Chrome上登录，如非本人操作，请尽快修改密码',
     is_read: 0,
-    created_at: '2026-07-28T15:44:11.215+08:00',
+    send_time: '2026-07-28T15:44:11.215+08:00',
   },
   {
-    id: 73,
+    id: '73',
     type: 2,
     content:
       '您的账号于2026-07-25 16:18:00在Windows - Edge上登录，如非本人操作，请尽快修改密码',
     is_read: 0,
-    created_at: '2026-07-25T16:18:00.000+08:00',
+    send_time: '2026-07-25T16:18:00.000+08:00',
   },
   {
-    id: 72,
+    id: '72',
     type: 1,
     content: '为了保障账号安全，建议您定期修改登录密码并开启登录提醒',
     is_read: 1,
-    created_at: '2026-07-21T21:33:21.043+08:00',
+    send_time: '2026-07-21T21:33:21.043+08:00',
   },
   {
-    id: 71,
+    id: '71',
     type: 0,
     content: '个人中心已升级，您现在可以直接在此页面维护头像、账号名与密码',
     is_read: 1,
-    created_at: '2026-07-15T17:33:05.000+08:00',
+    send_time: '2026-07-15T17:33:05.000+08:00',
   },
 ];
 
@@ -355,11 +387,11 @@ function updatePasswordHandler(req: any, res: any) {
   adminPassword = body.new_password;
   notificationList = [
     {
-      id: Date.now(),
+      id: String(Date.now()),
       type: 1,
       content: '您的登录密码已更新，请妥善保管新密码',
       is_read: 0,
-      created_at: formatIso8(),
+      send_time: formatIso8(),
     },
     ...notificationList,
   ];
@@ -423,7 +455,7 @@ function markAllNotificationsReadHandler(req: any, res: any) {
     is_read: 1,
   }));
 
-  sendBiz(res, 0, '已全部标记为已读', buildNotificationData(req.query || {}));
+  sendBiz(res, 0, '已全部标记为已读', {});
 }
 
 function markNotificationReadHandler(req: any, res: any) {
@@ -431,7 +463,7 @@ function markNotificationReadHandler(req: any, res: any) {
     return;
   }
 
-  const id = Number(req.params?.id);
+  const id = String(req.params?.id || '');
   const index = notificationList.findIndex((item) => item.id === id);
 
   if (index < 0) {
@@ -444,7 +476,7 @@ function markNotificationReadHandler(req: any, res: any) {
     is_read: 1,
   };
 
-  sendBiz(res, 0, '已标记为已读', null);
+  sendBiz(res, 0, '已标记为已读', {});
 }
 
 function deleteNotificationHandler(req: any, res: any) {
@@ -452,7 +484,7 @@ function deleteNotificationHandler(req: any, res: any) {
     return;
   }
 
-  const id = Number(req.params?.id);
+  const id = String(req.params?.id || '');
   const index = notificationList.findIndex((item) => item.id === id);
 
   if (index < 0) {
@@ -462,7 +494,7 @@ function deleteNotificationHandler(req: any, res: any) {
 
   notificationList.splice(index, 1);
 
-  sendBiz(res, 0, '消息删除成功', null);
+  sendBiz(res, 0, '消息删除成功', {});
 }
 
 function clearNotificationsHandler(req: any, res: any) {
@@ -472,7 +504,7 @@ function clearNotificationsHandler(req: any, res: any) {
 
   notificationList = [];
 
-  sendBiz(res, 0, '已清空所有消息', buildNotificationData(req.query || {}));
+  sendBiz(res, 0, '已清空所有消息', {});
 }
 
 export default {

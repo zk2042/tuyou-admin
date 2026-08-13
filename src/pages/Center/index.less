@@ -160,7 +160,13 @@
 .notifyActions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 4px;
+}
+
+.notifyActionButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .notifyList {
@@ -169,30 +175,20 @@
   gap: 16px;
 }
 
-.noticeMore {
-  margin-top: 16px;
-  text-align: center;
-}
-
 .notifyPager {
-  display: flex;
   margin-top: 20px;
-}
-
-.notifyPager :global(.ant-pagination) {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
 }
 
 .notifyItem {
   display: flex;
   gap: 14px;
   padding: 14px;
-  border: 1px solid #f0f0f0;
   border-radius: 14px;
+}
+
+.notifyUnread {
   background: #fafafa;
+  cursor: pointer;
 }
 
 .notifyIcon {
@@ -230,20 +226,32 @@
 }
 
 .notifyDesc {
+  flex: 1;
+  min-width: 0;
   margin-bottom: 0 !important;
   color: #8c8c8c;
   line-height: 1.7;
 }
 
-.notifyItemActions {
+.notifyContentRow {
   display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 8px;
+  align-items: center;
+  gap: 12px;
 }
 
-.notifyItemActions :global(.ant-btn) {
-  padding: 0;
+.notifyDelete {
+  flex-shrink: 0;
+  width: auto;
+  padding-inline: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.notifyItem:hover .notifyDelete,
+.notifyDelete:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .notifyTime {
