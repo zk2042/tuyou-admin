@@ -5,6 +5,7 @@ import {
   DashboardOutlined,
   ReadOutlined,
   SafetyCertificateOutlined,
+  TagOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
 import type { ComponentType, ReactNode } from 'react';
@@ -77,6 +78,9 @@ export const pageMap: Record<string, PageRule> = {
   './Authority/Permissions': {
     component: lazy(() => import('@/pages/Authority/Permissions')),
   },
+  './Tag': {
+    component: lazy(() => import('@/pages/Tag')),
+  },
 };
 
 const iconMap: Record<string, ComponentType> = {
@@ -86,6 +90,7 @@ const iconMap: Record<string, ComponentType> = {
   read: ReadOutlined,
   comment: CommentOutlined,
   safetyCertificate: SafetyCertificateOutlined,
+  tag: TagOutlined,
 };
 
 const reservedPaths = new Set(['/', '/login', '/center', '/403', '*']);

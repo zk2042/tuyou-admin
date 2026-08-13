@@ -12,6 +12,7 @@ import {
   FileTextOutlined,
   ReadOutlined,
   SafetyCertificateOutlined,
+  TagOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
 import { Column } from '@ant-design/plots';
@@ -69,6 +70,20 @@ const shortcuts = [
     icon: <SafetyCertificateOutlined />,
     path: '/authority/role',
     perm: 'role:list',
+  },
+  {
+    title: '权限管理',
+    desc: '管理后台角色与权限',
+    icon: <SafetyCertificateOutlined />,
+    path: '/authority/role',
+    perm: 'role:list',
+  },
+  {
+    title: '标签管理',
+    desc: '管理活动标签',
+    icon: <TagOutlined />,
+    path: '/tag',
+    perm: 'tag:list',
   },
 ];
 

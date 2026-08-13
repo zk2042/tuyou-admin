@@ -187,6 +187,17 @@ export const menuList: MenuItem[] = [
     create_time: '2026-08-11 09:18:32',
     update_time: '2026-08-11 09:18:32',
   },
+  {
+    id: '15',
+    menu_name: '标签管理',
+    parent_name: 'null',
+    menu_type: '菜单',
+    route_path: '/tag',
+    sort: 7,
+    status: '启用',
+    create_time: '2026-08-11 09:18:32',
+    update_time: '2026-08-11 09:18:32',
+  },
 ];
 
 const normalizeBody = <T extends object>(body?: T | string) => {
@@ -234,6 +245,7 @@ const componentMap: Record<string, string> = {
   '/authority/role': './Authority/Role',
   '/authority/menu': './Authority/Menu',
   '/authority/permissions': './Authority/Permissions',
+  '/tag': './Tag',
 };
 
 const iconMap: Record<string, string> = {
@@ -243,6 +255,7 @@ const iconMap: Record<string, string> = {
   '/content': 'read',
   '/comment': 'comment',
   '/authority': 'safetyCertificate',
+  '/tag': 'tag',
 };
 
 const getParentId = (item: MenuItem) => {
