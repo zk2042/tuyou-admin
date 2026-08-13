@@ -1,5 +1,6 @@
 import type { AuthMenu } from '@/services/auth';
 import {
+  BellOutlined,
   CalendarOutlined,
   CommentOutlined,
   DashboardOutlined,
@@ -81,6 +82,12 @@ export const pageMap: Record<string, PageRule> = {
   './Tag': {
     component: lazy(() => import('@/pages/Tag')),
   },
+  './Message/System': {
+    component: lazy(() => import('@/pages/Message/System')),
+  },
+  './Message/Interact': {
+    component: lazy(() => import('@/pages/Message/Interact')),
+  },
 };
 
 const iconMap: Record<string, ComponentType> = {
@@ -91,6 +98,7 @@ const iconMap: Record<string, ComponentType> = {
   comment: CommentOutlined,
   safetyCertificate: SafetyCertificateOutlined,
   tag: TagOutlined,
+  bell: BellOutlined,
 };
 
 const reservedPaths = new Set(['/', '/login', '/center', '/403', '*']);

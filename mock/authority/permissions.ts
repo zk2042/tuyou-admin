@@ -260,6 +260,52 @@ const seeds: PermSeed[] = [
     'DELETE',
     '/admin/api-permissions/:id',
   ],
+  ['查询标签列表', '标签管理', 'tag:list', 'GET', '/admin/tags'],
+  ['新增标签', '标签管理', 'tag:create', 'POST', '/admin/tags'],
+  ['编辑标签', '标签管理', 'tag:edit', 'PUT', '/admin/tags/:id'],
+  ['删除标签', '标签管理', 'tag:delete', 'DELETE', '/admin/tags/:id'],
+  [
+    '批量删除标签',
+    '标签管理',
+    'tag:batch-delete',
+    'POST',
+    '/admin/tags/batch-delete',
+  ],
+  [
+    '查询互动消息列表',
+    '消息管理',
+    'message:interact:list',
+    'GET',
+    '/admin/messages/interactions',
+  ],
+  [
+    '删除互动消息',
+    '消息管理',
+    'message:interact:delete',
+    'DELETE',
+    '/admin/messages/:id',
+  ],
+  [
+    '查询系统消息列表',
+    '消息管理',
+    'message:system:list',
+    'GET',
+    '/admin/messages/system',
+  ],
+  [
+    '发送系统消息',
+    '消息管理',
+    'message:system:send',
+    'POST',
+    '/admin/messages/system',
+  ],
+  [
+    '删除系统消息',
+    '消息管理',
+    'message:system:delete',
+    'DELETE',
+    '/admin/messages/:id',
+  ],
 ];
 
 export const permList: PermItem[] = seeds.map(
@@ -415,6 +461,8 @@ const moduleHandler = (_req: any, res: any) => {
     '用户模块',
     '认证模块',
     '评论模块',
+    '标签管理',
+    '消息管理',
   ];
 
   res.json({
