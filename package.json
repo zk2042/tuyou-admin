@@ -19,6 +19,7 @@
     "@ant-design/icons": "^5.0.1",
     "@ant-design/plots": "2.6.5",
     "@ant-design/pro-components": "2.8.10",
+    "@microsoft/fetch-event-source": "^2.0.1",
     "@reduxjs/toolkit": "^2.12.0",
     "@umijs/max": "^4.6.79",
     "@wangeditor/editor": "^5.1.23",

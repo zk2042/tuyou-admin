@@ -1,12 +1,12 @@
 // 运行时配置
 import Footer from '@/components/Footer';
+import { useNoticeStream } from '@/hooks/useNoticeStream';
 import Forbidden from '@/pages/Exception/403';
 import NotFound from '@/pages/Exception/404';
 import { getMe, type CurrentInfo } from '@/services/auth';
-import { queryNoticeUnread } from '@/services/center';
 import { adminLogout } from '@/services/login';
 import { store } from '@/store';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { useAppSelector } from '@/store/hooks';
 import { setUnreadCount } from '@/store/slices/noticeSlice';
 import {
   clearAuth as clearToken,
@@ -39,7 +39,7 @@ import {
   Typography,
 } from 'antd';
 import type { ComponentType, ReactNode } from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Provider } from 'react-redux';
 import { requestConfig } from './api/requestConfig';
 import './global.less';
@@ -124,11 +124,13 @@ function LayoutHeader() {
   const location = useLocation();
   const { initialState } = useModel('@@initialState');
   const { collapsed, toggleMenu } = useSider();
-  const dispatch = useAppDispatch();
   const unreadCount = useAppSelector((state) => state.notice.unreadCount);
   const { hasPerm } = useAccess();
   const canViewNotification = hasPerm('center:notification:list');
   const canViewUnread = hasPerm('center:notification:unread');
+  const handleStreamAuth = useCallback(() => redirectToLogin(), []);
+
+  useNoticeStream(Boolean(initialState?.id && canViewUnread), handleStreamAuth);
 
   const menuMeta = useMemo(
     () => [
@@ -181,24 +183,6 @@ function LayoutHeader() {
       return;
     }
   };
-
-  const loadUnread = async () => {
-    try {
-      const response = await queryNoticeUnread();
-      dispatch(setUnreadCount(response.data?.unread_count ?? 0));
-    } catch {
-      return;
-    }
-  };
-
-  useEffect(() => {
-    if (!getToken() || !initialState?.id || !canViewUnread) {
-      dispatch(setUnreadCount(0));
-      return;
-    }
-
-    void loadUnread();
-  }, [canViewUnread, dispatch, initialState?.id, location.pathname]);
 
   return (
     <div className="app-header">
