@@ -187,6 +187,50 @@ export const menuList: MenuItem[] = [
     create_time: '2026-08-11 09:18:32',
     update_time: '2026-08-11 09:18:32',
   },
+  {
+    id: '15',
+    menu_name: '标签管理',
+    parent_name: null,
+    menu_type: '菜单',
+    route_path: '/tag',
+    sort: 7,
+    status: '启用',
+    create_time: '2026-08-11 09:18:32',
+    update_time: '2026-08-11 09:18:32',
+  },
+  {
+    id: '16',
+    menu_name: '消息管理',
+    parent_name: null,
+    menu_type: '目录',
+    route_path: '/message',
+    sort: 8,
+    status: '启用',
+    create_time: '2026-08-12 09:18:32',
+    update_time: '2026-08-12 09:18:32',
+  },
+  {
+    id: '17',
+    menu_name: '系统消息',
+    parent_name: '消息管理',
+    menu_type: '菜单',
+    route_path: '/message/system',
+    sort: 1,
+    status: '启用',
+    create_time: '2026-08-12 09:18:32',
+    update_time: '2026-08-12 09:18:32',
+  },
+  {
+    id: '18',
+    menu_name: '互动消息',
+    parent_name: '消息管理',
+    menu_type: '菜单',
+    route_path: '/message/interact',
+    sort: 2,
+    status: '启用',
+    create_time: '2026-08-12 09:18:32',
+    update_time: '2026-08-12 09:18:32',
+  },
 ];
 
 const normalizeBody = <T extends object>(body?: T | string) => {
@@ -234,6 +278,9 @@ const componentMap: Record<string, string> = {
   '/authority/role': './Authority/Role',
   '/authority/menu': './Authority/Menu',
   '/authority/permissions': './Authority/Permissions',
+  '/tag': './Tag',
+  '/message/system': './Message/System',
+  '/message/interact': './Message/Interact',
 };
 
 const iconMap: Record<string, string> = {
@@ -243,6 +290,8 @@ const iconMap: Record<string, string> = {
   '/content': 'read',
   '/comment': 'comment',
   '/authority': 'safetyCertificate',
+  '/tag': 'tag',
+  '/message': 'bell',
 };
 
 const getParentId = (item: MenuItem) => {

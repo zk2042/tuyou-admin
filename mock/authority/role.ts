@@ -106,27 +106,36 @@ const roleList: RoleItem[] = [
 
 const roleGrants: Record<string, RoleGrant> = {
   '1': {
-    menu_ids: ['1', '6', '7', '8'],
+    menu_ids: ['1', '6', '7', '8', '15', '16', '17', '18'],
     perm_ids: permList
-      .filter((item) => ['内容管理', '评论管理'].includes(item.module))
+      .filter((item) =>
+        ['内容管理', '评论管理', '标签管理', '消息管理'].includes(item.module),
+      )
       .map((item) => item.id),
   },
   '2': {
-    menu_ids: ['1', '5', '6', '7', '8'],
+    menu_ids: ['1', '5', '6', '7', '8', '15', '16', '17', '18'],
     perm_ids: permList
-      .filter((item) => ['活动管理', '内容管理'].includes(item.module))
+      .filter((item) =>
+        ['活动管理', '内容管理', '标签管理', '消息管理'].includes(item.module),
+      )
       .map((item) => item.id),
   },
   '3': {
-    menu_ids: ['1', '2', '3', '4'],
+    menu_ids: ['1', '2', '3', '4', '16', '17', '18'],
     perm_ids: permList
-      .filter((item) => item.module === '用户管理')
+      .filter((item) => ['用户管理', '消息管理'].includes(item.module))
       .map((item) => item.id),
   },
   '4': {
-    menu_ids: ['1', '5'],
+    menu_ids: ['1', '5', '16', '17'],
     perm_ids: permList
-      .filter((item) => item.module === '活动管理')
+      .filter(
+        (item) =>
+          ['活动管理', '消息管理'].includes(item.module) ||
+          item.perm_key === 'message:system:list' ||
+          item.perm_key === 'message:system:send',
+      )
       .map((item) => item.id),
   },
   '5': {
@@ -142,9 +151,11 @@ const roleGrants: Record<string, RoleGrant> = {
       .map((item) => item.id),
   },
   '7': {
-    menu_ids: ['1', '2', '3', '4'],
+    menu_ids: ['1', '2', '3', '4', '16', '17', '18'],
     perm_ids: permList
-      .filter((item) => ['个人中心', '用户管理'].includes(item.module))
+      .filter((item) =>
+        ['个人中心', '用户管理', '消息管理'].includes(item.module),
+      )
       .map((item) => item.id),
   },
 };
