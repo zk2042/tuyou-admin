@@ -19,6 +19,7 @@ import { setAppInstance } from '@/utils/message';
 import {
   buildAppRoutes,
   buildMenuMeta,
+  getLoginRedirect,
   normalizePath,
   pageMap,
 } from '@/utils/route';
@@ -420,6 +421,9 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => ({
   actionsRender: false,
   avatarProps: false,
   menuFooterRender: false,
+  contentStyle: {
+    padding: 0,
+  },
   token: {
     pageContainer: {
       paddingBlockPageContainerContent: 8,
@@ -459,8 +463,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => ({
     }
 
     if (hasLogin && isLogin) {
-      const redirect = new URLSearchParams(search).get('redirect') || '/';
-      history.replace(redirect);
+      history.replace(getLoginRedirect(search));
       return;
     }
 

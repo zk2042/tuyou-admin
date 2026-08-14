@@ -114,6 +114,32 @@ export function normalizePath(path: string) {
   return path.endsWith('/') ? path.slice(0, -1) : path;
 }
 
+export function getLoginRedirect(search: string) {
+  const redirect = new URLSearchParams(search).get('redirect');
+
+  if (!redirect) {
+    return '/';
+  }
+
+  try {
+    const target = new URL(redirect, window.location.origin);
+    const path = normalizePath(target.pathname);
+
+    if (
+      target.origin !== window.location.origin ||
+      path === '/login' ||
+      path === '/403' ||
+      path === '*'
+    ) {
+      return '/';
+    }
+
+    return `${target.pathname}${target.search}${target.hash}`;
+  } catch {
+    return '/';
+  }
+}
+
 function isReservedPath(path?: string) {
   return !path || reservedPaths.has(normalizePath(path));
 }
