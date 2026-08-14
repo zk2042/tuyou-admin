@@ -27,7 +27,7 @@ export interface GuideItem {
   title: string;
   nickname: string;
   category: string;
-  tags: string[];
+  tags: string[] | null;
   difficulty: string;
   publish_time: string;
   view_count: number;

@@ -1,12 +1,15 @@
 import Forbidden from '@/pages/Exception/403';
 import { queryActivity } from '@/services/activity';
 import type { ActivityItem } from '@/services/activity/types';
+import { querySystemMessage } from '@/services/message/system';
+import type { MessageItem } from '@/services/message/system/types';
 import type { WorkbenchData } from '@/services/workbench';
 import { getWorkbench } from '@/services/workbench';
 import { message } from '@/utils/message';
 import { hasMenuPath } from '@/utils/route';
 import {
   ArrowRightOutlined,
+  BellOutlined,
   CalendarOutlined,
   CommentOutlined,
   FileTextOutlined,
@@ -65,59 +68,25 @@ const shortcuts = [
     perm: 'comment:list',
   },
   {
-    title: '权限管理',
-    desc: '管理后台角色与权限',
-    icon: <SafetyCertificateOutlined />,
-    path: '/authority/role',
-    perm: 'role:list',
-  },
-  {
-    title: '权限管理',
-    desc: '管理后台角色与权限',
-    icon: <SafetyCertificateOutlined />,
-    path: '/authority/role',
-    perm: 'role:list',
-  },
-  {
     title: '标签管理',
     desc: '管理活动标签',
     icon: <TagOutlined />,
     path: '/tag',
     perm: 'tag:list',
   },
-];
-
-interface LatestNotice {
-  id: string;
-  type: keyof typeof noticeMeta;
-  content: string;
-  created_at: string;
-}
-
-const latestNotices: LatestNotice[] = [
   {
-    id: 'N001',
-    type: '系统公告',
-    content: '途友 App v3.2.0 版本更新公告',
-    created_at: '2026-08-07 10:24:00',
+    title: '互动管理',
+    desc: '管理用户互动记录',
+    icon: <BellOutlined />,
+    path: '/message/interact',
+    perm: 'message:interact:list',
   },
   {
-    id: 'N002',
-    type: '活动通知',
-    content: '暑期户外安全温馨提示',
-    created_at: '2026-08-06 18:42:00',
-  },
-  {
-    id: 'N003',
-    type: '下架通知',
-    content: '“川西秋色露营之旅”活动已被下架',
-    created_at: '2026-08-05 14:16:00',
-  },
-  {
-    id: 'N004',
-    type: '系统公告',
-    content: '平台服务协议与隐私政策更新说明',
-    created_at: '2026-08-04 09:08:00',
+    title: '权限管理',
+    desc: '管理后台角色与权限',
+    icon: <SafetyCertificateOutlined />,
+    path: '/authority/role',
+    perm: 'role:list',
   },
 ];
 
@@ -158,7 +127,6 @@ const formatDate = (value: string) => {
 const trendConfig = {
   xField: 'date',
   yField: 'count',
-  height: 290,
   paddingBottom: 8,
   paddingLeft: 18,
   style: {
@@ -202,10 +170,9 @@ const trendConfig = {
 } as const;
 
 const noticeMeta = {
-  系统公告: { color: 'green', tag: 'blue' },
-  活动通知: { color: '#faad14', tag: 'orange' },
-  下架通知: { color: 'red', tag: 'red' },
-} as const;
+  系统: { color: 'green', tag: 'blue' },
+  活动: { color: '#faad14', tag: 'orange' },
+};
 
 function LatestActivities({
   loading,
@@ -264,27 +231,47 @@ function LatestActivities({
   );
 }
 
-function LatestNotices({ list }: { list: LatestNotice[] }) {
+function LatestNotices({
+  loading,
+  list,
+}: {
+  loading: boolean;
+  list: MessageItem[];
+}) {
   return (
     <Card title="最新动态" className={styles.panel}>
-      {list.length ? (
+      {loading ? (
+        <Skeleton active paragraph={{ rows: 4 }} />
+      ) : list.length ? (
         <Timeline
           className={styles.timeline}
-          items={list.map((item) => ({
-            key: item.id,
-            color: noticeMeta[item.type].color,
-            children: (
-              <div className={styles.notice}>
-                <Tag color={noticeMeta[item.type].tag}>{item.type}</Tag>
-                <Typography.Text className={styles.noticeText}>
-                  {item.content}
-                </Typography.Text>
-                <Typography.Text type="secondary" className={styles.noticeTime}>
-                  {item.created_at}
-                </Typography.Text>
-              </div>
-            ),
-          }))}
+          items={list.map((item) => {
+            const meta = noticeMeta[
+              item.msg_type as keyof typeof noticeMeta
+            ] ?? {
+              color: 'gray',
+              tag: 'default',
+            };
+
+            return {
+              key: item.id,
+              color: meta.color,
+              children: (
+                <div className={styles.notice}>
+                  <Tag color={meta.tag}>{item.msg_type}</Tag>
+                  <Typography.Text className={styles.noticeText}>
+                    {item.content}
+                  </Typography.Text>
+                  <Typography.Text
+                    type="secondary"
+                    className={styles.noticeTime}
+                  >
+                    {item.send_time}
+                  </Typography.Text>
+                </div>
+              ),
+            };
+          })}
         />
       ) : (
         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无动态" />
@@ -300,6 +287,7 @@ const DashboardPage: React.FC = () => {
   const canViewActivities =
     hasPerm('activity:list') &&
     hasMenuPath('/activity', initialState?.menu_tree);
+  const canViewMessages = hasPerm('message:system:list');
   const visibleShortcuts = useMemo(
     () =>
       shortcuts.filter(
@@ -310,8 +298,10 @@ const DashboardPage: React.FC = () => {
   );
   const [data, setData] = useState<WorkbenchData>();
   const [activities, setActivities] = useState<ActivityItem[]>([]);
+  const [notices, setNotices] = useState<MessageItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [actLoading, setActLoading] = useState(false);
+  const [noticeLoading, setNoticeLoading] = useState(false);
   const [welcome, setWelcome] = useState('');
 
   const loadData = useCallback(async () => {
@@ -346,6 +336,18 @@ const DashboardPage: React.FC = () => {
     }
   }, []);
 
+  const loadNotices = useCallback(async () => {
+    setNoticeLoading(true);
+    try {
+      const response = await querySystemMessage({ page: 1, size: 4 });
+      setNotices(response.data?.list ?? []);
+    } catch {
+      setNotices([]);
+    } finally {
+      setNoticeLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (!canView) {
       return;
@@ -355,7 +357,17 @@ const DashboardPage: React.FC = () => {
     if (canViewActivities) {
       void loadActivities();
     }
-  }, [canView, canViewActivities, loadActivities, loadData]);
+    if (canViewMessages) {
+      void loadNotices();
+    }
+  }, [
+    canView,
+    canViewActivities,
+    canViewMessages,
+    loadActivities,
+    loadData,
+    loadNotices,
+  ]);
 
   const name = initialState?.username || '旅行伙伴';
   const today = new Intl.DateTimeFormat('zh-CN', {
@@ -460,11 +472,16 @@ const DashboardPage: React.FC = () => {
           </Card>
         </Col>
         <Col xs={24} xl={12}>
-          <Card title="近 7 天用户注册数" className={styles.panel}>
+          <Card
+            title="近 7 天用户注册数"
+            className={`${styles.panel} ${styles.trendPanel}`}
+          >
             {loading ? (
               <Skeleton active paragraph={{ rows: 5 }} />
             ) : data?.register_trend.length ? (
-              <Column {...trendConfig} data={data.register_trend} />
+              <div className={styles.trendChart}>
+                <Column {...trendConfig} data={data.register_trend} />
+              </div>
             ) : (
               <Empty
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -477,7 +494,7 @@ const DashboardPage: React.FC = () => {
 
       <Row gutter={[16, 16]} className={styles.grid}>
         <Col xs={24} xl={12}>
-          <LatestNotices list={latestNotices} />
+          <LatestNotices loading={noticeLoading} list={notices} />
         </Col>
         {canViewActivities && (
           <Col xs={24} xl={12}>

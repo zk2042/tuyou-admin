@@ -1,4 +1,5 @@
 // 运行时配置
+import appLogo from '@/assets/images/logo.png';
 import Footer from '@/components/Footer';
 import { useNoticeStream } from '@/hooks/useNoticeStream';
 import Forbidden from '@/pages/Exception/403';
@@ -43,9 +44,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Provider } from 'react-redux';
 import { requestConfig } from './api/requestConfig';
 import './global.less';
-
-const APP_LOGO =
-  'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png';
 
 export type InitialState = CurrentInfo;
 
@@ -406,8 +404,15 @@ export const request: RequestConfig = {
 };
 
 export const layout: RunTimeLayoutConfig = ({ initialState }) => ({
-  logo: APP_LOGO,
+  logo: appLogo,
   title: '途友管理后台',
+  siderWidth: 240,
+  menuHeaderRender: (_, __, props) => (
+    <span className="sider-brand">
+      <img className="sider-brand-logo" src={appLogo} alt="途友" />
+      {!props?.collapsed && <span className="sider-brand-title">途友</span>}
+    </span>
+  ),
   navTheme: 'light',
   headerRender: false,
   rightContentRender: false,

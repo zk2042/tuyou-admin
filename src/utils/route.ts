@@ -4,6 +4,7 @@ import {
   CalendarOutlined,
   CommentOutlined,
   DashboardOutlined,
+  HeartOutlined,
   ReadOutlined,
   SafetyCertificateOutlined,
   TagOutlined,
@@ -93,6 +94,7 @@ export const pageMap: Record<string, PageRule> = {
 const iconMap: Record<string, ComponentType> = {
   dashboard: DashboardOutlined,
   team: TeamOutlined,
+  heart: HeartOutlined,
   calendar: CalendarOutlined,
   read: ReadOutlined,
   comment: CommentOutlined,
