@@ -125,8 +125,8 @@ const NoteCover = ({ src, alt }: NoteCoverProps) => {
   );
 };
 
-const TagList = ({ tags }: { tags: string[] }) => {
-  if (!tags.length) {
+const TagList = ({ tags }: { tags: string[] | null }) => {
+  if (!Array.isArray(tags) || !tags.length) {
     return '-';
   }
 

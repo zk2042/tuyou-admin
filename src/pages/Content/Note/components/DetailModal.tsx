@@ -89,7 +89,7 @@ const detailItems = (
       label: '标签',
       children: (
         <Space size={[4, 4]} wrap>
-          {record.tags.length
+          {Array.isArray(record.tags) && record.tags.length
             ? record.tags.map((item) => (
                 <Tag key={item} color="blue">
                   {item}
