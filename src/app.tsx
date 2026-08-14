@@ -127,9 +127,14 @@ function LayoutHeader() {
   const { hasPerm } = useAccess();
   const canViewNotification = hasPerm('center:notification:list');
   const canViewUnread = hasPerm('center:notification:unread');
+  const canStreamNotification = hasPerm('center:notification:stream');
   const handleStreamAuth = useCallback(() => redirectToLogin(), []);
 
-  useNoticeStream(Boolean(initialState?.id && canViewUnread), handleStreamAuth);
+  useNoticeStream(
+    Boolean(initialState?.id && canViewUnread),
+    canStreamNotification,
+    handleStreamAuth,
+  );
 
   const menuMeta = useMemo(
     () => [

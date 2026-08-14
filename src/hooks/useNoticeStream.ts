@@ -7,13 +7,17 @@ import { useEffect } from 'react';
 
 const POLL_INTERVAL = 60000;
 
-export function useNoticeStream(enabled: boolean, onAuthError: () => void) {
+export function useNoticeStream(
+  unreadEnabled: boolean,
+  streamEnabled: boolean,
+  onAuthError: () => void,
+) {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     const token = getToken();
 
-    if (!enabled || !token) {
+    if (!unreadEnabled || !token) {
       dispatch(setUnreadCount(0));
       return;
     }
@@ -52,6 +56,11 @@ export function useNoticeStream(enabled: boolean, onAuthError: () => void) {
     };
 
     const connect = async () => {
+      if (!streamEnabled) {
+        startPolling();
+        return;
+      }
+
       await loadUnread();
 
       if (controller.signal.aborted) {
@@ -79,5 +88,5 @@ export function useNoticeStream(enabled: boolean, onAuthError: () => void) {
       stopPolling();
       controller.abort();
     };
-  }, [dispatch, enabled, onAuthError]);
+  }, [dispatch, onAuthError, streamEnabled, unreadEnabled]);
 }

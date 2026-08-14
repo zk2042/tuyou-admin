@@ -47,6 +47,13 @@ const seeds: PermSeed[] = [
     '/admin/center/notifications/unread',
   ],
   [
+    '订阅消息通知',
+    '个人中心',
+    'center:notification:stream',
+    'GET',
+    '/admin/center/notifications/stream',
+  ],
+  [
     '全部标记已读',
     '个人中心',
     'center:notification:read-all',
