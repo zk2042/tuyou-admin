@@ -57,7 +57,6 @@ export interface ActivityItem {
   is_slide: string;
   status: string;
   activity_status: string;
-  is_del: string;
   delete_time?: string | null;
 }
 

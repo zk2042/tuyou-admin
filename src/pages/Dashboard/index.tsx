@@ -75,11 +75,11 @@ const shortcuts = [
     perm: 'tag:list',
   },
   {
-    title: '互动管理',
+    title: '消息管理',
     desc: '管理用户互动记录',
     icon: <BellOutlined />,
-    path: '/message/interact',
-    perm: 'message:interact:list',
+    path: '/message/system',
+    perm: 'message:system:list',
   },
   {
     title: '权限管理',
@@ -239,9 +239,17 @@ function LatestNotices({
   list: MessageItem[];
 }) {
   return (
-    <Card title="最新动态" className={styles.panel}>
+    <Card
+      title="最新动态"
+      extra={
+        <Button type="link" onClick={() => history.push('/message/system')}>
+          查看全部 <ArrowRightOutlined />
+        </Button>
+      }
+      className={styles.panel}
+    >
       {loading ? (
-        <Skeleton active paragraph={{ rows: 4 }} />
+        <Skeleton active paragraph={{ rows: 7 }} />
       ) : list.length ? (
         <Timeline
           className={styles.timeline}
@@ -339,7 +347,7 @@ const DashboardPage: React.FC = () => {
   const loadNotices = useCallback(async () => {
     setNoticeLoading(true);
     try {
-      const response = await querySystemMessage({ page: 1, size: 4 });
+      const response = await querySystemMessage({ page: 1, size: 7 });
       setNotices(response.data?.list ?? []);
     } catch {
       setNotices([]);

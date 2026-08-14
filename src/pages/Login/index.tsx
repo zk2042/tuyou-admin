@@ -7,6 +7,7 @@ import {
   type LoginForm,
 } from '@/services/login';
 import { clearAuth, setToken, setUser } from '@/utils/auth';
+import { getLoginRedirect } from '@/utils/route';
 import {
   LockOutlined,
   SafetyCertificateOutlined,
@@ -99,9 +100,7 @@ const LoginPage: React.FC = () => {
 
       message.success(response.message || '登录成功');
 
-      const redirect =
-        new URLSearchParams(window.location.search).get('redirect') || '/';
-      window.location.replace(redirect);
+      window.location.replace(getLoginRedirect(window.location.search));
     } catch {
       clearAuth();
       await loadCode();

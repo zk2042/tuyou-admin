@@ -4,7 +4,6 @@ import {
   Button,
   Col,
   DatePicker,
-  Divider,
   Drawer,
   Form,
   Input,
@@ -13,7 +12,7 @@ import {
   Select,
   Space,
 } from 'antd';
-import type { Dayjs } from 'dayjs';
+import dayjs, { type Dayjs } from 'dayjs';
 import { useEffect } from 'react';
 
 const typeOpts = [
@@ -93,22 +92,13 @@ const CreateModal = ({
       footer={
         <Space>
           <Button onClick={onCancel}>取消</Button>
-          <Button
-            type="primary"
-            loading={saving}
-            onClick={() => {
-              void form.validateFields().then((vals) => {
-                onSubmit(vals);
-              });
-            }}
-          >
+          <Button type="primary" loading={saving} onClick={() => form.submit()}>
             创建活动
           </Button>
         </Space>
       }
     >
-      <Divider style={{ margin: '0 0 24px' }} />
-      <Form<CreateVals> form={form} layout="vertical">
+      <Form<CreateVals> form={form} layout="vertical" onFinish={onSubmit}>
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item
@@ -191,11 +181,25 @@ const CreateModal = ({
             <Form.Item
               label="开始时间"
               name="start_time"
-              rules={[{ required: true, message: '请选择开始时间' }]}
+              rules={[
+                { required: true, message: '请选择开始时间' },
+                {
+                  validator(_, value?: Dayjs) {
+                    if (!value || value.isAfter(dayjs().add(48, 'hour'))) {
+                      return Promise.resolve();
+                    }
+
+                    return Promise.reject(
+                      new Error('开始时间需晚于当前时间48小时'),
+                    );
+                  },
+                },
+              ]}
             >
               <DatePicker
                 showTime
                 format="YYYY-MM-DD HH:mm"
+                minDate={dayjs().add(48, 'hour')}
                 placeholder="请选择开始时间"
                 style={{ width: '100%' }}
               />

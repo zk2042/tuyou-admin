@@ -19,6 +19,7 @@ import { setAppInstance } from '@/utils/message';
 import {
   buildAppRoutes,
   buildMenuMeta,
+  getLoginRedirect,
   normalizePath,
   pageMap,
 } from '@/utils/route';
@@ -126,9 +127,14 @@ function LayoutHeader() {
   const { hasPerm } = useAccess();
   const canViewNotification = hasPerm('center:notification:list');
   const canViewUnread = hasPerm('center:notification:unread');
+  const canStreamNotification = hasPerm('center:notification:stream');
   const handleStreamAuth = useCallback(() => redirectToLogin(), []);
 
-  useNoticeStream(Boolean(initialState?.id && canViewUnread), handleStreamAuth);
+  useNoticeStream(
+    Boolean(initialState?.id && canViewUnread),
+    canStreamNotification,
+    handleStreamAuth,
+  );
 
   const menuMeta = useMemo(
     () => [
@@ -420,6 +426,9 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => ({
   actionsRender: false,
   avatarProps: false,
   menuFooterRender: false,
+  contentStyle: {
+    padding: 0,
+  },
   token: {
     pageContainer: {
       paddingBlockPageContainerContent: 8,
@@ -459,8 +468,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => ({
     }
 
     if (hasLogin && isLogin) {
-      const redirect = new URLSearchParams(search).get('redirect') || '/';
-      history.replace(redirect);
+      history.replace(getLoginRedirect(search));
       return;
     }
 
