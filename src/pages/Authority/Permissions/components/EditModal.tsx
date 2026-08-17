@@ -12,7 +12,7 @@ interface EditModalProps {
   onSubmit: (values: PermValues) => void;
   moduleOptions: { label: string; value: string }[];
   moduleLoading: boolean;
-  onModuleOpen: () => void;
+  onModuleOpen?: () => void;
 }
 
 const EditModal = ({

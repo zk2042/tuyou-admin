@@ -31,6 +31,7 @@ const PermissionsPage: React.FC = () => {
   const access = useAccess();
   const { setInitialState } = useModel('@@initialState');
   const canList = access.hasPerm('permission:list');
+  const canLoadModules = access.hasPerm('permission:module:list');
   const actionRef = useRef<ActionType>();
   const [createOpen, setCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -75,6 +76,11 @@ const PermissionsPage: React.FC = () => {
     [setInitialState],
   );
   const loadModules = React.useCallback(async () => {
+    if (!canLoadModules) {
+      setModules([]);
+      return;
+    }
+
     setModuleLoading(true);
     try {
       const response = await getPermModules();
@@ -84,7 +90,7 @@ const PermissionsPage: React.FC = () => {
     } finally {
       setModuleLoading(false);
     }
-  }, []);
+  }, [canLoadModules]);
   const moduleOptions = useMemo(
     () =>
       modules.map((item) => ({
@@ -212,7 +218,7 @@ const PermissionsPage: React.FC = () => {
         saving={creating}
         moduleOptions={moduleOptions}
         moduleLoading={moduleLoading}
-        onModuleOpen={loadModules}
+        onModuleOpen={canLoadModules ? loadModules : undefined}
         onCancel={closeCreate}
         onSubmit={(values) => {
           void submitCreate(values);
@@ -224,7 +230,7 @@ const PermissionsPage: React.FC = () => {
         record={editRecord}
         moduleOptions={moduleOptions}
         moduleLoading={moduleLoading}
-        onModuleOpen={loadModules}
+        onModuleOpen={canLoadModules ? loadModules : undefined}
         onCancel={closeEdit}
         onSubmit={(values) => {
           void submitEdit(values);

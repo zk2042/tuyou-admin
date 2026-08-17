@@ -12,7 +12,7 @@ interface EditModalProps {
   onSubmit: (values: MenuValues) => void;
   parentOptions: { label: string; value: string }[];
   parentLoading: boolean;
-  onParentOpen: () => void;
+  onParentOpen?: () => void;
 }
 
 const EditModal = ({
