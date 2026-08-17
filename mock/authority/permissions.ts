@@ -236,6 +236,7 @@ const seeds: PermSeed[] = [
     '/admin/roles/:id/permissions',
   ],
   ['查询菜单列表', '权限管理', 'menu:list', 'GET', '/admin/menus'],
+  ['获取父级菜单', '权限管理', 'menu:list:all', 'GET', '/admin/menus/all'],
   ['新增菜单', '权限管理', 'menu:create', 'POST', '/admin/menus'],
   ['编辑菜单', '权限管理', 'menu:edit', 'PUT', '/admin/menus/:id'],
   ['删除菜单', '权限管理', 'menu:delete', 'DELETE', '/admin/menus/:id'],
@@ -245,6 +246,13 @@ const seeds: PermSeed[] = [
     'permission:list',
     'GET',
     '/admin/api-permissions',
+  ],
+  [
+    '获取权限模块',
+    '权限管理',
+    'permission:module:list',
+    'GET',
+    '/admin/api-permissions/module',
   ],
   [
     '新增API权限',
