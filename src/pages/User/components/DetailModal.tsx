@@ -4,6 +4,8 @@ import type { DescriptionsProps } from 'antd';
 import { Avatar, Image, Space, Spin, Tag, theme, Typography } from 'antd';
 import type { CSSProperties, ReactNode } from 'react';
 
+import { MEMBER_STATUS } from '../shared';
+
 type DetailRecord = {
   id: string;
   avatar: string;
@@ -14,7 +16,7 @@ type DetailRecord = {
   favorite_count?: number;
   publish_count?: number;
   fans_count?: number;
-  status: boolean;
+  status: number;
   bio: string;
   role: string;
   register_time: string;
@@ -42,10 +44,21 @@ interface DetailProps {
   onClose: () => void;
 }
 
-const statusTag = (status: boolean) => {
-  const color = status ? 'success' : 'error';
+const statusTag = (status: number) => {
+  const color =
+    status === MEMBER_STATUS.NORMAL
+      ? 'success'
+      : status === MEMBER_STATUS.DISABLED
+      ? 'error'
+      : 'default';
+  const text =
+    status === MEMBER_STATUS.NORMAL
+      ? '正常'
+      : status === MEMBER_STATUS.CANCELLED
+      ? '已注销'
+      : '禁用';
 
-  return <Tag color={color}>{status ? '正常' : '禁用'}</Tag>;
+  return <Tag color={color}>{text}</Tag>;
 };
 
 const roleTag = (role: string) => {

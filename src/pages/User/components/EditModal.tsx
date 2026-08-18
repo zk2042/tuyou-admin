@@ -9,13 +9,14 @@ import {
   Typography,
 } from 'antd';
 import { useEffect } from 'react';
-import type { EditVals, RoleText } from '../shared';
+import { MEMBER_STATUS, type EditVals, type RoleText } from '../shared';
 
 interface EditProps {
   entityLabel: string;
   roleText?: RoleText;
   record: {
     nickname: string;
+    status?: number;
   };
   values: EditVals;
   open: boolean;
@@ -63,6 +64,7 @@ const EditModal = ({
   const roleChecked = roleFlag ?? values.roleFlag;
   const nextStatus = statusFlag ? '正常' : '禁用';
   const nextRole = roleChecked ? '领队' : roleText;
+  const isCancelled = record.status === MEMBER_STATUS.CANCELLED;
 
   useEffect(() => {
     if (!open) {
@@ -107,16 +109,18 @@ const EditModal = ({
                   <Switch
                     checkedChildren="正常"
                     unCheckedChildren="禁用"
-                    disabled={loading}
+                    disabled={loading || isCancelled}
                   />
                 </Form.Item>
                 <Typography.Paragraph
-                  type="secondary"
+                  type={isCancelled ? 'warning' : 'secondary'}
                   style={{ marginTop: 16, marginBottom: 0 }}
                 >
-                  {`当前开关${
-                    statusFlag ? '已开启' : '已关闭'
-                  }，保存后状态为${nextStatus}。`}
+                  {isCancelled
+                    ? `该${entityLabel}已注销，状态不可在此修改，请通过"恢复"操作还原。`
+                    : `当前开关${
+                        statusFlag ? '已开启' : '已关闭'
+                      }，保存后状态为${nextStatus}。`}
                 </Typography.Paragraph>
               </div>
             </Form.Item>

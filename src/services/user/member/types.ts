@@ -6,6 +6,7 @@ export interface MemberQuery {
   phone?: string;
   register_start?: string;
   register_end?: string;
+  status?: number;
 }
 
 export interface MemberItem {
@@ -18,7 +19,7 @@ export interface MemberItem {
   favorite_count: number;
   publish_count: number;
   fans_count: number;
-  status: boolean;
+  status: number;
   bio: string;
   role: string;
   register_time: string;

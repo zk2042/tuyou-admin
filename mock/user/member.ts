@@ -24,7 +24,7 @@ const memberList: UserItem[] = [
     favorite_count: 24,
     publish_count: 11,
     fans_count: 135,
-    status: true,
+    status: 1,
     bio: '热爱户外，喜欢和山野对话。',
     role: '普通会员',
     register_time: '2026-07-20',
@@ -40,7 +40,7 @@ const memberList: UserItem[] = [
     favorite_count: 19,
     publish_count: 8,
     fans_count: 102,
-    status: true,
+    status: 1,
     bio: '行也无忧，知行万里皆风景。',
     role: '普通会员',
     register_time: '2026-07-19',
@@ -56,7 +56,7 @@ const memberList: UserItem[] = [
     favorite_count: 37,
     publish_count: 16,
     fans_count: 186,
-    status: true,
+    status: 1,
     bio: '在路上，故事会比目的地更动人。',
     role: '普通会员',
     register_time: '2026-07-18',
@@ -72,7 +72,7 @@ const memberList: UserItem[] = [
     favorite_count: 15,
     publish_count: 6,
     fans_count: 79,
-    status: true,
+    status: 1,
     bio: '旅行友好者，用脚步丈量每一段未知。',
     role: '普通会员',
     register_time: '2026-07-17',
@@ -88,7 +88,7 @@ const memberList: UserItem[] = [
     favorite_count: 9,
     publish_count: 3,
     fans_count: 34,
-    status: false,
+    status: 0,
     bio: '暂未填写个性签名。',
     role: '普通会员',
     register_time: '2026-07-16',
@@ -104,7 +104,7 @@ const memberList: UserItem[] = [
     favorite_count: 28,
     publish_count: 13,
     fans_count: 142,
-    status: true,
+    status: 1,
     bio: '说走就走，把远方写成生活的一部分。',
     role: '普通会员',
     register_time: '2026-07-15',
@@ -120,7 +120,7 @@ const memberList: UserItem[] = [
     favorite_count: 12,
     publish_count: 5,
     fans_count: 57,
-    status: false,
+    status: 0,
     bio: '擅长整理攻略，也乐于分享路线经验。',
     role: '普通会员',
     register_time: '2026-07-14',
@@ -136,7 +136,7 @@ const memberList: UserItem[] = [
     favorite_count: 41,
     publish_count: 18,
     fans_count: 208,
-    status: true,
+    status: 1,
     bio: '晨起登山，夜晚观星，理想周末不过如此。',
     role: '普通会员',
     register_time: '2026-07-13',
@@ -152,7 +152,7 @@ const memberList: UserItem[] = [
     favorite_count: 22,
     publish_count: 10,
     fans_count: 121,
-    status: true,
+    status: 1,
     bio: '想把每一段旅途都过成值得纪念的日子。',
     role: '普通会员',
     register_time: '2026-07-12',
@@ -168,7 +168,7 @@ const memberList: UserItem[] = [
     favorite_count: 7,
     publish_count: 2,
     fans_count: 29,
-    status: false,
+    status: 0,
     bio: '正在休整，下次出发会去更远的地方。',
     role: '普通会员',
     register_time: '2026-07-11',
@@ -184,7 +184,7 @@ const memberList: UserItem[] = [
     favorite_count: 26,
     publish_count: 9,
     fans_count: 118,
-    status: true,
+    status: 1,
     bio: '越野、露营、轻徒步都想试试看。',
     role: '普通会员',
     register_time: '2026-07-10',
@@ -200,11 +200,27 @@ const memberList: UserItem[] = [
     favorite_count: 31,
     publish_count: 14,
     fans_count: 167,
-    status: true,
+    status: 1,
     bio: '总想在周末给生活加一点海风和日落。',
     role: '普通会员',
     register_time: '2026-07-09',
     last_login: '2026-07-15 09:12',
+  },
+  {
+    id: '10013',
+    avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=hejiuling',
+    bg_img: DEFAULT_BG_IMG,
+    nickname: '何玖龄',
+    phone: '199****3210',
+    follow_count: 12,
+    favorite_count: 4,
+    publish_count: 1,
+    fans_count: 18,
+    status: 2,
+    bio: '已注销账号，等待管理员恢复。',
+    role: '普通会员',
+    register_time: '2026-06-30',
+    last_login: '2026-07-10 19:20',
   },
 ];
 
@@ -220,6 +236,26 @@ export default {
   },
   'DELETE /__mock/api/v1/admin/members/:id': (req: any, res: any) => {
     res.json(removeItem(memberList, req.params.id));
+  },
+  'POST /__mock/api/v1/admin/members/:id/restore': (req: any, res: any) => {
+    const current = findItem(memberList, req.params.id);
+
+    if (!current) {
+      res.json({ code: 404, message: '会员不存在', data: null });
+      return;
+    }
+
+    if (current.status !== 2) {
+      res.json({ code: 400, message: '该会员未注销，无需恢复', data: null });
+      return;
+    }
+
+    current.status = 1;
+    res.json({
+      code: 0,
+      message: '恢复成功',
+      data: current,
+    });
   },
   'POST /__mock/api/v1/admin/members/batch-delete': (req: any, res: any) => {
     res.json(removeItems(memberList, req.body));
@@ -243,7 +279,7 @@ export default {
         item.id,
         item.nickname,
         item.phone,
-        item.status ? '正常' : '禁用',
+        item.status === 1 ? '正常' : item.status === 2 ? '已注销' : '禁用',
         item.role,
         item.bio,
         item.register_time,
