@@ -22,7 +22,7 @@ import styles from './index.less';
 type FormValue = Pick<LoginForm, 'username' | 'password' | 'captcha'>;
 
 const LoginPage: React.FC = () => {
-  const { message, modal } = App.useApp();
+  const { message } = App.useApp();
   const [form] = Form.useForm();
   const { setInitialState } = useModel('@@initialState');
   const [submitting, setSubmitting] = useState(false);
@@ -58,14 +58,6 @@ const LoginPage: React.FC = () => {
   useEffect(() => {
     loadCode();
   }, [loadCode]);
-
-  const handleForgotPassword = () => {
-    modal.info({
-      title: '忘记密码',
-      content: '请联系管理员重置密码',
-      okText: '我知道了',
-    });
-  };
 
   const handleLogin = async (values: FormValue) => {
     if (!codeData?.captcha_id) {
@@ -227,9 +219,6 @@ const LoginPage: React.FC = () => {
               <Form.Item name="remember" valuePropName="checked" noStyle>
                 <Checkbox>记住我</Checkbox>
               </Form.Item>
-              <Button type="link" onClick={handleForgotPassword}>
-                忘记密码
-              </Button>
             </div>
 
             <div className={styles.loginHint}>
