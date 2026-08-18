@@ -140,7 +140,7 @@ const detailItems = (
     {
       key: 'is_del',
       label: '状态',
-      children: <Tag color={tagColor(record.is_del)}>{record.is_del}</Tag>,
+      children: <Tag color={tagColor(record.status)}>{record.status}</Tag>,
     },
     {
       key: 'delete_time',
@@ -192,7 +192,7 @@ const detailHeader = (
           <Tag color={tagColor(record.activity_status)}>
             {record.activity_status}
           </Tag>
-          <Tag color={tagColor(record.is_del)}>{record.is_del}</Tag>
+          <Tag color={tagColor(record.status)}>{record.status}</Tag>
         </Space>
       </Space>
     </Space>

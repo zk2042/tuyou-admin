@@ -1,24 +1,24 @@
-import carousel1Image from '@/assets/images/carousel1.jpg';
-import carousel4Image from '@/assets/images/carousel4.webp';
-import carousel7Image from '@/assets/images/carousel7.webp';
+import carousel1Image from '@/assets/images/carousel1.jpeg';
+import carousel2Image from '@/assets/images/carousel2.jpeg';
+import carousel3Image from '@/assets/images/carousel3.png';
 
 export const carouselImages = [
   {
     id: '01',
-    title: '统一运营视图',
-    description: '集中处理用户、内容与活动数据，让后台管理更清晰高效。',
+    title: '邂逅沿途风光',
+    description: '从花海田园到山川湖海，途友精选每一处值得驻足的风景。',
     image: carousel1Image,
   },
   {
     id: '02',
-    title: '实时业务洞察',
-    description: '通过可视化图表快速识别趋势，帮助管理员及时完成决策。',
-    image: carousel7Image,
+    title: '启程自在旅途',
+    description: '与志同道合的伙伴同行，让每一段路程都充满故事与欢笑。',
+    image: carousel3Image,
   },
   {
     id: '03',
-    title: '安全权限管理',
-    description: '在统一入口中管理账号、权限与系统操作，保障平台稳定运行。',
-    image: carousel4Image,
+    title: '逐梦山川湖海',
+    description: '翻越山岭，奔赴远方，在每一次探索中发现更广阔的世界。',
+    image: carousel2Image,
   },
 ];

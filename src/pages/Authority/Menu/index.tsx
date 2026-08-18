@@ -58,6 +58,7 @@ const MenuPage: React.FC = () => {
   const access = useAccess();
   const { initialState, setInitialState } = useModel('@@initialState');
   const canList = access.hasPerm('menu:list');
+  const canLoadParents = access.hasPerm('menu:list:all');
   const actionRef = useRef<ActionType>();
   const [createOpen, setCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -67,6 +68,11 @@ const MenuPage: React.FC = () => {
   const [parentMenus, setParentMenus] = useState<ParentMenu[]>([]);
   const [parentLoading, setParentLoading] = useState(false);
   const loadParents = useCallback(async () => {
+    if (!canLoadParents) {
+      setParentMenus([]);
+      return;
+    }
+
     setParentLoading(true);
     try {
       const response = await getParentMenus();
@@ -76,7 +82,7 @@ const MenuPage: React.FC = () => {
     } finally {
       setParentLoading(false);
     }
-  }, []);
+  }, [canLoadParents]);
   const menuRequest = useCallback(
     async (params: MenuQueryParams) => {
       try {
@@ -246,7 +252,7 @@ const MenuPage: React.FC = () => {
         saving={creating}
         parentOptions={parentOptions}
         parentLoading={parentLoading}
-        onParentOpen={loadParents}
+        onParentOpen={canLoadParents ? loadParents : undefined}
         onCancel={closeCreate}
         onSubmit={(values) => {
           void submitCreate(values);
@@ -260,7 +266,7 @@ const MenuPage: React.FC = () => {
           (option) => option.value !== editRecord?.menu_name,
         )}
         parentLoading={parentLoading}
-        onParentOpen={loadParents}
+        onParentOpen={canLoadParents ? loadParents : undefined}
         onCancel={closeEdit}
         onSubmit={(values) => {
           void submitEdit(values);

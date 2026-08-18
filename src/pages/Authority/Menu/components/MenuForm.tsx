@@ -12,7 +12,7 @@ interface MenuFormProps {
   form: FormInstance<MenuValues>;
   parentOptions: { label: string; value: string }[];
   parentLoading: boolean;
-  onParentOpen: () => void;
+  onParentOpen?: () => void;
 }
 
 const MenuForm = ({
@@ -42,7 +42,7 @@ const MenuForm = ({
           placeholder="请选择父级菜单"
           notFoundContent={parentLoading ? <Spin size="small" /> : undefined}
           onOpenChange={(open) => {
-            if (open) onParentOpen();
+            if (open) onParentOpen?.();
           }}
         />
       </Form.Item>

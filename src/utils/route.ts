@@ -2,10 +2,20 @@ import type { AuthMenu } from '@/services/auth';
 import {
   BellOutlined,
   CalendarOutlined,
+  CarOutlined,
+  CarryOutOutlined,
   CommentOutlined,
   DashboardOutlined,
+  HeartOutlined,
+  KeyOutlined,
+  OneToOneOutlined,
+  ProfileOutlined,
   ReadOutlined,
+  ReconciliationOutlined,
+  RocketOutlined,
   SafetyCertificateOutlined,
+  SmileOutlined,
+  StarOutlined,
   TagOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
@@ -93,12 +103,22 @@ export const pageMap: Record<string, PageRule> = {
 const iconMap: Record<string, ComponentType> = {
   dashboard: DashboardOutlined,
   team: TeamOutlined,
+  heart: HeartOutlined,
+  star: StarOutlined,
   calendar: CalendarOutlined,
+  profile: ProfileOutlined,
+  reconciliation: ReconciliationOutlined,
   read: ReadOutlined,
   comment: CommentOutlined,
   safetyCertificate: SafetyCertificateOutlined,
   tag: TagOutlined,
   bell: BellOutlined,
+  car: CarOutlined,
+  carryOut: CarryOutOutlined,
+  oneToOne: OneToOneOutlined,
+  smile: SmileOutlined,
+  rocket: RocketOutlined,
+  key: KeyOutlined,
 };
 
 const reservedPaths = new Set(['/', '/login', '/center', '/403', '*']);
@@ -110,6 +130,32 @@ export function normalizePath(path: string) {
   }
 
   return path.endsWith('/') ? path.slice(0, -1) : path;
+}
+
+export function getLoginRedirect(search: string) {
+  const redirect = new URLSearchParams(search).get('redirect');
+
+  if (!redirect) {
+    return '/';
+  }
+
+  try {
+    const target = new URL(redirect, window.location.origin);
+    const path = normalizePath(target.pathname);
+
+    if (
+      target.origin !== window.location.origin ||
+      path === '/login' ||
+      path === '/403' ||
+      path === '*'
+    ) {
+      return '/';
+    }
+
+    return `${target.pathname}${target.search}${target.hash}`;
+  } catch {
+    return '/';
+  }
 }
 
 function isReservedPath(path?: string) {

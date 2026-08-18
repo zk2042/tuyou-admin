@@ -7,7 +7,7 @@ interface PermFormProps {
   form: FormInstance<PermValues>;
   moduleOptions: { label: string; value: string }[];
   moduleLoading: boolean;
-  onModuleOpen: () => void;
+  onModuleOpen?: () => void;
 }
 
 const METHOD_OPTIONS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map(
@@ -41,7 +41,7 @@ const PermForm = ({
         optionFilterProp="label"
         notFoundContent={moduleLoading ? <Spin size="small" /> : '暂无模块'}
         onOpenChange={(open) => {
-          if (open) onModuleOpen();
+          if (open) onModuleOpen?.();
         }}
       />
     </Form.Item>

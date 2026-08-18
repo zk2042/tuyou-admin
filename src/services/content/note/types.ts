@@ -26,7 +26,7 @@ export interface NoteItem {
   title: string;
   nickname: string;
   category: string;
-  tags: string[];
+  tags: string[] | null;
   publish_time: string;
   view_count: number;
   like_count: number;

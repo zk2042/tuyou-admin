@@ -1,4 +1,5 @@
 // 运行时配置
+import appLogo from '@/assets/images/logo.png';
 import Footer from '@/components/Footer';
 import { useNoticeStream } from '@/hooks/useNoticeStream';
 import Forbidden from '@/pages/Exception/403';
@@ -18,6 +19,7 @@ import { setAppInstance } from '@/utils/message';
 import {
   buildAppRoutes,
   buildMenuMeta,
+  getLoginRedirect,
   normalizePath,
   pageMap,
 } from '@/utils/route';
@@ -43,9 +45,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Provider } from 'react-redux';
 import { requestConfig } from './api/requestConfig';
 import './global.less';
-
-const APP_LOGO =
-  'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png';
 
 export type InitialState = CurrentInfo;
 
@@ -128,9 +127,14 @@ function LayoutHeader() {
   const { hasPerm } = useAccess();
   const canViewNotification = hasPerm('center:notification:list');
   const canViewUnread = hasPerm('center:notification:unread');
+  const canStreamNotification = hasPerm('center:notification:stream');
   const handleStreamAuth = useCallback(() => redirectToLogin(), []);
 
-  useNoticeStream(Boolean(initialState?.id && canViewUnread), handleStreamAuth);
+  useNoticeStream(
+    Boolean(initialState?.id && canViewUnread),
+    canStreamNotification,
+    handleStreamAuth,
+  );
 
   const menuMeta = useMemo(
     () => [
@@ -406,8 +410,15 @@ export const request: RequestConfig = {
 };
 
 export const layout: RunTimeLayoutConfig = ({ initialState }) => ({
-  logo: APP_LOGO,
+  logo: appLogo,
   title: '途友管理后台',
+  siderWidth: 240,
+  menuHeaderRender: (_, __, props) => (
+    <span className="sider-brand">
+      <img className="sider-brand-logo" src={appLogo} alt="途友" />
+      {!props?.collapsed && <span className="sider-brand-title">途友</span>}
+    </span>
+  ),
   navTheme: 'light',
   headerRender: false,
   rightContentRender: false,
@@ -415,6 +426,9 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => ({
   actionsRender: false,
   avatarProps: false,
   menuFooterRender: false,
+  contentStyle: {
+    padding: 0,
+  },
   token: {
     pageContainer: {
       paddingBlockPageContainerContent: 8,
@@ -454,8 +468,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => ({
     }
 
     if (hasLogin && isLogin) {
-      const redirect = new URLSearchParams(search).get('redirect') || '/';
-      history.replace(redirect);
+      history.replace(getLoginRedirect(search));
       return;
     }
 
