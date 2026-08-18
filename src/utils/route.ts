@@ -1,5 +1,6 @@
 import type { AuthMenu } from '@/services/auth';
 import {
+  AuditOutlined,
   BellOutlined,
   CalendarOutlined,
   CarOutlined,
@@ -98,6 +99,9 @@ export const pageMap: Record<string, PageRule> = {
   './Message/Interact': {
     component: lazy(() => import('@/pages/Message/Interact')),
   },
+  './SensitiveWord': {
+    component: lazy(() => import('@/pages/SensitiveWord')),
+  },
 };
 
 const iconMap: Record<string, ComponentType> = {
@@ -119,6 +123,7 @@ const iconMap: Record<string, ComponentType> = {
   smile: SmileOutlined,
   rocket: RocketOutlined,
   key: KeyOutlined,
+  audit: AuditOutlined,
 };
 
 const reservedPaths = new Set(['/', '/login', '/center', '/403', '*']);

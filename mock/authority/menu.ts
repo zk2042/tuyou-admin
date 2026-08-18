@@ -231,6 +231,17 @@ export const menuList: MenuItem[] = [
     create_time: '2026-08-12 09:18:32',
     update_time: '2026-08-12 09:18:32',
   },
+  {
+    id: '19',
+    menu_name: '敏感词管理',
+    parent_name: null,
+    menu_type: '菜单',
+    route_path: '/sensitive-word',
+    sort: 9,
+    status: '启用',
+    create_time: '2026-08-18 09:18:32',
+    update_time: '2026-08-18 09:18:32',
+  },
 ];
 
 const normalizeBody = <T extends object>(body?: T | string) => {
@@ -281,6 +292,7 @@ const componentMap: Record<string, string> = {
   '/tag': './Tag',
   '/message/system': './Message/System',
   '/message/interact': './Message/Interact',
+  '/sensitive-word': './SensitiveWord',
 };
 
 const iconMap: Record<string, string> = {
@@ -292,6 +304,7 @@ const iconMap: Record<string, string> = {
   '/authority': 'safetyCertificate',
   '/tag': 'tag',
   '/message': 'bell',
+  '/sensitive-word': 'warning',
 };
 
 const getParentId = (item: MenuItem) => {
