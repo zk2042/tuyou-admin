@@ -1,7 +1,8 @@
 import Detail from '@/components/Detail';
 import type { CommentDetail } from '@/services/comment/types';
+import { WarningFilled } from '@ant-design/icons';
 import type { DescriptionsProps } from 'antd';
-import { Avatar, Space, Tag, theme, Typography } from 'antd';
+import { Avatar, Space, Tag, theme, Tooltip, Typography } from 'antd';
 
 interface DetailProps {
   open: boolean;
@@ -23,6 +24,55 @@ const tagColor = (text: string) => {
     default:
       return 'default';
   }
+};
+
+const sensitiveItems = (record: CommentDetail) => {
+  if (!record.is_sensitive) {
+    return [];
+  }
+
+  const words = record.hit_words ?? [];
+  const tip =
+    words.length > 0 ? `命中敏感词：${words.join('、')}` : '该评论命中敏感词';
+
+  return [
+    {
+      key: 'is_sensitive',
+      label: '敏感词',
+      children: (
+        <Tooltip title={tip}>
+          <Tag
+            color="warning"
+            icon={<WarningFilled />}
+            style={{ marginInlineEnd: 0 }}
+          >
+            命中敏感词
+          </Tag>
+        </Tooltip>
+      ),
+    },
+    ...(words.length > 0
+      ? [
+          {
+            key: 'hit_words',
+            label: '命中词列表',
+            children: (
+              <Space size={[6, 6]} wrap>
+                {words.map((word) => (
+                  <Tag
+                    key={word}
+                    color="warning"
+                    style={{ marginInlineEnd: 0 }}
+                  >
+                    {word}
+                  </Tag>
+                ))}
+              </Space>
+            ),
+          },
+        ]
+      : []),
+  ];
 };
 
 const commentText = (record: CommentDetail, mentionColor: string) => {
@@ -96,6 +146,7 @@ const detailItems = (
       label: '状态',
       children: <Tag color={tagColor(record.status)}>{record.status}</Tag>,
     },
+    ...sensitiveItems(record),
     {
       key: 'delete_time',
       label: '删除时间',
@@ -105,6 +156,10 @@ const detailItems = (
 };
 
 const detailHeader = (record: CommentDetail) => {
+  const words = record.hit_words ?? [];
+  const tip =
+    words.length > 0 ? `命中敏感词：${words.join('、')}` : '该评论命中敏感词';
+
   return (
     <Space direction="vertical" size={4} style={{ marginBottom: 24 }}>
       <Typography.Title level={5} style={{ margin: 0 }}>
@@ -115,6 +170,17 @@ const detailHeader = (record: CommentDetail) => {
         <Tag color={tagColor(record.target_type)}>{record.target_type}</Tag>
         <Tag>{record.level}</Tag>
         <Tag color={tagColor(record.status)}>{record.status}</Tag>
+        {record.is_sensitive ? (
+          <Tooltip title={tip}>
+            <Tag
+              color="warning"
+              icon={<WarningFilled />}
+              style={{ marginInlineEnd: 0 }}
+            >
+              敏感
+            </Tag>
+          </Tooltip>
+        ) : null}
       </Space>
     </Space>
   );

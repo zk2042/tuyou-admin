@@ -4,6 +4,7 @@ import {
   EyeOutlined,
   FireFilled,
   LikeFilled,
+  WarningFilled,
 } from '@ant-design/icons';
 import type { ProColumns } from '@ant-design/pro-components';
 import { Avatar, Button, Space, Tag, theme, Tooltip, Typography } from 'antd';
@@ -44,6 +45,28 @@ const tagColor = (text: string) => {
     default:
       return 'default';
   }
+};
+
+const sensitiveTag = (record: CommentItem) => {
+  if (!record.is_sensitive) {
+    return null;
+  }
+
+  const words = record.hit_words ?? [];
+  const tip =
+    words.length > 0 ? `命中敏感词：${words.join('、')}` : '该评论命中敏感词';
+
+  return (
+    <Tooltip title={tip}>
+      <Tag
+        color="warning"
+        icon={<WarningFilled />}
+        style={{ marginInlineEnd: 0 }}
+      >
+        敏感
+      </Tag>
+    </Tooltip>
+  );
 };
 
 const createRange = (value?: [string, string]) => {
@@ -275,10 +298,15 @@ export const commentColumns = ({
     {
       title: '状态',
       dataIndex: 'status',
-      width: 100,
+      width: 120,
       hideInSearch: true,
       render: (_, record) => (
-        <Tag color={tagColor(record.status)}>{record.status}</Tag>
+        <Space size={4}>
+          <Tag color={tagColor(record.status)} style={{ marginInlineEnd: 0 }}>
+            {record.status}
+          </Tag>
+          {sensitiveTag(record)}
+        </Space>
       ),
     },
     {

@@ -29,6 +29,8 @@ export interface CommentItem {
   create_time: string;
   status: string;
   delete_time: string;
+  is_sensitive?: boolean;
+  hit_words?: string[];
 }
 
 export type CommentDetail = CommentItem;

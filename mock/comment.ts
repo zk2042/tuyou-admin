@@ -65,6 +65,8 @@ const commentList: CommentMockItem[] = [
     create_time: '2026-07-18 18:42:00',
     status: '正常',
     delete_time: '',
+    is_sensitive: true,
+    hit_words: ['补给点'],
   },
   {
     id: 'C004',
@@ -110,6 +112,8 @@ const commentList: CommentMockItem[] = [
     create_time: '2026-07-15 07:50:00',
     status: '正常',
     delete_time: '',
+    is_sensitive: true,
+    hit_words: ['营地', '日出'],
   },
   {
     id: 'C007',
@@ -170,6 +174,8 @@ const commentList: CommentMockItem[] = [
     create_time: '2026-07-11 13:05:00',
     status: '正常',
     delete_time: '',
+    is_sensitive: true,
+    hit_words: [],
   },
 ];
 
