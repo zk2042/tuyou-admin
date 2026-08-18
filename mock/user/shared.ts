@@ -8,7 +8,7 @@ export interface UserItem {
   favorite_count: number;
   publish_count: number;
   fans_count: number;
-  status: boolean;
+  status: number;
   bio: string;
   role: string;
   register_time: string;
@@ -175,6 +175,8 @@ export const updateItem = <T extends UserItem>(
   const data = normalizeUpdate(body);
 
   if (typeof data.status === 'boolean') {
+    current.status = data.status ? 1 : 0;
+  } else if (typeof data.status === 'number') {
     current.status = data.status;
   }
 
@@ -252,7 +254,8 @@ export const updateStatusItems = <T extends UserItem>(
     };
   }
 
-  const nextStatus = data.status;
+  const nextStatus =
+    typeof data.status === 'boolean' ? (data.status ? 1 : 0) : data.status;
 
   source.forEach((item) => {
     if (ids.has(item.id)) {

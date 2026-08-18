@@ -87,6 +87,13 @@ const seeds: PermSeed[] = [
   ['编辑会员', '用户管理', 'member:edit', 'PUT', '/admin/members/:id'],
   ['删除会员', '用户管理', 'member:delete', 'DELETE', '/admin/members/:id'],
   [
+    '恢复已注销会员',
+    '用户管理',
+    'member:restore',
+    'POST',
+    '/admin/members/:id/restore',
+  ],
+  [
     '批量删除会员',
     '用户管理',
     'member:batch-delete',

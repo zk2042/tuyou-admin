@@ -4,6 +4,7 @@ import type {
   DelRun,
   DetailLoad,
   EditSave,
+  RestoreRun,
   UserPermissions,
   UserRecord,
 } from '../shared';
@@ -23,6 +24,7 @@ export const memberColumns = (
   loadDetail: DetailLoad | undefined,
   editSave: EditSave | undefined,
   delRun: DelRun | undefined,
+  restoreRun: RestoreRun | undefined,
   onEdited: (() => void) | undefined,
   bioWidth: number,
   permissions: UserPermissions,
@@ -113,9 +115,17 @@ export const memberColumns = (
       title: '操作',
       key: 'option',
       valueType: 'option',
-      width: 220,
+      width: 260,
       render: (_, record) =>
-        tableActions('会员', loadDetail, editSave, delRun, onEdited, record),
+        tableActions(
+          '会员',
+          loadDetail,
+          editSave,
+          delRun,
+          restoreRun,
+          onEdited,
+          record,
+        ),
     });
   }
 

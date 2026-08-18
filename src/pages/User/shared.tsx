@@ -9,8 +9,10 @@ import {
   EditOutlined,
   ExportOutlined,
   EyeOutlined,
+  UndoOutlined,
 } from '@ant-design/icons';
 import {
+  App,
   Avatar,
   Button,
   ConfigProvider,
@@ -52,7 +54,7 @@ export interface UserRecord {
   favorite_count?: number;
   publish_count?: number;
   fans_count?: number;
-  status: boolean;
+  status: number;
   bio: string;
   role: string;
   register_time: string;
@@ -75,13 +77,29 @@ export type EditVals = {
 
 type EditSrc = Pick<UserRecord, 'status' | 'role'>;
 
-const statusText = (status?: boolean) => (status ? '正常' : '禁用');
+export const MEMBER_STATUS = {
+  DISABLED: 0,
+  NORMAL: 1,
+  CANCELLED: 2,
+} as const;
+
+const statusText = (status?: number) => {
+  if (status === MEMBER_STATUS.NORMAL) {
+    return '正常';
+  }
+
+  if (status === MEMBER_STATUS.CANCELLED) {
+    return '已注销';
+  }
+
+  return '禁用';
+};
 
 const roleOn = (role?: string) => role === '领队';
 
 export const editVals = (data: EditSrc): EditVals => {
   return {
-    status: data.status,
+    status: data.status === MEMBER_STATUS.NORMAL,
     roleFlag: roleOn(data.role),
   };
 };
@@ -110,6 +128,7 @@ export type EditSave = (
 ) => Promise<ApiResponse<DetailRecord>>;
 
 export type DelRun = (id: string) => Promise<ApiResponse>;
+export type RestoreRun = (id: string) => Promise<ApiResponse>;
 export type BatchDel = (ids: string[]) => Promise<ApiResponse>;
 export type BatchStatus = (
   ids: string[],
@@ -124,6 +143,7 @@ export interface UserPermissions {
   detail: boolean;
   edit: boolean;
   delete: boolean;
+  restore: boolean;
   batchStatus: boolean;
   batchDelete: boolean;
   export: boolean;
@@ -140,6 +160,7 @@ export const getUserPermissions = (
     detail: has('detail'),
     edit: has('edit'),
     delete: has('delete'),
+    restore: has('restore'),
     batchStatus: has('batch-status'),
     batchDelete: has('batch-delete'),
     export: has('export'),
@@ -147,7 +168,12 @@ export const getUserPermissions = (
 };
 
 export const hasRowActions = (permissions: UserPermissions) => {
-  return permissions.detail || permissions.edit || permissions.delete;
+  return (
+    permissions.detail ||
+    permissions.edit ||
+    permissions.delete ||
+    permissions.restore
+  );
 };
 
 export const hasBatchActions = (permissions: UserPermissions) => {
@@ -182,8 +208,13 @@ export const userAvatar = (
   return <Avatar src={record.avatar} alt={record.nickname} />;
 };
 
-export const statusTag = (status: boolean) => {
-  const color = status ? 'success' : 'error';
+export const statusTag = (status: number) => {
+  const color =
+    status === MEMBER_STATUS.NORMAL
+      ? 'success'
+      : status === MEMBER_STATUS.DISABLED
+      ? 'error'
+      : 'default';
 
   return <Tag color={color}>{statusText(status)}</Tag>;
 };
@@ -252,6 +283,7 @@ interface RowProps {
   loadDetail?: DetailLoad;
   editSave?: EditSave;
   delRun?: DelRun;
+  restoreRun?: RestoreRun;
   onEdited?: () => void;
   record: DetailRecord;
 }
@@ -261,16 +293,19 @@ const RowActions = ({
   loadDetail,
   editSave,
   delRun,
+  restoreRun,
   onEdited,
   record,
 }: RowProps) => {
   const { token } = theme.useToken();
+  const { modal } = App.useApp();
   const [detailData, setDetailData] = useState<DetailRecord>();
   const [detailOpen, setDetailOpen] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [editFetching, setEditFetching] = useState(false);
   const [editLoading, setEditLoading] = useState(false);
+  const [restoring, setRestoring] = useState(false);
   const { deleting, confirmDelete } = useRowDelete<DetailRecord>({
     entityLabel,
     getName: (current) => current.nickname,
@@ -281,6 +316,45 @@ const RowActions = ({
     },
     onSuccess: () => onEdited?.(),
   });
+
+  const isCancelled = record.status === MEMBER_STATUS.CANCELLED;
+
+  const confirmRestore = () => {
+    modal.confirm({
+      title: `确认恢复该${entityLabel}吗？`,
+      closable: true,
+      content: (
+        <>
+          <Divider style={{ margin: '0 0 20px' }} />
+          <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
+            {`${record.nickname}（${record.id}）恢复后状态将变为正常，可正常登录。若手机号已被其他账号占用，恢复将失败。`}
+          </Typography.Paragraph>
+        </>
+      ),
+      okText: '确认恢复',
+      cancelText: '取消',
+      okButtonProps: { loading: restoring },
+      onOk: async () => {
+        if (!restoreRun) {
+          return;
+        }
+
+        setRestoring(true);
+
+        try {
+          const response = await restoreRun(record.id);
+          message.success(
+            response.message || `已恢复${entityLabel} ${record.nickname}`,
+          );
+          onEdited?.();
+        } catch {
+          return;
+        } finally {
+          setRestoring(false);
+        }
+      },
+    });
+  };
 
   const openDetail = async () => {
     if (!loadDetail) {
@@ -384,6 +458,17 @@ const RowActions = ({
             删除
           </Button>
         ) : null}
+        {restoreRun && isCancelled ? (
+          <Button
+            type="link"
+            icon={<UndoOutlined />}
+            style={{ color: token.colorSuccess, paddingInline: 4 }}
+            loading={restoring}
+            onClick={confirmRestore}
+          >
+            恢复
+          </Button>
+        ) : null}
       </Space>
       <DetailModal
         entityLabel={entityLabel}
@@ -419,6 +504,7 @@ export const tableActions = (
   loadDetail: DetailLoad | undefined,
   editSave: EditSave | undefined,
   delRun: DelRun | undefined,
+  restoreRun: RestoreRun | undefined,
   onEdited: (() => void) | undefined,
   record: DetailRecord,
 ) => {
@@ -428,6 +514,7 @@ export const tableActions = (
       loadDetail={loadDetail}
       editSave={editSave}
       delRun={delRun}
+      restoreRun={restoreRun}
       onEdited={onEdited}
       record={record}
     />
@@ -471,7 +558,7 @@ const BatchStatusButton = ({
       return;
     }
 
-    setStatus(selectedRows.every((row) => row.status));
+    setStatus(selectedRows.every((row) => row.status === 1));
   }, [open, selectedRows]);
 
   const batchStatus = async () => {

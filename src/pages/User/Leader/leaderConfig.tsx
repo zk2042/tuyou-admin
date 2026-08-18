@@ -124,7 +124,15 @@ export const leaderColumns = (
       valueType: 'option',
       width: 220,
       render: (_, record) =>
-        tableActions('领队', loadDetail, editSave, delRun, onEdited, record),
+        tableActions(
+          '领队',
+          loadDetail,
+          editSave,
+          delRun,
+          undefined,
+          onEdited,
+          record,
+        ),
     });
   }
 

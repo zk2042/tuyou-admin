@@ -8,6 +8,7 @@ import {
   exportMember,
   getMember,
   queryMember,
+  restoreMember,
 } from '@/services/user/member';
 import type { ActionType } from '@ant-design/pro-components';
 import { useAccess } from '@umijs/max';
@@ -69,6 +70,7 @@ const MemberPage: React.FC = () => {
         : undefined,
       permissions.edit ? editMember : undefined,
       permissions.delete ? delMember : undefined,
+      permissions.restore ? restoreMember : undefined,
       () => {
         actionRef.current?.reload();
       },

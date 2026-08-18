@@ -47,6 +47,17 @@ export async function delMember(id: string, options?: { [key: string]: any }) {
   });
 }
 
+export async function restoreMember(
+  id: string,
+  options?: { [key: string]: any },
+) {
+  return apiRequest({
+    url: `/admin/members/${id}/restore`,
+    method: 'POST',
+    ...(options || {}),
+  });
+}
+
 export async function batchDelMember(
   ids: string[],
   options?: { [key: string]: any },

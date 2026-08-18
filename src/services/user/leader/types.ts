@@ -20,7 +20,7 @@ export interface LeaderItem {
   fans_count: number;
   bio: string;
   leading_count: number;
-  status: boolean;
+  status: number;
   role: string;
   register_time: string;
   last_login: string;
