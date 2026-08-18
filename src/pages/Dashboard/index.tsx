@@ -295,7 +295,9 @@ const DashboardPage: React.FC = () => {
   const canViewActivities =
     hasPerm('activity:list') &&
     hasMenuPath('/activity', initialState?.menu_tree);
-  const canViewMessages = hasPerm('message:system:list');
+  const canViewMessages =
+    hasPerm('message:system:list') &&
+    hasMenuPath('/message/system', initialState?.menu_tree);
   const visibleShortcuts = useMemo(
     () =>
       shortcuts.filter(
@@ -501,9 +503,11 @@ const DashboardPage: React.FC = () => {
       </Row>
 
       <Row gutter={[16, 16]} className={styles.grid}>
-        <Col xs={24} xl={12}>
-          <LatestNotices loading={noticeLoading} list={notices} />
-        </Col>
+        {canViewMessages && (
+          <Col xs={24} xl={12}>
+            <LatestNotices loading={noticeLoading} list={notices} />
+          </Col>
+        )}
         {canViewActivities && (
           <Col xs={24} xl={12}>
             <LatestActivities loading={actLoading} list={activities} />

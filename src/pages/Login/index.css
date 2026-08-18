@@ -144,8 +144,8 @@
   --input-h: 42px;
 
   width: 100%;
-  max-width: 540px;
-  min-height: 600px;
+  max-width: 500px;
+  min-height: 560px;
   padding: 54px 50px 50px;
   border: 1px solid rgba(46, 125, 50, 8%);
   border-radius: 18px;
@@ -273,7 +273,7 @@
 .formOptions {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 
 .formOptions :global(.ant-checkbox-wrapper) {
@@ -288,11 +288,6 @@
 
 .formOptions :global(.ant-checkbox + span) {
   padding-inline-start: 10px;
-}
-
-.formOptions a {
-  color: #2e7d32;
-  font-size: 15px;
 }
 
 .loginHint {
