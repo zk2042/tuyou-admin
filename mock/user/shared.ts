@@ -8,7 +8,7 @@ export interface UserItem {
   favorite_count: number;
   publish_count: number;
   fans_count: number;
-  status: number;
+  status: string;
   bio: string;
   role: string;
   register_time: string;
@@ -99,7 +99,7 @@ export const findItem = <T extends UserItem>(
 };
 
 interface UpdateData {
-  status?: boolean;
+  status?: string;
   role?: '普通会员' | '领队';
 }
 
@@ -108,7 +108,7 @@ interface BatchData {
 }
 
 interface BatchStatusData extends BatchData {
-  status?: boolean;
+  status?: string;
 }
 
 const normalizeUpdate = (body?: UpdateData | string): UpdateData => {
@@ -174,9 +174,7 @@ export const updateItem = <T extends UserItem>(
 
   const data = normalizeUpdate(body);
 
-  if (typeof data.status === 'boolean') {
-    current.status = data.status ? 1 : 0;
-  } else if (typeof data.status === 'number') {
+  if (data.status) {
     current.status = data.status;
   }
 
@@ -246,7 +244,7 @@ export const updateStatusItems = <T extends UserItem>(
     };
   }
 
-  if (typeof data.status !== 'boolean') {
+  if (!data.status) {
     return {
       code: 400,
       message: '请选择目标状态',
@@ -254,8 +252,7 @@ export const updateStatusItems = <T extends UserItem>(
     };
   }
 
-  const nextStatus =
-    typeof data.status === 'boolean' ? (data.status ? 1 : 0) : data.status;
+  const nextStatus = data.status;
 
   source.forEach((item) => {
     if (ids.has(item.id)) {

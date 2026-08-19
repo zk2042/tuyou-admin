@@ -16,7 +16,7 @@ interface EditProps {
   roleText?: RoleText;
   record: {
     nickname: string;
-    status?: number;
+    status?: string;
   };
   values: EditVals;
   open: boolean;

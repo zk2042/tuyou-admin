@@ -72,7 +72,7 @@ export async function batchDelMember(
 
 export async function batchStatusMember(
   ids: string[],
-  status: boolean,
+  status: string,
   options?: { [key: string]: any },
 ) {
   return apiRequest({

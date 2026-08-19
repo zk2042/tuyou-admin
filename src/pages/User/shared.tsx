@@ -54,7 +54,7 @@ export interface UserRecord {
   favorite_count?: number;
   publish_count?: number;
   fans_count?: number;
-  status: number;
+  status: string;
   bio: string;
   role: string;
   register_time: string;
@@ -66,7 +66,7 @@ export type BatchRow = Pick<UserRecord, 'id' | 'nickname' | 'status'>;
 export type RoleText = '普通会员' | '领队';
 
 export interface EditData {
-  status?: boolean;
+  status?: string;
   role?: RoleText;
 }
 
@@ -78,21 +78,13 @@ export type EditVals = {
 type EditSrc = Pick<UserRecord, 'status' | 'role'>;
 
 export const MEMBER_STATUS = {
-  DISABLED: 0,
-  NORMAL: 1,
-  CANCELLED: 2,
+  DISABLED: '禁用',
+  NORMAL: '启用',
+  CANCELLED: '已注销',
 } as const;
 
-const statusText = (status?: number) => {
-  if (status === MEMBER_STATUS.NORMAL) {
-    return '正常';
-  }
-
-  if (status === MEMBER_STATUS.CANCELLED) {
-    return '已注销';
-  }
-
-  return '禁用';
+const statusText = (status?: string) => {
+  return status as keyof typeof MEMBER_STATUS;
 };
 
 const roleOn = (role?: string) => role === '领队';
@@ -109,7 +101,7 @@ export const editData = (
   off: RoleText = '普通会员',
 ): EditData => {
   return {
-    status: data.status,
+    status: data.status ? MEMBER_STATUS.NORMAL : MEMBER_STATUS.DISABLED,
     role: data.roleFlag ? '领队' : off,
   };
 };
@@ -132,7 +124,7 @@ export type RestoreRun = (id: string) => Promise<ApiResponse>;
 export type BatchDel = (ids: string[]) => Promise<ApiResponse>;
 export type BatchStatus = (
   ids: string[],
-  status: boolean,
+  status: string,
 ) => Promise<ApiResponse>;
 
 export type UserScope = 'member' | 'leader';
@@ -208,7 +200,7 @@ export const userAvatar = (
   return <Avatar src={record.avatar} alt={record.nickname} />;
 };
 
-export const statusTag = (status: number) => {
+export const statusTag = (status: string) => {
   const color =
     status === MEMBER_STATUS.NORMAL
       ? 'success'
@@ -549,16 +541,21 @@ const BatchStatusButton = ({
 }: StatusBtnProps) => {
   const [open, setOpen] = useState(false);
   const [updating, setUpdating] = useState(false);
-  const [status, setStatus] = useState(true);
+  const [status, setStatus] = useState<string>(MEMBER_STATUS.NORMAL);
   const selectedCount = selectedKeys.length;
-  const nextText = status ? '正常' : '禁用';
+  const nextStatus = status;
+  const nextText = status === MEMBER_STATUS.NORMAL ? '正常' : '禁用';
 
   useEffect(() => {
     if (!open) {
       return;
     }
 
-    setStatus(selectedRows.every((row) => row.status === 1));
+    setStatus(
+      selectedRows.every((row) => row.status === MEMBER_STATUS.NORMAL)
+        ? MEMBER_STATUS.NORMAL
+        : MEMBER_STATUS.DISABLED,
+    );
   }, [open, selectedRows]);
 
   const batchStatus = async () => {
@@ -574,7 +571,7 @@ const BatchStatusButton = ({
     setUpdating(true);
 
     try {
-      const response = await statusRun(selectedKeys, status);
+      const response = await statusRun(selectedKeys, nextStatus);
 
       setOpen(false);
       await onStatused?.();
@@ -626,11 +623,13 @@ const BatchStatusButton = ({
         <ConfigProvider theme={switchTheme}>
           <div style={{ ...cardStyle, marginBottom: 20 }}>
             <Switch
-              checked={status}
+              checked={status === MEMBER_STATUS.NORMAL}
               checkedChildren="正常"
               unCheckedChildren="禁用"
               disabled={updating}
-              onChange={setStatus}
+              onChange={(v) =>
+                setStatus(v ? MEMBER_STATUS.NORMAL : MEMBER_STATUS.DISABLED)
+              }
             />
             <Typography.Paragraph
               type="secondary"

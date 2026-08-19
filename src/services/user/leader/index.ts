@@ -61,7 +61,7 @@ export async function batchDelLeader(
 
 export async function batchStatusLeader(
   ids: string[],
-  status: boolean,
+  status: string,
   options?: { [key: string]: any },
 ) {
   return apiRequest({

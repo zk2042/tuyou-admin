@@ -6,7 +6,7 @@ export interface MemberQuery {
   phone?: string;
   register_start?: string;
   register_end?: string;
-  status?: number;
+  status?: string;
 }
 
 export interface MemberItem {
@@ -19,7 +19,7 @@ export interface MemberItem {
   favorite_count: number;
   publish_count: number;
   fans_count: number;
-  status: number;
+  status: string;
   bio: string;
   role: string;
   register_time: string;
@@ -27,7 +27,7 @@ export interface MemberItem {
 }
 
 export interface MemberEdit {
-  status?: boolean;
+  status?: string;
   role?: '普通会员' | '领队';
 }
 

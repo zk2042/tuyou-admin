@@ -16,7 +16,7 @@ type DetailRecord = {
   favorite_count?: number;
   publish_count?: number;
   fans_count?: number;
-  status: number;
+  status: string;
   bio: string;
   role: string;
   register_time: string;
@@ -44,7 +44,7 @@ interface DetailProps {
   onClose: () => void;
 }
 
-const statusTag = (status: number) => {
+const statusTag = (status: string) => {
   const color =
     status === MEMBER_STATUS.NORMAL
       ? 'success'
