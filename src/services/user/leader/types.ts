@@ -20,14 +20,14 @@ export interface LeaderItem {
   fans_count: number;
   bio: string;
   leading_count: number;
-  status: number;
+  status: string;
   role: string;
   register_time: string;
   last_login: string;
 }
 
 export interface LeaderEdit {
-  status?: boolean;
+  status?: string;
   role?: '普通会员' | '领队';
 }
 
