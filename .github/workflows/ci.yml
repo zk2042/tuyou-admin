@@ -1,0 +1,35 @@
+name: Admin H5 CI
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: admin-h5-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build:prod
+      - name: Verify H5 output
+        run: test -s dist/index.html
+      - uses: actions/upload-artifact@v4
+        if: github.event_name == 'push'
+        with:
+          name: admin-h5-${{ github.sha }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 7
