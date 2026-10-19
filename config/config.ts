@@ -12,6 +12,9 @@ console.log('[Umi Config] currentEnv:', currentEnv);
 export default defineConfig({
   // ========== 构建配置 ==========
   hash: true, // 打包产物带 hash，避免浏览器缓存
+  chainWebpack: (memo) => {
+    memo.output.set('assetModuleFilename', 'admin-static/[name].[hash:8][ext]');
+  },
   fastRefresh: true, // 热更新保留组件 state
   ignoreMomentLocale: true, // 去掉 moment 国际化，减包体积
   esbuildMinifyIIFE: true, // 避免 esbuild helper 冲突导致构建失败
