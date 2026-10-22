@@ -81,7 +81,12 @@ const LoginPage: React.FC = () => {
         return;
       }
 
-      if (!loginData.token || !loginData.id || !loginData.username) {
+      if (
+        !(loginData.access_token || loginData.token) ||
+        !loginData.refresh_token ||
+        !loginData.id ||
+        !loginData.username
+      ) {
         message.error('登录响应数据不完整，请联系系统管理员');
         return;
       }
