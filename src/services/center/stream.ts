@@ -23,7 +23,14 @@ async function fetchWithTokenRefresh(
   input: RequestInfo | URL,
   init?: RequestInit,
 ): Promise<Response> {
-  const response = await fetch(input, init);
+  // 每次重连都读取本地最新的访问令牌，避免复用首次连接时的旧令牌
+  const headers = new Headers(init?.headers);
+  const currentToken = getToken();
+  if (currentToken) {
+    headers.set('Authorization', `Bearer ${currentToken}`);
+  }
+
+  const response = await fetch(input, { ...init, headers });
 
   if (response.status !== 401) {
     return response;
@@ -34,9 +41,7 @@ async function fetchWithTokenRefresh(
     return response;
   }
 
-  const headers = new Headers(init?.headers);
   headers.set('Authorization', `Bearer ${newAccessToken}`);
-
   return fetch(input, { ...init, headers });
 }
 
