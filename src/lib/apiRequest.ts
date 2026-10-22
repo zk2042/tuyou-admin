@@ -11,6 +11,7 @@
  */
 import { handleRequestError } from '@/api/requestErrorConfig';
 import { API_RESPONSE_SUCCESS_CODE, type ApiResponse } from '@/constants';
+import { refreshAccessToken } from '@/utils/auth';
 import { message } from '@/utils/message';
 import { request, type RequestOptions } from '@umijs/max';
 
@@ -30,6 +31,7 @@ interface RequestExecutorOptions extends RequestOptions {
   url: string;
   method?: RequestMethod;
   skipAuthToken?: boolean;
+  skipAuthRefresh?: boolean;
 }
 
 const MOCK_BASE_URL = '/__mock/api/v1';
@@ -99,49 +101,85 @@ async function requestWithAuth<T>(
   }
 }
 
+// 判断是否为登录态失效（HTTP 401 或业务码 401）
+function isUnauthorizedError(error: any) {
+  return (
+    error?.response?.status === 401 ||
+    error?.info?.code === 401 ||
+    error?.code === 401
+  );
+}
+
+// 执行一次请求（含开发环境 Mock 降级），不在此处处理全局错误提示
+async function executeApiRequest<T>(
+  url: string,
+  options: Omit<RequestExecutorOptions, 'url'>,
+  method: RequestMethod,
+): Promise<ApiResponse<T>> {
+  try {
+    const response = await request<ApiResponse<T>>(url, {
+      ...options,
+      skipErrorHandler: true,
+    });
+
+    return throwBizError(response);
+  } catch (error) {
+    if (
+      process.env.NODE_ENV !== 'development' ||
+      !canFallbackToMock(error, method)
+    ) {
+      throw error;
+    }
+
+    // 开发环境接口不可用时，请求对应的本地 Mock 地址
+    const response = await request<ApiResponse<T>>(url, {
+      ...options,
+      baseURL: MOCK_BASE_URL,
+      skipErrorHandler: true,
+    });
+
+    console.warn(`[Mock Fallback] ${method.toUpperCase()} /api/v1${url}`);
+    return throwBizError(response);
+  }
+}
+
 /**
  * 统一请求入口
  * 通过 options.method 区分 GET / POST / PUT / DELETE 等请求方式
  * 始终返回完整响应数据：{ code, message, data }
+ * 访问令牌过期（401）时自动使用刷新令牌续期，并重试一次原请求
  */
 export async function apiRequest<T = unknown>(
   options: RequestExecutorOptions,
 ): Promise<ApiResponse<T>> {
-  const { url, method = 'GET', ...restOptions } = options;
-  return requestWithAuth<ApiResponse<T>>(
+  const {
     url,
-    {
-      method,
-      ...restOptions,
-    },
-    async (path, requestOptions) => {
-      try {
-        const response = await request<ApiResponse<T>>(path, {
-          ...requestOptions,
-          skipErrorHandler: true,
-        });
+    method = 'GET',
+    skipAuthRefresh = false,
+    ...restOptions
+  } = options;
+  const requestOptions = { method, ...restOptions };
 
-        return throwBizError(response);
-      } catch (error) {
-        if (
-          process.env.NODE_ENV !== 'development' ||
-          !canFallbackToMock(error, method)
-        ) {
-          throw error;
+  try {
+    return await executeApiRequest<T>(url, requestOptions, method);
+  } catch (error) {
+    let finalError = error;
+
+    if (!skipAuthRefresh && isUnauthorizedError(error)) {
+      const newAccessToken = await refreshAccessToken();
+
+      if (newAccessToken) {
+        try {
+          return await executeApiRequest<T>(url, requestOptions, method);
+        } catch (retryError) {
+          finalError = retryError;
         }
-
-        // 开发环境接口不可用时，请求对应的本地 Mock 地址
-        const response = await request<ApiResponse<T>>(path, {
-          ...requestOptions,
-          baseURL: MOCK_BASE_URL,
-          skipErrorHandler: true,
-        });
-
-        console.warn(`[Mock Fallback] ${method.toUpperCase()} /api/v1${path}`);
-        return throwBizError(response);
       }
-    },
-  );
+    }
+
+    handleRequestError(finalError, options);
+    return Promise.reject(finalError);
+  }
 }
 
 // ================================= 下载 =================================

@@ -10,7 +10,12 @@ export type LoginForm = {
 };
 
 export type LoginData = {
-  token: string;
+  token?: string;
+  access_token: string;
+  refresh_token: string;
+  token_type?: string;
+  expires_in?: number;
+  refresh_expires_in?: number;
   id: string;
   username: string;
   role: string;
@@ -32,6 +37,7 @@ export async function adminLogin(
     url: '/admin/login',
     method: 'POST',
     skipAuthToken: true,
+    skipAuthRefresh: true,
     data,
     ...(options || {}),
   });
@@ -52,6 +58,7 @@ export async function getCaptcha(options?: {
     url: '/admin/captcha',
     method: 'GET',
     skipAuthToken: true,
+    skipAuthRefresh: true,
     ...(options || {}),
   });
 }

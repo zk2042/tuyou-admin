@@ -2,7 +2,7 @@ import { queryNoticeUnread } from '@/services/center';
 import { openNoticeStream } from '@/services/center/stream';
 import { useAppDispatch } from '@/store/hooks';
 import { setUnreadCount } from '@/store/slices/noticeSlice';
-import { getToken } from '@/utils/auth';
+import { hasAuth } from '@/utils/auth';
 import { useEffect } from 'react';
 
 const POLL_INTERVAL = 60000;
@@ -15,9 +15,7 @@ export function useNoticeStream(
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    const token = getToken();
-
-    if (!unreadEnabled || !token) {
+    if (!unreadEnabled || !hasAuth()) {
       dispatch(setUnreadCount(0));
       return;
     }

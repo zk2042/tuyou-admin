@@ -1,4 +1,4 @@
-import { getToken } from '@/utils/auth';
+import { getToken, refreshAccessToken } from '@/utils/auth';
 import {
   EventStreamContentType,
   fetchEventSource,
@@ -19,22 +19,41 @@ type StreamOptions = {
 };
 
 export async function openNoticeStream(options: StreamOptions) {
-  const token = getToken();
+  const token = getToken() || (await refreshAccessToken());
   let retryCount = 0;
+  let authRetryCount = 0;
 
   if (!token) {
     return;
   }
 
+  // headers 对象在重连时复用，刷新令牌后直接更新 Authorization
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${token}`,
+  };
+
   await fetchEventSource(STREAM_URL, {
     method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers,
     signal: options.signal,
     openWhenHidden: true,
     async onopen(response) {
-      if (response.status === 401 || response.status === 403) {
+      if (response.status === 401) {
+        if (authRetryCount >= 1) {
+          throw new FatalError('SSE authentication failed');
+        }
+        authRetryCount += 1;
+
+        const newAccessToken = await refreshAccessToken();
+        if (!newAccessToken) {
+          throw new FatalError('SSE token refresh failed');
+        }
+
+        headers.Authorization = `Bearer ${newAccessToken}`;
+        throw new Error('SSE token refreshed, retrying');
+      }
+
+      if (response.status === 403) {
         throw new FatalError('SSE authentication failed');
       }
 
@@ -46,6 +65,7 @@ export async function openNoticeStream(options: StreamOptions) {
 
       console.info('[Notice SSE] 连接成功');
       retryCount = 0;
+      authRetryCount = 0;
       options.onOpen();
     },
     onmessage(message) {

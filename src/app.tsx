@@ -11,8 +11,8 @@ import { useAppSelector } from '@/store/hooks';
 import { setUnreadCount } from '@/store/slices/noticeSlice';
 import {
   clearAuth as clearToken,
-  getToken,
   getUser,
+  hasAuth,
   setUser,
 } from '@/utils/auth';
 import { setAppInstance } from '@/utils/message';
@@ -372,9 +372,7 @@ export function patchRoutes({
 // 全局初始化数据配置，用于 Layout 用户信息和权限初始化
 // 更多信息见文档：https://umijs.org/docs/api/runtime-config#getinitialstate
 export async function getInitialState(): Promise<InitialState | undefined> {
-  const token = getToken();
-
-  if (!token) {
+  if (!hasAuth()) {
     clearToken();
     return undefined;
   }
@@ -457,9 +455,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => ({
     const { pathname, search } = history.location;
     const currentPath = normalizePath(pathname);
     const cachedUser = getUser<InitialState>();
-    const hasLogin = Boolean(
-      getToken() && (initialState?.id || cachedUser?.id),
-    );
+    const hasLogin = Boolean(hasAuth() && (initialState?.id || cachedUser?.id));
     const isLogin = currentPath === '/login';
 
     if (!hasLogin && !isLogin) {
