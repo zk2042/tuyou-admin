@@ -1,6 +1,6 @@
 import carousel1Image from '@/assets/images/carousel1.jpeg';
 import carousel2Image from '@/assets/images/carousel2.jpeg';
-import carousel3Image from '@/assets/images/carousel3.png';
+import carousel3Image from '@/assets/images/carousel3.jpg';
 
 export const carouselImages = [
   {
